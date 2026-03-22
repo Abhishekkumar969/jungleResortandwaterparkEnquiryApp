@@ -8,6 +8,7 @@ import BackButton from "../components/BackButton";
 import BottomNavigationBar from './BottomNavigationBar';
 import DailyReport from "./DailyReport";
 import DuePayments from "./DuePayments";
+import Download from "./Download";
 
 import './Prebook.css';
 import {
@@ -745,6 +746,8 @@ const Prebook = () => {
               </div>
             </div>
           ) : null}
+
+          <Download />
 
           {/* App Logout / ON-OFF */}
           <div
