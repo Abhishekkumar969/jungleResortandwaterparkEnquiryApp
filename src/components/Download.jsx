@@ -8,14 +8,7 @@ export default function Download() {
     const [isInstalled, setIsInstalled] = useState(false);
 
     useEffect(() => {
-        // 1️⃣ If previously installed, hide the card
-        const alreadyInstalled = localStorage.getItem("pwa_installed") === "yes";
-        if (alreadyInstalled) {
-            setIsInstalled(true);
-            return;
-        }
-
-        // 2️⃣ iOS Safari detection
+        // iOS detection
         const ua = window.navigator.userAgent.toLowerCase();
         const iosCheck =
             /iphone|ipad|ipod/.test(ua) &&
@@ -23,28 +16,25 @@ export default function Download() {
             !/crios|fxios/.test(ua);
         setIsIOS(iosCheck);
 
-        // 3️⃣ Detect if opened in standalone mode (Android/iOS/Windows)
+        // Detect standalone mode
         const isStandalone =
             window.matchMedia("(display-mode: standalone)").matches ||
             window.navigator.standalone === true;
 
         if (isStandalone) {
             setIsInstalled(true);
-            localStorage.setItem("pwa_installed", "yes");
-            return;
         }
 
-        // 4️⃣ Chrome Desktop detection (checks if PWA already installed)
+        // Chrome related apps check
         if (navigator.getInstalledRelatedApps) {
             navigator.getInstalledRelatedApps().then((apps) => {
                 if (apps.length > 0) {
                     setIsInstalled(true);
-                    localStorage.setItem("pwa_installed", "yes");
                 }
             });
         }
 
-        // 5️⃣ Listen for "beforeinstallprompt"
+        // beforeinstallprompt
         const beforeInstallHandler = (e) => {
             e.preventDefault();
             setDeferredPrompt(e);
@@ -53,10 +43,9 @@ export default function Download() {
 
         window.addEventListener("beforeinstallprompt", beforeInstallHandler);
 
-        // 6️⃣ When app gets installed
+        // appinstalled event
         window.addEventListener("appinstalled", () => {
             setIsInstalled(true);
-            localStorage.setItem("pwa_installed", "yes");
         });
 
         return () => {
@@ -64,10 +53,11 @@ export default function Download() {
         };
     }, []);
 
-    // Install Button Handler
     const handleInstall = async () => {
+        if (isInstalled) return;
+
         if (isIOS) {
-            alert("iOS does not support auto installation. Use Share → 'Add to Home Screen'");
+            alert("iOS: Share → 'Add to Home Screen'");
             return;
         }
 
@@ -82,35 +72,41 @@ export default function Download() {
         setCanInstall(false);
     };
 
-    // 7️⃣ Hide card if already installed
-    if (isInstalled || (!canInstall && !isIOS)) return null;
-
     return (
         <section className="download-section">
-            <div className="download-card" style={{ maxWidth: 400, margin: "auto" }}>
-                <h3 className="download-card-title">Install App</h3>
-                <p className="download-card-sub">
-                    Works on Android, Desktop Chrome, iPhone (manual)
-                </p>
+            <div
+                className="download-card"
+                style={{ maxWidth: 400, margin: "auto" }}
+            >
 
                 <button
                     className="download-btn"
                     onClick={handleInstall}
-                    disabled={!canInstall && !isIOS}
-                    style={!canInstall && !isIOS ? { opacity: 0.5 } : {}}
+                    disabled={
+                        isInstalled || (!canInstall && !isIOS)
+                    }
+                    style={
+                        isInstalled || (!canInstall && !isIOS)
+                            ? { opacity: 0.5 }
+                            : {}
+                    }
                 >
-                    <svg width="20" height="20" fill="currentColor">
-                        <path d="M3 2l14 10L3 22V2z" />
-                    </svg>
 
                     <div>
-                        <div className="btn-text-title">Install App</div>
+                        <div className="btn-text-title">
+                            {isInstalled
+                                ? "Already Installed"
+                                : "Install App"}
+                        </div>
+
                         <div className="btn-text-sub">
-                            {isIOS
-                                ? "Use 'Add to Home Screen'"
-                                : canInstall
-                                    ? "One-tap installation"
-                                    : "Not Available"}
+                            {isInstalled
+                                ? "App is already on your device"
+                                : isIOS
+                                    ? "Use 'Add to Home Screen'"
+                                    : canInstall
+                                        ? "One-tap installation"
+                                        : "Not Available"}
                         </div>
                     </div>
                 </button>

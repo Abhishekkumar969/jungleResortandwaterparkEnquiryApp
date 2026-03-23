@@ -747,7 +747,7 @@ const Prebook = () => {
             </div>
           ) : null}
 
-          <Download />
+
 
           {/* App Logout / ON-OFF */}
           <div
@@ -786,6 +786,8 @@ const Prebook = () => {
             </div>
 
           </div>
+
+          <Download />
 
         </div>
 
