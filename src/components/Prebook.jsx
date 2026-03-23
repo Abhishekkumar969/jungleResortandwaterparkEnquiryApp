@@ -756,6 +756,7 @@ const Prebook = () => {
               marginTop: "15px",
               display: "flex",
               justifyContent: "space-around",
+              marginBottom: "40px"
             }}
           >
 
@@ -772,6 +773,8 @@ const Prebook = () => {
 
             </div>
 
+            <Download />
+
             {/* LOGOUT */}
             <div className="app-rectbox" onClick={confirmLogout}>
 
@@ -787,7 +790,7 @@ const Prebook = () => {
 
           </div>
 
-          <Download />
+
 
         </div>
 

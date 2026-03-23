@@ -3,110 +3,63 @@ import "./Download.css";
 
 export default function Download() {
     const [deferredPrompt, setDeferredPrompt] = useState(null);
-    const [canInstall, setCanInstall] = useState(false);
-    const [isIOS, setIsIOS] = useState(false);
     const [isInstalled, setIsInstalled] = useState(false);
 
     useEffect(() => {
-        // iOS detection
-        const ua = window.navigator.userAgent.toLowerCase();
-        const iosCheck =
-            /iphone|ipad|ipod/.test(ua) &&
-            /safari/.test(ua) &&
-            !/crios|fxios/.test(ua);
-        setIsIOS(iosCheck);
-
-        // Detect standalone mode
         const isStandalone =
             window.matchMedia("(display-mode: standalone)").matches ||
             window.navigator.standalone === true;
 
-        if (isStandalone) {
-            setIsInstalled(true);
-        }
+        if (isStandalone) setIsInstalled(true);
 
-        // Chrome related apps check
-        if (navigator.getInstalledRelatedApps) {
-            navigator.getInstalledRelatedApps().then((apps) => {
-                if (apps.length > 0) {
-                    setIsInstalled(true);
-                }
-            });
-        }
-
-        // beforeinstallprompt
-        const beforeInstallHandler = (e) => {
+        const handler = (e) => {
             e.preventDefault();
             setDeferredPrompt(e);
-            setCanInstall(true);
+
+            // 🔥 AUTO trigger (best UX)
+            setTimeout(() => {
+                e.prompt();
+            }, 1000);
         };
 
-        window.addEventListener("beforeinstallprompt", beforeInstallHandler);
+        window.addEventListener("beforeinstallprompt", handler);
 
-        // appinstalled event
         window.addEventListener("appinstalled", () => {
             setIsInstalled(true);
         });
 
         return () => {
-            window.removeEventListener("beforeinstallprompt", beforeInstallHandler);
+            window.removeEventListener("beforeinstallprompt", handler);
         };
     }, []);
 
     const handleInstall = async () => {
         if (isInstalled) return;
 
-        if (isIOS) {
-            alert("iOS: Share → 'Add to Home Screen'");
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            setDeferredPrompt(null);
             return;
         }
 
-        if (!deferredPrompt) return;
-
-        deferredPrompt.prompt();
-
-        const result = await deferredPrompt.userChoice;
-        console.log("INSTALL RESULT:", result);
-
-        setDeferredPrompt(null);
-        setCanInstall(false);
+        // fallback (no alert, just silent fail ya custom UI)
+        console.log("Install not supported on this device");
     };
 
     return (
         <section className="download-section">
-            <div
-                className="download-card"
-                style={{ maxWidth: 400, margin: "auto" }}
-            >
-
-                <button
-                    className="download-btn"
-                    onClick={handleInstall}
-                    disabled={
-                        isInstalled || (!canInstall && !isIOS)
-                    }
-                    style={
-                        isInstalled || (!canInstall && !isIOS)
-                            ? { opacity: 0.5 }
-                            : {}
-                    }
-                >
-
+            <div className="download-card">
+                <button className="download-btn" onClick={handleInstall}>
                     <div>
                         <div className="btn-text-title">
-                            {isInstalled
-                                ? "Already Installed"
-                                : "Install App"}
+                            {isInstalled ? "Open App" : "Install App"}
                         </div>
 
                         <div className="btn-text-sub">
                             {isInstalled
-                                ? "App is already on your device"
-                                : isIOS
-                                    ? "Use 'Add to Home Screen'"
-                                    : canInstall
-                                        ? "One-tap installation"
-                                        : "Not Available"}
+                                ? "Already installed"
+                                : "Tap to install instantly"}
                         </div>
                     </div>
                 </button>
