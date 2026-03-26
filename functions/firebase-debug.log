@@ -1,0 +1,390 @@
+[debug] [2026-03-26T14:22:38.566Z] ----------------------------------------------------------------------
+[debug] [2026-03-26T14:22:38.569Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2026-03-26T14:22:38.569Z] CLI Version:   15.11.0
+[debug] [2026-03-26T14:22:38.569Z] Platform:      win32
+[debug] [2026-03-26T14:22:38.569Z] Node Version:  v22.18.0
+[debug] [2026-03-26T14:22:38.570Z] Time:          Thu Mar 26 2026 06:22:38 GMT-0800 (GMT-08:00)
+[debug] [2026-03-26T14:22:38.570Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-26T14:22:40.288Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-26T14:22:40.289Z] > authorizing via signed-in user (abhishekbhardwaj9631@gmail.com)
+[debug] [2026-03-26T14:22:40.289Z] [iam] checking project jungleresortwaterparkenquiry for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-03-26T14:22:40.290Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:40.290Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:40.291Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions [none]
+[debug] [2026-03-26T14:22:40.291Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions  x-goog-user-project=jungleresortwaterparkenquiry
+[debug] [2026-03-26T14:22:40.291Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-03-26T14:22:41.674Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions 200
+[debug] [2026-03-26T14:22:41.674Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-03-26T14:22:41.674Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:41.675Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:41.675Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-03-26T14:22:41.675Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-03-26T14:22:43.267Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-03-26T14:22:43.267Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'jungleresortwaterparkenquiry'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] +  functions: Finished running predeploy script. 
+[debug] [2026-03-26T14:22:43.960Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:43.960Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:43.960Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry [none]
+[debug] [2026-03-26T14:22:44.300Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry 200
+[debug] [2026-03-26T14:22:44.301Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry {"projectNumber":"462669648395","projectId":"jungleresortwaterparkenquiry","lifecycleState":"ACTIVE","name":"jungleresortwaterparkEnquiry","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-03-14T17:15:50.029211Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-03-26T14:22:44.318Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:44.318Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:44.318Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry/adminSdkConfig [none]
+[debug] [2026-03-26T14:22:45.046Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry/adminSdkConfig 200
+[debug] [2026-03-26T14:22:45.046Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry/adminSdkConfig {"projectId":"jungleresortwaterparkenquiry","storageBucket":"jungleresortwaterparkenquiry.firebasestorage.app"}
+[debug] [2026-03-26T14:22:45.049Z] Validating nodejs source
+[debug] [2026-03-26T14:22:46.638Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "echo 'skip lint'",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "24"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.4.1"
+  },
+  "private": true
+}
+[debug] [2026-03-26T14:22:46.638Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-03-26T14:22:46.639Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-03-26T14:22:46.648Z] Found firebase-functions binary at 'D:\BMA\Node Module Here\Node Module Here 2\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8705
+
+[debug] [2026-03-26T14:22:47.808Z] Got response from /__/functions.yaml {"endpoints":{"allCollectionsNotification":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"{collectionId}/{docId}"},"retry":false},"entryPoint":"allCollectionsNotification"},"bookingNotification":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":10,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"WaterPark/{month}/{bookingId}"},"retry":false},"entryPoint":"bookingNotification"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-03-26T14:22:51.922Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-26T14:22:51.922Z] > authorizing via signed-in user (abhishekbhardwaj9631@gmail.com)
+[debug] [2026-03-26T14:22:51.922Z] [iam] checking project jungleresortwaterparkenquiry for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-03-26T14:22:51.923Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:51.923Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:51.923Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions [none]
+[debug] [2026-03-26T14:22:51.923Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions  x-goog-user-project=jungleresortwaterparkenquiry
+[debug] [2026-03-26T14:22:51.923Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-03-26T14:22:53.261Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions 200
+[debug] [2026-03-26T14:22:53.261Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-03-26T14:22:53.263Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:53.263Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:53.264Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/jungleresortwaterparkenquiry/instances pageSize=100&pageToken=
+[debug] [2026-03-26T14:22:54.972Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/jungleresortwaterparkenquiry/instances 200
+[debug] [2026-03-26T14:22:54.973Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/jungleresortwaterparkenquiry/instances {}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged D:\BMA\Node Module Here\Node Module Here 2\functions (78.94 KB) for uploading 
+[debug] [2026-03-26T14:22:55.103Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:55.103Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:55.103Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/jungleresortwaterparkenquiry/locations/-/functions [none]
+[debug] [2026-03-26T14:22:56.063Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/jungleresortwaterparkenquiry/locations/-/functions 200
+[debug] [2026-03-26T14:22:56.063Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/jungleresortwaterparkenquiry/locations/-/functions {}
+[debug] [2026-03-26T14:22:56.064Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:56.064Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:56.064Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-03-26T14:22:57.763Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/-/functions 200
+[debug] [2026-03-26T14:22:57.764Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/-/functions {"functions":[{"name":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder","buildConfig":{"build":"projects/462669648395/locations/us-central1/builds/b4ad3291-7af7-4ab5-9120-5840761bf32d","runtime":"nodejs24","entryPoint":"createRazorpayOrder","source":{"storageSource":{"bucket":"gcf-v2-sources-462669648395-us-central1","object":"createRazorpayOrder/function-source.zip","generation":"1774364903550044"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/jungleresortwaterparkenquiry/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-462669648395-us-central1","object":"createRazorpayOrder/function-source.zip","generation":"1774364903550044"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/jungleresortwaterparkenquiry/serviceAccounts/462669648395-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/jungleresortwaterparkenquiry/locations/us-central1/services/createrazorpayorder","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"jungleresortwaterparkenquiry\",\"storageBucket\":\"jungleresortwaterparkenquiry.firebasestorage.app\"}","GCLOUD_PROJECT":"jungleresortwaterparkenquiry","EVENTARC_CLOUD_EVENT_SOURCE":"projects/jungleresortwaterparkenquiry/locations/us-central1/services/createRazorpayOrder","FUNCTION_TARGET":"createRazorpayOrder","LOG_EXECUTION_ID":"true"},"maxInstanceCount":20,"ingressSettings":"ALLOW_ALL","uri":"https://createrazorpayorder-kqnuxplbyq-uc.a.run.app","serviceAccountEmail":"462669648395-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"revision":"createrazorpayorder-00004-joz","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","updateTime":"2026-03-24T15:09:19.634354865Z","labels":{"firebase-functions-hash":"0af14ff28f6ae674f52468a499a39b81f64df7e8","deployment-tool":"cli-firebase"},"environment":"GEN_2","url":"https://us-central1-jungleresortwaterparkenquiry.cloudfunctions.net/createRazorpayOrder","createTime":"2026-03-24T13:28:29.128099383Z","satisfiesPzi":true}]}
+[debug] [2026-03-26T14:22:57.771Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:57.771Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:57.772Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/jungleresortwaterparkenquiry/databases/(default) [none]
+[debug] [2026-03-26T14:22:59.505Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/jungleresortwaterparkenquiry/databases/(default) 200
+[debug] [2026-03-26T14:22:59.506Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/jungleresortwaterparkenquiry/databases/(default) {"name":"projects/jungleresortwaterparkenquiry/databases/(default)","uid":"86a10a14-f88d-4594-9d2d-90c797742939","createTime":"2026-03-14T17:17:35.600455Z","updateTime":"2026-03-14T17:17:35.600455Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-03-26T13:22:57.185752Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IL7K0/fhvZMDMO6mwLL7oZMD"}
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[info] i  functions: generating the service identity for pubsub.googleapis.com... 
+[debug] [2026-03-26T14:22:59.526Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:59.527Z] Checked if tokens are valid: true, expires at: 1774536031948
+[info] i  functions: generating the service identity for eventarc.googleapis.com... 
+[debug] [2026-03-26T14:22:59.528Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:59.528Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:22:59.529Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[debug] [2026-03-26T14:22:59.529Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/pubsub.googleapis.com:generateServiceIdentity  x-goog-user-project=462669648395
+[debug] [2026-03-26T14:22:59.529Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/pubsub.googleapis.com:generateServiceIdentity {}
+[debug] [2026-03-26T14:22:59.532Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[debug] [2026-03-26T14:22:59.533Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/eventarc.googleapis.com:generateServiceIdentity  x-goog-user-project=462669648395
+[debug] [2026-03-26T14:22:59.533Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/eventarc.googleapis.com:generateServiceIdentity {}
+[debug] [2026-03-26T14:23:01.526Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/eventarc.googleapis.com:generateServiceIdentity 200
+[debug] [2026-03-26T14:23:01.526Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-462669648395@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"107209170261548049778"}}
+[debug] [2026-03-26T14:23:01.536Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/pubsub.googleapis.com:generateServiceIdentity 200
+[debug] [2026-03-26T14:23:01.537Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/462669648395/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-462669648395@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"118350751275504979875"}}
+[debug] [2026-03-26T14:23:01.544Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:01.544Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:01.544Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/462669648395 [none]
+[debug] [2026-03-26T14:23:02.188Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/462669648395 403
+[debug] [2026-03-26T14:23:02.188Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/462669648395 {"error":{"code":403,"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"compute.googleapis.com","containerInfo":"462669648395","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395","serviceTitle":"Compute Engine API","consumer":"projects/462669648395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395"}]}]}}
+[debug] [2026-03-26T14:23:02.190Z] unable to look up default compute service account. Falling back to 462669648395-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"compute.googleapis.com","containerInfo":"462669648395","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395","serviceTitle":"Compute Engine API","consumer":"projects/462669648395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/462669648395 had HTTP Error: 403, Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2026-03-26T14:23:02.191Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:02.192Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:02.192Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/462669648395:getIamPolicy [none]
+[debug] [2026-03-26T14:23:03.631Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/462669648395:getIamPolicy 200
+[debug] [2026-03-26T14:23:03.632Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/462669648395:getIamPolicy {"version":1,"etag":"BwZNxUi19Nk=","bindings":[{"role":"roles/artifactregistry.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-artifactregistry.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:462669648395@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-462669648395@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-462669648395@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:462669648395-compute@developer.gserviceaccount.com","serviceAccount:462669648395@cloudbuild.gserviceaccount.com","serviceAccount:462669648395@cloudservices.gserviceaccount.com","serviceAccount:jungleresortwaterparkenquiry@appspot.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-462669648395@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:abhishekbhardwaj9631@gmail.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-462669648395@serverless-robot-prod.iam.gserviceaccount.com"]}]}
+[debug] [2026-03-26T14:23:03.634Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:03.634Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:03.635Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/462669648395:setIamPolicy [none]
+[debug] [2026-03-26T14:23:03.635Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/462669648395:setIamPolicy {"policy":{"version":1,"etag":"BwZNxUi19Nk=","bindings":[{"role":"roles/artifactregistry.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-artifactregistry.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:462669648395@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-462669648395@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-462669648395@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:462669648395-compute@developer.gserviceaccount.com","serviceAccount:462669648395@cloudbuild.gserviceaccount.com","serviceAccount:462669648395@cloudservices.gserviceaccount.com","serviceAccount:jungleresortwaterparkenquiry@appspot.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-462669648395@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com","serviceAccount:service-462669648395@gcp-sa-pubsub.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:abhishekbhardwaj9631@gmail.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-462669648395@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/run.invoker","members":["serviceAccount:462669648395-compute@developer.gserviceaccount.com"]},{"role":"roles/eventarc.eventReceiver","members":["serviceAccount:462669648395-compute@developer.gserviceaccount.com"]}]},"updateMask":"bindings"}
+[debug] [2026-03-26T14:23:04.663Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/462669648395:setIamPolicy 200
+[debug] [2026-03-26T14:23:04.663Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/462669648395:setIamPolicy {"version":1,"etag":"BwZN7h9DTzQ=","bindings":[{"role":"roles/artifactregistry.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-artifactregistry.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:462669648395@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-462669648395@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-462669648395@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:462669648395-compute@developer.gserviceaccount.com","serviceAccount:462669648395@cloudbuild.gserviceaccount.com","serviceAccount:462669648395@cloudservices.gserviceaccount.com","serviceAccount:jungleresortwaterparkenquiry@appspot.gserviceaccount.com"]},{"role":"roles/eventarc.eventReceiver","members":["serviceAccount:462669648395-compute@developer.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-462669648395@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-462669648395@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@jungleresortwaterparkenquiry.iam.gserviceaccount.com","serviceAccount:service-462669648395@gcp-sa-pubsub.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:abhishekbhardwaj9631@gmail.com"]},{"role":"roles/run.invoker","members":["serviceAccount:462669648395-compute@developer.gserviceaccount.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-462669648395@serverless-robot-prod.iam.gserviceaccount.com"]}]}
+[debug] [2026-03-26T14:23:04.669Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:04.670Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:04.670Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry [none]
+[debug] [2026-03-26T14:23:05.000Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry 200
+[debug] [2026-03-26T14:23:05.000Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry {"projectNumber":"462669648395","projectId":"jungleresortwaterparkenquiry","lifecycleState":"ACTIVE","name":"jungleresortwaterparkEnquiry","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-03-14T17:15:50.029211Z"}
+[debug] [2026-03-26T14:23:05.001Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:05.002Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:05.002Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/462669648395 [none]
+[debug] [2026-03-26T14:23:05.407Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/462669648395 403
+[debug] [2026-03-26T14:23:05.408Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/462669648395 {"error":{"code":403,"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395","service":"compute.googleapis.com","serviceTitle":"Compute Engine API","containerInfo":"462669648395","consumer":"projects/462669648395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395"}]}]}}
+[debug] [2026-03-26T14:23:05.409Z] unable to look up default compute service account. Falling back to 462669648395-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395","service":"compute.googleapis.com","serviceTitle":"Compute Engine API","containerInfo":"462669648395","consumer":"projects/462669648395"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/462669648395 had HTTP Error: 403, Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2026-03-26T14:23:05.409Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:05.410Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:05.410Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/462669648395 [none]
+[debug] [2026-03-26T14:23:05.745Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/462669648395 403
+[debug] [2026-03-26T14:23:05.746Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/462669648395 {"error":{"code":403,"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"compute.googleapis.com","containerInfo":"462669648395","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395","consumer":"projects/462669648395","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395"}]}]}}
+[debug] [2026-03-26T14:23:05.747Z] unable to look up default compute service account. Falling back to 462669648395-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"compute.googleapis.com","containerInfo":"462669648395","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395","consumer":"projects/462669648395","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/462669648395 had HTTP Error: 403, Compute Engine API has not been used in project 462669648395 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=462669648395 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2026-03-26T14:23:05.756Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:05.757Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:05.757Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/jungleresortwaterparkenquiry/billingInfo [none]
+[debug] [2026-03-26T14:23:07.404Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/jungleresortwaterparkenquiry/billingInfo 200
+[debug] [2026-03-26T14:23:07.404Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/jungleresortwaterparkenquiry/billingInfo {"name":"projects/jungleresortwaterparkenquiry/billingInfo","projectId":"jungleresortwaterparkenquiry","billingAccountName":"billingAccounts/01656A-AE9A1D-93629A","billingEnabled":true}
+[debug] [2026-03-26T14:23:07.407Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:07.407Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:07.407Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2026-03-26T14:23:09.155Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2026-03-26T14:23:09.155Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com/dd794211-e945-4b54-b46f-8f809037bb56.zip?GoogleAccessId=service-462669648395@gcf-admin-robot.iam.gserviceaccount.com&Expires=1774536786&Signature=qFjgetykyQDQ6gmzcAhijKuM5CmNKFYZqv37hBOu2CnBLBnU88%2FGKDkziD%2BTbDOGpO0faejKRDykqpAFHJCvwi%2BOWexixfc0S%2FJCO0fcwgcwmD0mvpf0o5WLq%2FlnCRJoa%2BKCfMvNTvLgcUkfrEd2indVWMrnsPv%2Fjvz2mLDe6WgPsSWHySo2xagbQl38NfHYFpVhy9yxyTr1sME%2Fwu9lY2xVfIaynzP7vAaZ93YL40DnZwSEYXbOkeTGoy2ydRvjI0aaiMPhv2Ehu8GM3OctCTKBt8UnHEYz5B8udF%2FaW%2B3Vibxip47ID2OJlmWH0ieSM%2BbrgscUs73CfXZJiK0E%2Bw%3D%3D","storageSource":{"bucket":"gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com","object":"dd794211-e945-4b54-b46f-8f809037bb56.zip"}}
+[debug] [2026-03-26T14:23:09.159Z] >>> [apiv2][query] PUT https://storage.googleapis.com/gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com/dd794211-e945-4b54-b46f-8f809037bb56.zip GoogleAccessId=service-462669648395%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1774536786&Signature=qFjgetykyQDQ6gmzcAhijKuM5CmNKFYZqv37hBOu2CnBLBnU88%2FGKDkziD%2BTbDOGpO0faejKRDykqpAFHJCvwi%2BOWexixfc0S%2FJCO0fcwgcwmD0mvpf0o5WLq%2FlnCRJoa%2BKCfMvNTvLgcUkfrEd2indVWMrnsPv%2Fjvz2mLDe6WgPsSWHySo2xagbQl38NfHYFpVhy9yxyTr1sME%2Fwu9lY2xVfIaynzP7vAaZ93YL40DnZwSEYXbOkeTGoy2ydRvjI0aaiMPhv2Ehu8GM3OctCTKBt8UnHEYz5B8udF%2FaW%2B3Vibxip47ID2OJlmWH0ieSM%2BbrgscUs73CfXZJiK0E%2Bw%3D%3D
+[debug] [2026-03-26T14:23:09.159Z] >>> [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com/dd794211-e945-4b54-b46f-8f809037bb56.zip [stream]
+[debug] [2026-03-26T14:23:10.295Z] <<< [apiv2][status] PUT https://storage.googleapis.com/gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com/dd794211-e945-4b54-b46f-8f809037bb56.zip 200
+[debug] [2026-03-26T14:23:10.296Z] <<< [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com/dd794211-e945-4b54-b46f-8f809037bb56.zip [omitted]
+[info] +  functions: functions source uploaded successfully 
+[info] 
+The following functions are found in your project but do not exist in your local source code:
+	createRazorpayOrder(us-central1)
+
+If you are renaming a function or changing its region, it is recommended that you create the new function first before deleting the old one to prevent event loss. For more info, visit https://firebase.google.com/docs/functions/manage-functions#modify
+
+[info] i  functions: creating Node.js 24 (2nd Gen) function allCollectionsNotification(us-central1)... 
+[info] i  functions: creating Node.js 24 (2nd Gen) function bookingNotification(us-central1)... 
+[debug] [2026-03-26T14:23:36.760Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:36.761Z] Checked if tokens are valid: true, expires at: 1774536031948
+[info] i  functions: deleting Node.js 24 (2nd Gen) function createRazorpayOrder(us-central1)... 
+[debug] [2026-03-26T14:23:36.764Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:36.764Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:36.765Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions functionId=allCollectionsNotification
+[debug] [2026-03-26T14:23:36.765Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions {"name":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/allCollectionsNotification","buildConfig":{"runtime":"nodejs24","entryPoint":"allCollectionsNotification","source":{"storageSource":{"bucket":"gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com","object":"dd794211-e945-4b54-b46f-8f809037bb56.zip"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}},"serviceConfig":{"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"jungleresortwaterparkenquiry\",\"storageBucket\":\"jungleresortwaterparkenquiry.firebasestorage.app\"}","GCLOUD_PROJECT":"jungleresortwaterparkenquiry","EVENTARC_CLOUD_EVENT_SOURCE":"projects/jungleresortwaterparkenquiry/locations/us-central1/services/allCollectionsNotification","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"allCollectionsNotification","LOG_EXECUTION_ID":"true"},"ingressSettings":null,"timeoutSeconds":null,"serviceAccountEmail":null,"availableMemory":"256Mi","minInstanceCount":null,"maxInstanceCount":10,"maxInstanceRequestConcurrency":80,"availableCpu":"1","vpcConnector":null,"vpcConnectorEgressSettings":null,"directVpcNetworkInterface":null,"directVpcEgress":null},"labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"75cfe87b7af80156253f9a590bf2763e87fe49f4"},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"{collectionId}/{docId}","operator":"match-path-pattern"}],"triggerRegion":"nam5"}}
+[debug] [2026-03-26T14:23:36.769Z] >>> [apiv2][query] DELETE https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder [none]
+[debug] [2026-03-26T14:23:38.307Z] <<< [apiv2][status] DELETE https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder 200
+[debug] [2026-03-26T14:23:38.307Z] <<< [apiv2][body] DELETE https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder {"name":"projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2026-03-26T14:23:35.950605016Z","target":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder","verb":"delete","cancelRequested":false,"apiVersion":"v2"},"done":false}
+[debug] [2026-03-26T14:23:38.309Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:38.310Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:38.311Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67 [none]
+[debug] [2026-03-26T14:23:39.851Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67 200
+[debug] [2026-03-26T14:23:39.852Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67 {"name":"projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2026-03-26T14:23:35.950605016Z","target":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder","verb":"delete","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder","environment":"GEN_2"},"stages":[{"name":"ARTIFACT_REGISTRY","state":"NOT_STARTED"},{"name":"SERVICE","message":"Deleting Cloud Run service","state":"IN_PROGRESS","resource":"projects/jungleresortwaterparkenquiry/locations/us-central1/services/createrazorpayorder"}],"operationType":"DELETE_FUNCTION"},"done":false}
+[debug] [2026-03-26T14:23:40.363Z] [delete-default-us-central1-createRazorpayOrder] Retrying task index 0
+[debug] [2026-03-26T14:23:40.364Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:40.364Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:40.365Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67 [none]
+[debug] [2026-03-26T14:23:41.933Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67 200
+[debug] [2026-03-26T14:23:41.934Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67 {"name":"projects/jungleresortwaterparkenquiry/locations/us-central1/operations/operation-1774535015929-64dee21441549-c5a37a9c-bc3bfc67","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2026-03-26T14:23:35.950605016Z","endTime":"2026-03-26T14:23:39.237048349Z","target":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder","verb":"delete","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/createRazorpayOrder","environment":"GEN_2"},"stages":[{"name":"ARTIFACT_REGISTRY","message":"Deleting function artifacts in Artifact Registry","state":"COMPLETE"},{"name":"SERVICE","message":"Deleting Cloud Run service","state":"COMPLETE","resource":"projects/jungleresortwaterparkenquiry/locations/us-central1/services/createrazorpayorder"}],"operationType":"DELETE_FUNCTION"},"done":true,"response":{"@type":"type.googleapis.com/google.protobuf.Empty"}}
+[info] +  functions[createRazorpayOrder(us-central1)] Successful delete operation. 
+[debug] [2026-03-26T14:23:53.789Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions 400
+[debug] [2026-03-26T14:23:53.790Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions {"error":{"code":400,"message":"Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/allcollectionsnotification-385142: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.","status":"FAILED_PRECONDITION"}}
+[warn] !  functions: Request to https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions?functionId=allCollectionsNotification had HTTP Error: 400, Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/allcollectionsnotification-385142: Invalid resource state for "": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role. 
+[warn] !  functions: Since this is your first time using 2nd gen functions, we need a little bit longer to finish setting everything up. Retry the deployment in a few minutes. 
+[warn] !  functions:  failed to create function projects/jungleresortwaterparkenquiry/locations/us-central1/functions/allCollectionsNotification 
+[error] Failed to create function projects/jungleresortwaterparkenquiry/locations/us-central1/functions/allCollectionsNotification
+[debug] [2026-03-26T14:23:53.800Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:53.800Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:23:53.801Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions functionId=bookingNotification
+[debug] [2026-03-26T14:23:53.801Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions {"name":"projects/jungleresortwaterparkenquiry/locations/us-central1/functions/bookingNotification","buildConfig":{"runtime":"nodejs24","entryPoint":"bookingNotification","source":{"storageSource":{"bucket":"gcf-v2-uploads-462669648395.us-central1.cloudfunctions.appspot.com","object":"dd794211-e945-4b54-b46f-8f809037bb56.zip"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}},"serviceConfig":{"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"jungleresortwaterparkenquiry\",\"storageBucket\":\"jungleresortwaterparkenquiry.firebasestorage.app\"}","GCLOUD_PROJECT":"jungleresortwaterparkenquiry","EVENTARC_CLOUD_EVENT_SOURCE":"projects/jungleresortwaterparkenquiry/locations/us-central1/services/bookingNotification","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"bookingNotification","LOG_EXECUTION_ID":"true"},"ingressSettings":null,"timeoutSeconds":null,"serviceAccountEmail":null,"availableMemory":"256Mi","minInstanceCount":null,"maxInstanceCount":10,"maxInstanceRequestConcurrency":80,"availableCpu":"1","vpcConnector":null,"vpcConnectorEgressSettings":null,"directVpcNetworkInterface":null,"directVpcEgress":null},"labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"75cfe87b7af80156253f9a590bf2763e87fe49f4"},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"WaterPark/{month}/{bookingId}","operator":"match-path-pattern"}],"triggerRegion":"nam5"}}
+[debug] [2026-03-26T14:24:09.125Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions 400
+[debug] [2026-03-26T14:24:09.125Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions {"error":{"code":400,"message":"Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/bookingnotification-610571: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.","status":"FAILED_PRECONDITION"}}
+[warn] !  functions: Request to https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions?functionId=bookingNotification had HTTP Error: 400, Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/bookingnotification-610571: Invalid resource state for "": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role. 
+[warn] !  functions: Since this is your first time using 2nd gen functions, we need a little bit longer to finish setting everything up. Retry the deployment in a few minutes. 
+[warn] !  functions:  failed to create function projects/jungleresortwaterparkenquiry/locations/us-central1/functions/bookingNotification 
+[error] Failed to create function projects/jungleresortwaterparkenquiry/locations/us-central1/functions/bookingNotification
+[debug] [2026-03-26T14:24:09.140Z] Total Function Deployment time: 32379
+[debug] [2026-03-26T14:24:09.141Z] 3 Functions Deployed
+[debug] [2026-03-26T14:24:09.141Z] 2 Functions Errored
+[debug] [2026-03-26T14:24:09.141Z] 0 Function Deployments Aborted
+[debug] [2026-03-26T14:24:09.141Z] Average Function Deployment time: 18197.666666666668
+[info] 
+[info] Functions deploy had errors with the following functions:
+	allCollectionsNotification(us-central1)
+	bookingNotification(us-central1)
+[debug] [2026-03-26T14:24:09.149Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:24:09.149Z] Checked if tokens are valid: true, expires at: 1774536031948
+[debug] [2026-03-26T14:24:09.150Z] >>> [apiv2][query] GET https://artifactregistry.googleapis.com/v1/projects/jungleresortwaterparkenquiry/locations/us-central1/repositories/gcf-artifacts [none]
+[debug] [2026-03-26T14:24:10.786Z] <<< [apiv2][status] GET https://artifactregistry.googleapis.com/v1/projects/jungleresortwaterparkenquiry/locations/us-central1/repositories/gcf-artifacts 200
+[debug] [2026-03-26T14:24:10.786Z] <<< [apiv2][body] GET https://artifactregistry.googleapis.com/v1/projects/jungleresortwaterparkenquiry/locations/us-central1/repositories/gcf-artifacts {"name":"projects/jungleresortwaterparkenquiry/locations/us-central1/repositories/gcf-artifacts","format":"DOCKER","description":"This repository is created and used by Cloud Functions for storing function docker images.","labels":{"goog-managed-by":"cloudfunctions"},"createTime":"2026-03-24T13:28:45.115997Z","updateTime":"2026-03-26T14:23:38.955238Z","mode":"STANDARD_REPOSITORY","cleanupPolicies":{"firebase-functions-cleanup":{"id":"firebase-functions-cleanup","action":"DELETE","condition":{"tagState":"ANY","olderThan":"86400s"}}},"vulnerabilityScanningConfig":{"lastEnableTime":"2026-03-24T13:28:29.333214406Z","enablementState":"SCANNING_DISABLED","enablementStateReason":"API containerscanning.googleapis.com is not enabled."},"satisfiesPzi":true,"registryUri":"us-central1-docker.pkg.dev/jungleresortwaterparkenquiry/gcf-artifacts"}
+[debug] [2026-03-26T14:24:10.787Z] Functions deploy failed.
+[debug] [2026-03-26T14:24:10.787Z] {
+  "endpoint": {
+    "id": "allCollectionsNotification",
+    "project": "jungleresortwaterparkenquiry",
+    "region": "us-central1",
+    "entryPoint": "allCollectionsNotification",
+    "platform": "gcfv2",
+    "runtime": "nodejs24",
+    "eventTrigger": {
+      "eventType": "google.cloud.firestore.document.v1.created",
+      "retry": false,
+      "eventFilters": {
+        "database": "(default)",
+        "namespace": "(default)"
+      },
+      "eventFilterPathPatterns": {
+        "document": "{collectionId}/{docId}"
+      },
+      "region": "nam5"
+    },
+    "labels": {
+      "deployment-tool": "cli-firebase"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": 10,
+    "minInstances": null,
+    "concurrency": 80,
+    "vpc": null,
+    "environmentVariables": {
+      "FIREBASE_CONFIG": "{\"projectId\":\"jungleresortwaterparkenquiry\",\"storageBucket\":\"jungleresortwaterparkenquiry.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "jungleresortwaterparkenquiry",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/jungleresortwaterparkenquiry/locations/us-central1/services/allCollectionsNotification"
+    },
+    "codebase": "default",
+    "cpu": 1,
+    "targetedByOnly": false,
+    "hash": "75cfe87b7af80156253f9a590bf2763e87fe49f4"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "context": {
+      "function": "projects/jungleresortwaterparkenquiry/locations/us-central1/functions/allCollectionsNotification"
+    },
+    "exit": 1,
+    "message": "Failed to create function projects/jungleresortwaterparkenquiry/locations/us-central1/functions/allCollectionsNotification",
+    "original": {
+      "name": "FirebaseError",
+      "children": [],
+      "context": {
+        "body": {
+          "error": {
+            "code": 400,
+            "message": "Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/allcollectionsnotification-385142: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+            "status": "FAILED_PRECONDITION"
+          }
+        },
+        "response": {
+          "statusCode": 400
+        }
+      },
+      "exit": 1,
+      "message": "Request to https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions?functionId=allCollectionsNotification had HTTP Error: 400, Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/allcollectionsnotification-385142: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+      "status": 400
+    },
+    "status": 400,
+    "code": 400
+  }
+}
+[debug] [2026-03-26T14:24:10.787Z] {
+  "endpoint": {
+    "id": "bookingNotification",
+    "project": "jungleresortwaterparkenquiry",
+    "region": "us-central1",
+    "entryPoint": "bookingNotification",
+    "platform": "gcfv2",
+    "runtime": "nodejs24",
+    "eventTrigger": {
+      "eventType": "google.cloud.firestore.document.v1.created",
+      "retry": false,
+      "eventFilters": {
+        "database": "(default)",
+        "namespace": "(default)"
+      },
+      "eventFilterPathPatterns": {
+        "document": "WaterPark/{month}/{bookingId}"
+      },
+      "region": "nam5"
+    },
+    "labels": {
+      "deployment-tool": "cli-firebase"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": 10,
+    "minInstances": null,
+    "concurrency": 80,
+    "vpc": null,
+    "environmentVariables": {
+      "FIREBASE_CONFIG": "{\"projectId\":\"jungleresortwaterparkenquiry\",\"storageBucket\":\"jungleresortwaterparkenquiry.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "jungleresortwaterparkenquiry",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/jungleresortwaterparkenquiry/locations/us-central1/services/bookingNotification"
+    },
+    "codebase": "default",
+    "cpu": 1,
+    "targetedByOnly": false,
+    "hash": "75cfe87b7af80156253f9a590bf2763e87fe49f4"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "context": {
+      "function": "projects/jungleresortwaterparkenquiry/locations/us-central1/functions/bookingNotification"
+    },
+    "exit": 1,
+    "message": "Failed to create function projects/jungleresortwaterparkenquiry/locations/us-central1/functions/bookingNotification",
+    "original": {
+      "name": "FirebaseError",
+      "children": [],
+      "context": {
+        "body": {
+          "error": {
+            "code": 400,
+            "message": "Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/bookingnotification-610571: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+            "status": "FAILED_PRECONDITION"
+          }
+        },
+        "response": {
+          "statusCode": 400
+        }
+      },
+      "exit": 1,
+      "message": "Request to https://cloudfunctions.googleapis.com/v2/projects/jungleresortwaterparkenquiry/locations/us-central1/functions?functionId=bookingNotification had HTTP Error: 400, Validation failed for trigger projects/jungleresortwaterparkenquiry/locations/nam5/triggers/bookingnotification-610571: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+      "status": 400
+    },
+    "status": 400,
+    "code": 400
+  }
+}
+[error] Error: There was an error deploying functions:
+[error] - Error Failed to create function allCollectionsNotification in region us-central1
+[error] - Error Failed to create function bookingNotification in region us-central1
