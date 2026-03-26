@@ -5,8 +5,8 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 import EnquiryDetails from "../../Enquiry/EnquiryDetails";
-import BookingLeadsTable from "./BookingLeadsTable";
-import AllBookings from "../../Book/AllLeads/BookingLeadsTable";
+// import BookingLeadsTable from "./BookingLeadsTable";
+// import AllBookings from "../../Book/AllLeads/BookingLeadsTable";
 
 import "../../styles/LeadsTabContainer.css";
 import BackButton from "../../components/BackButton";
@@ -76,8 +76,8 @@ const LeadsTabContainer = () => {
 
         const accessibleTabs = [];
         if (hasAccess("Enquiry Record")) accessibleTabs.push("enquiry");
-        if (hasAccess("Lead Record")) accessibleTabs.push("leads");
-        if (hasAccess("Book Record")) accessibleTabs.push("bookings");
+        // if (hasAccess("Lead Record")) accessibleTabs.push("leads");
+        // if (hasAccess("Book Record")) accessibleTabs.push("bookings");
 
         let defaultTab = null;
 
@@ -99,10 +99,10 @@ const LeadsTabContainer = () => {
         switch (activeTab) {
             case "enquiry":
                 return <EnquiryDetails />;
-            case "leads":
-                return <BookingLeadsTable />;
-            case "bookings":
-                return <AllBookings />;
+            // case "leads":
+            //     return <BookingLeadsTable />;
+            // case "bookings":
+            //     return <AllBookings />;
             default:
                 return <p style={{ textAlign: "center" }}>No access</p>;
         }
