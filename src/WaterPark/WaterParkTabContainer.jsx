@@ -689,19 +689,20 @@ const WaterParkTable = () => {
                             <th>Sl</th>
 
                             <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
-                                Event Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
+                                Visit Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
                             </th>
 
                             <th>Name</th>
                             <th
-                                onClick={() => handleSort("enquiryDate")}
+                                onClick={() => handleSort("createdAt")}
                                 style={{ cursor: "pointer", whiteSpace: "nowrap" }}
                             >
-                                Enquiry Date {sortField === "enquiryDate" ? (sortAsc ? "" : "") : ""}
+                                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "" : "") : ""}
                             </th>
                             <th>Mobile</th>
-                            <th>Email</th>
-                            <th>Pax</th>
+                            <th>Tickets</th>
+                            <th>Payment Status</th>
+                            <th>Total Amt</th>
                             <th>Notes</th>
                             <th>Day/Night</th>
                             {[
@@ -713,8 +714,8 @@ const WaterParkTable = () => {
                             ))}
 
                             <th>Source</th>
-                            <th>Win Probability</th>
-                            <th>Drop</th>
+                            {/* <th>Win Probability</th> */}
+                            {/* <th>Drop</th> */}
                         </tr>
                     </thead>
 
@@ -857,26 +858,30 @@ const WaterParkTable = () => {
                                         {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
                                     </td>
 
-                                    <td style={{ backgroundColor: rowBg }}>{formatDate(enq.enquiryDate)}</td>
+                                    <td style={{ backgroundColor: rowBg }}>{enq.createdAt}</td>
 
                                     <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
-                                        {enq.mobile1 ? (
-                                            <a href={`tel:${enq.mobile1}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                                                {enq.mobile1}
-                                            </a>
-                                        ) : " "}
-                                        <div style={{ marginTop: '5px' }}>
-                                            {enq.mobile2 ? (
-                                                <a href={`tel:${enq.mobile2}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                                                    {enq.mobile2}
-                                                </a>
-                                            ) : " "}
-                                        </div>
+
+                                        <a href={`tel:${enq.phone}`} style={{ color: '#000000', textDecoration: 'none' }}>
+                                            {enq.phone}
+                                        </a>
+
                                     </td>
 
-                                    <td style={{ backgroundColor: rowBg }}>{enq.email}</td>
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {enq.tickets && typeof enq.tickets === "object"
+                                            ? Object.entries(enq.tickets)
+                                                .map(([key, value]) => `${key}: ${value}`)
+                                                .join(", ")
+                                            : enq.tickets || "-"}
+                                    </td>
 
-                                    <td style={{ backgroundColor: rowBg }}>{enq.tickets?.total}</td>
+                                    <td style={{ backgroundColor: rowBg }}>{enq.paymentStatus || "Booked"}</td>
+
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        ₹ {enq.total?.toLocaleString("en-IN")}
+                                    </td>
+
 
                                     <td style={{ backgroundColor: rowBg }}>{enq.note}</td>
 
@@ -1063,9 +1068,9 @@ const WaterParkTable = () => {
                                         <div style={{ color: "gray", fontSize: "13px" }}> {enq.referredBy} </div>
                                     </td>
 
-                                    <td style={{ backgroundColor: rowBg }}>{enq.winProbability}</td>
+                                    <td style={{ backgroundColor: rowBg, display: "none" }}>{enq.winProbability}</td>
 
-                                    <td style={{ backgroundColor: rowBg }}>
+                                    <td style={{ backgroundColor: rowBg, display: "none" }}>
                                         <button
                                             style={{
                                                 backgroundColor: "#fb4747ff",
@@ -1081,7 +1086,6 @@ const WaterParkTable = () => {
                                             Drop
                                         </button>
                                     </td>
-
                                 </tr>
                             )
                         })}
