@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { deleteField, updateDoc, doc, setDoc, collection, onSnapshot, serverTimestamp } from "firebase/firestore";
+import React, { useEffect, useState, useRef } from "react";
+import { updateDoc, doc, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import "../Book/AllLeads/BookingLeadsTable.css";
 import { useNavigate } from "react-router-dom";
@@ -9,12 +9,13 @@ import { getAuth } from "firebase/auth";
 const WaterParkTable = () => {
     const [enquiries, setEnquiries] = useState([]);
     const [search, setSearch] = useState("");
-    const [sortField, setSortField] = useState("enquiryDate");
+    const [sortField, setSortField] = useState("visitDate");
     const [sortAsc, setSortAsc] = useState(false);
     const navigate = useNavigate();
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [availableFY, setAvailableFY] = useState([]);
+    const [visitFilter, setVisitFilter] = useState("upcoming");
 
     const getCurrentFinancialYear = () => {
         // Get the current time in Asia/Kolkata timezone accurately
@@ -42,12 +43,7 @@ const WaterParkTable = () => {
     const [filteredEnquiries, setFilteredEnquiries] = useState([]);
     const [editing, setEditing] = useState({});
     const [tempFollowUps, setTempFollowUps] = useState({});
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [showRefreshBtn, setShowRefreshBtn] = useState(false);
-    const autoRefreshDone = useRef(false);
-    const [activeHighlight, setActiveHighlight] = useState(null);
-    const [activeSource, setActiveSource] = useState(null);
-    const [winFilter, setWinFilter] = useState(null);
+    const [paymentFilter, setPaymentFilter] = useState("payment");
 
     useEffect(() => {
         const auth = getAuth();
@@ -177,53 +173,7 @@ const WaterParkTable = () => {
         return sortAsc ? dateA - dateB : dateB - dateA;
     });
 
-    // 📅 Get today's IST date (YYYY-MM-DD)
-    const now = new Date();
-
-    const istParts = new Intl.DateTimeFormat("en-GB", {
-        timeZone: "Asia/Kolkata",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).formatToParts(now);
-
-    let day, month, year;
-
-    istParts.forEach(p => {
-        if (p.type === "day") day = p.value;
-        if (p.type === "month") month = p.value;
-        if (p.type === "year") year = p.value;
-    });
-
-    const todayIST = `${year}-${month}-${day}`;
-
-    const finalEnquiries = sortedEnquiries.filter(enq => {
-
-        if (!activeHighlight) return true;
-
-        const completedCount =
-            Array.isArray(enq.followUpDetails)
-                ? enq.followUpDetails.filter(f => f?.createdAt).length
-                : 0;
-
-        const hasTodayFollowUp =
-            Array.isArray(enq.followUpDetails) &&
-            enq.followUpDetails.some(f => f?.date === todayIST);
-
-        if (activeHighlight === "today")
-            return hasTodayFollowUp;
-
-        if (activeHighlight === "completed")
-            return completedCount >= 5;
-
-        if (activeHighlight === "nofollowup")
-            return completedCount === 0;
-
-        if (activeHighlight === "all")
-            return true;
-
-        return true;
-    });
+    const finalEnquiries = sortedEnquiries;
 
     const rightRef = useRef(null);
 
@@ -236,7 +186,7 @@ const WaterParkTable = () => {
     useEffect(() => {
         if (enquiries.length > 0) {
             const fyList = enquiries.map(l => {
-                const d = new Date(l.functionDate);
+                const d = new Date(l.visitDate);
                 const y = d.getFullYear();
                 const m = d.getMonth();
                 return m >= 3 ? `${y}-${y + 1}` : `${y - 1}-${y}`;
@@ -249,109 +199,10 @@ const WaterParkTable = () => {
     }, [enquiries]);
 
     useEffect(() => {
-        if (!enquiries.length) return;
-
-        const now = new Date();
-
-        const istParts = new Intl.DateTimeFormat("en-GB", {
-            timeZone: "Asia/Kolkata",
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-        }).formatToParts(now);
-
-        let day, month, year;
-        istParts.forEach(p => {
-            if (p.type === "day") day = p.value;
-            if (p.type === "month") month = p.value;
-            if (p.type === "year") year = p.value;
-        });
-
-        const todayIST = new Date(`${year}-${month}-${day}T00:00:00`);
-
-        const hasOld = enquiries.some(enq => {
-            if (!enq.visitDate) return false;
-            return new Date(enq.visitDate) < todayIST;
-        });
-
-        setShowRefreshBtn(hasOld);
-
-    }, [enquiries]);
-
-    useEffect(() => {
         if (availableFY.length > 0 && financialYear === null) {
             setFinancialYear(getCurrentFinancialYear());
         }
     }, [availableFY, financialYear]);
-
-    const moveLeadToDrop = (leadId, removeOriginal = false, reason = '', monthYear) => {
-        try {
-            const monthRef = doc(db, "PastWaterPark", monthYear);
-
-            // Listen to the month document in real-time
-            const unsubscribe = onSnapshot(monthRef, async (monthSnap) => {
-                if (!monthSnap.exists()) return;
-
-                const monthData = monthSnap.data();
-                const leadData = monthData[leadId];
-                if (!leadData) return;
-
-                // Determine monthYear for pastEnquiry based on enquiryDate
-                const enquiryDateObj = new Date(leadData.enquiryDate);
-                const monthNames = [
-                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                ];
-                const pastMonthYear = `${monthNames[enquiryDateObj.getMonth()]}${enquiryDateObj.getFullYear()}`;
-                const pastRef = doc(db, "pastEnquiry", pastMonthYear);
-
-                // Move lead to pastEnquiry
-                await setDoc(
-                    pastRef,
-                    {
-                        [leadId]: {
-                            ...leadData,
-                            droppedAt: new Date(),
-                            dropReason: reason || "No reason provided"
-                        }
-                    },
-                    { merge: true }
-                );
-
-                // Optionally remove original lead
-                if (removeOriginal) {
-                    await updateDoc(monthRef, { [leadId]: deleteField() });
-                }
-
-                // Unsubscribe after operation to avoid repeated triggers
-                unsubscribe();
-            });
-
-        } catch (error) {
-            console.error("Error moving lead to pastEnquiry:", error);
-        }
-    };
-
-    const handleDropClick = async (lead) => {
-        const reason = window.prompt("Enter drop reason for this lead:");
-        if (!reason) return;
-
-        if (!lead.enquiryDate) {
-            alert("Lead has no enquiryDate!");
-            return;
-        }
-
-        const date = new Date(lead.enquiryDate);
-        if (isNaN(date)) {
-            alert("Invalid enquiryDate!");
-            return;
-        }
-
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const monthYear = `${monthNames[date.getMonth()]}${date.getFullYear()}`;
-
-        await moveLeadToDrop(lead.id, true, reason, monthYear);
-    };
 
     const handleEdit = (enquiryId, index) => {
         setEditing(prev => ({
@@ -439,7 +290,7 @@ const WaterParkTable = () => {
 
                 if (plainMatch) return true;
 
-                // Search in functionDate & enquiryDate with IST flexibility
+                // Search in visitDate & enquiryDate with IST flexibility
                 return (
                     matchDateFlexible(enq.visitDate, t) ||
                     matchDateFlexible(enq.enquiryDate, t)
@@ -478,98 +329,38 @@ const WaterParkTable = () => {
             return sortAsc ? A - B : B - A;
         });
 
-        // --- Source Filter ---
-        if (activeSource) {
-            data = data.filter(enq =>
-                (enq.source?.trim() || "Unknown") === activeSource
-            );
-        }
+        // 📅 Visit Date Filter (NEW)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-        // --- Win Probability Filter ---
-        if (winFilter) {
-            const [min, max] = winFilter;
-
+        if (visitFilter === "upcoming") {
             data = data.filter(enq => {
-                const prob = Number(enq.winProbability || 0);
-                return prob >= min && prob <= max;
+                if (!enq.visitDate) return false;
+                return new Date(enq.visitDate) >= today;
             });
         }
+
+        if (visitFilter === "past") {
+            data = data.filter(enq => {
+                if (!enq.visitDate) return false;
+                return new Date(enq.visitDate) < today;
+            });
+        }
+
+        // 💰 Payment Filter (NEW)
+        if (paymentFilter === "payment") {
+            data = data.filter(enq => enq.paymentId);
+        }
+
+        if (paymentFilter === "nonpayment") {
+            data = data.filter(enq => !enq.paymentId);
+        }
+
+        // "all" → no filter
 
         setFilteredEnquiries(data);
-    }, [search, fromDate, toDate, financialYear, winFilter, sortField, sortAsc, enquiries, activeSource]);
 
-    const handleRefreshPastEnquiry = useCallback(async () => {
-        try {
-            setIsRefreshing(true);
-
-            const now = new Date();
-
-            const istParts = new Intl.DateTimeFormat("en-GB", {
-                timeZone: "Asia/Kolkata",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-            }).formatToParts(now);
-
-            let day, month, year;
-            istParts.forEach(p => {
-                if (p.type === "day") day = p.value;
-                if (p.type === "month") month = p.value;
-                if (p.type === "year") year = p.value;
-            });
-
-            const todayIST = new Date(`${year}-${month}-${day}T00:00:00`);
-
-            for (const enq of enquiries) {
-                if (!enq.visitDate) continue;
-
-                const eventDate = new Date(enq.visitDate);
-
-                if (eventDate < todayIST) {
-
-                    const enquiryDateObj = new Date(enq.enquiryDate);
-                    const monthNames = [
-                        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                    ];
-
-                    const pastMonthYear =
-                        `${monthNames[enquiryDateObj.getMonth()]}${enquiryDateObj.getFullYear()}`;
-
-                    const pastRef = doc(db, "pastEnquiry", pastMonthYear);
-                    const currentRef = doc(db, "enquiry", enq.monthYear);
-
-                    await setDoc(
-                        pastRef,
-                        {
-                            [enq.id]: {
-                                ...enq,
-                                autoMovedAt: serverTimestamp(),
-                                autoMovedReason: "Expired Enquiry"
-                            }
-                        },
-                        { merge: true }
-                    );
-
-                    await updateDoc(currentRef, {
-                        [enq.id]: deleteField()
-                    });
-                }
-            }
-
-        } catch (error) {
-            console.error("❌ Bulk move failed:", error);
-        } finally {
-            setIsRefreshing(false);
-        }
-    }, [enquiries]);
-
-    useEffect(() => {
-        if (showRefreshBtn && !autoRefreshDone.current) {
-            autoRefreshDone.current = true;
-            handleRefreshPastEnquiry();
-        }
-    }, [showRefreshBtn, handleRefreshPastEnquiry]);
+    }, [search, fromDate, toDate, financialYear, sortField, sortAsc, paymentFilter, enquiries, visitFilter]);
 
     const handleCancelEdit = (enquiryId, index) => {
         setEditing(prev => ({
@@ -588,17 +379,6 @@ const WaterParkTable = () => {
                 [index]: {}
             }
         }));
-    };
-
-    const getWinProbabilityColor = (prob) => {
-        const p = Number(prob || 0);
-
-        if (p >= 76) return "#76fe76";   // Green
-        if (p >= 51) return "#fdf279";   // Yellow
-        if (p >= 26) return "#fdc279";   // Orange
-        if (p > 0) return "#fd7575";     // Red
-
-        return null;
     };
 
     return (
@@ -620,28 +400,50 @@ const WaterParkTable = () => {
                 }}
             />
 
-            <div style={{ display: 'flex', margin: "15px 0px", justifyContent: "end" }}>
+            <div style={{ display: "flex", gap: "0px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "10px", margin: "12px 0px", marginRight: "50px" }}>
 
-                {showRefreshBtn && (
-                    <button
-                        onClick={handleRefreshPastEnquiry}
-                        disabled={isRefreshing}
-                        style={{
-                            padding: "5px 10px",
-                            backgroundColor: "#d98a36",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: isRefreshing ? "not-allowed" : "pointer",
-                            fontSize: "15px",
-                            marginLeft: "10px",
-                            opacity: isRefreshing ? 0.7 : 1
-                        }}
-                    >
-                        {isRefreshing ? "Refreshing..." : "Refresh"}
-                    </button>
-                )}
+                    {["upcoming", "past", "all"].map(type => (
+                        <button
+                            key={type}
+                            onClick={() => setVisitFilter(type)}
+                            style={{
+                                padding: "6px 12px",
+                                borderRadius: "6px",
+                                border: "none",
+                                cursor: "pointer",
+                                backgroundColor: visitFilter === type ? "#007bff" : "#e0e0e0",
+                                color: visitFilter === type ? "#fff" : "#000",
+                                fontWeight: "600"
+                            }}
+                        >
+                            {type === "upcoming" ? "UpComing" : type === "past" ? "Past" : "All"}
+                        </button>
+                    ))}
 
+                </div>
+
+                <div style={{ display: "flex", gap: "10px", margin: "12px 0px" }}>
+
+                    {["payment", "nonpayment", "all"].map(type => (
+                        <button
+                            key={type}
+                            onClick={() => setPaymentFilter(type)}
+                            style={{
+                                padding: "6px 12px",
+                                borderRadius: "6px",
+                                border: "none",
+                                cursor: "pointer",
+                                backgroundColor: paymentFilter === type ? "#28a745" : "#e0e0e0",
+                                color: paymentFilter === type ? "#fff" : "#000",
+                                fontWeight: "600"
+                            }}
+                        >
+                            {type === "payment" ? "Booked" : type === "nonpayment" ? "Cancelled" : "All"}
+                        </button>
+                    ))}
+
+                </div>
             </div>
 
             <div className="filters-container">
@@ -671,9 +473,6 @@ const WaterParkTable = () => {
                             setFromDate('');
                             setToDate('');
                             setFinancialYear('');
-                            setActiveHighlight(null);
-                            setActiveSource(null);
-                            setWinFilter(null);
                         }}
                     >
                         Clear
@@ -688,8 +487,8 @@ const WaterParkTable = () => {
                         <tr style={{ whiteSpace: "nowrap" }}>
                             <th>Sl</th>
 
-                            <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
-                                Visit Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
+                            <th onClick={() => handleSort("visitDate")} style={{ cursor: "pointer", padding: '4px' }}>
+                                Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
                             </th>
 
                             <th>Name</th>
@@ -701,7 +500,7 @@ const WaterParkTable = () => {
                             </th>
                             <th>Mobile</th>
                             <th>Tickets</th>
-                            <th>Payment Status</th>
+                            <th>Payment Id</th>
                             <th>Total Amt</th>
                             <th>Notes</th>
                             <th>Day/Night</th>
@@ -714,37 +513,19 @@ const WaterParkTable = () => {
                             ))}
 
                             <th>Source</th>
-                            {/* <th>Win Probability</th> */}
-                            {/* <th>Drop</th> */}
+
                         </tr>
                     </thead>
 
                     <tbody>
                         {finalEnquiries.map((enq, index) => {
 
-                            const hasTodayFollowUp =
-                                Array.isArray(enq.followUpDetails) &&
-                                enq.followUpDetails.some(f => f?.date === todayIST);
-
-                            const completedCount =
-                                Array.isArray(enq.followUpDetails)
-                                    ? enq.followUpDetails.filter(f => f?.createdAt).length
-                                    : 0;
-
-                            const isFullyCompleted = completedCount >= 5;
-
-                            const winBg = getWinProbabilityColor(enq.winProbability);
+                            const isCancelled = !enq.paymentId;
 
                             const rowBg =
-                                activeHighlight === "today" && hasTodayFollowUp
-                                    ? "#ffdaa4"
-                                    : activeHighlight === "completed" && isFullyCompleted
-                                        ? "#4CAF50"
-                                        : activeHighlight === "nofollowup" && completedCount === 0
-                                            ? "#ffc8c8"
-                                            : activeHighlight === "all"
-                                                ? "#d1eaff"
-                                                : winBg || (index % 2 === 0 ? "#ffffff" : "#eaf4ff");
+                                isCancelled
+                                    ? "#ffbec0"
+                                    : "#5ffe64";
 
                             return (
                                 <tr
@@ -876,7 +657,9 @@ const WaterParkTable = () => {
                                             : enq.tickets || "-"}
                                     </td>
 
-                                    <td style={{ backgroundColor: rowBg }}>{enq.paymentStatus || "Booked"}</td>
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {enq.paymentId ? enq.paymentId : "Payment Cancelled"}
+                                    </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
                                         ₹ {enq.total?.toLocaleString("en-IN")}
@@ -1068,24 +851,6 @@ const WaterParkTable = () => {
                                         <div style={{ color: "gray", fontSize: "13px" }}> {enq.referredBy} </div>
                                     </td>
 
-                                    <td style={{ backgroundColor: rowBg, display: "none" }}>{enq.winProbability}</td>
-
-                                    <td style={{ backgroundColor: rowBg, display: "none" }}>
-                                        <button
-                                            style={{
-                                                backgroundColor: "#fb4747ff",
-                                                color: "white",
-                                                padding: "4px 8px",
-                                                borderRadius: "4px",
-                                                cursor: "pointer",
-                                                border: '2px solid white',
-                                                boxShadow: '2px 2px 4px #030303ff'
-                                            }}
-                                            onClick={() => handleDropClick(enq)}
-                                        >
-                                            Drop
-                                        </button>
-                                    </td>
                                 </tr>
                             )
                         })}
@@ -1141,7 +906,6 @@ const WaterParkTable = () => {
             <div style={{ marginBottom: '50px' }}></div>
         </div>
     );
-
 };
 
 export default WaterParkTable;
