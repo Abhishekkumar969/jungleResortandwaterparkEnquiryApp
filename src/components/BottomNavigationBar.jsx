@@ -2,22 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     FaHome,
-    FaFileInvoice,
-    FaFolderOpen,
+    // FaFolderOpen,
     FaUserTie,
-    FaCheckCircle,
     FaEnvelopeOpenText,
-    FaRocket,
-    FaLink
 } from "react-icons/fa";
 
 const getNavConfig = (userAppType) => {
 
     let navItems = [
         { icon: '', path: '/leadstabcontainer' },
-        { label: "Home", icon: <FaHome />, path: '/' },
-        { label: "Reports", icon: <FaFolderOpen />, path: '/leadstabcontainer' },
-        { icon: '', path: '/leadstabcontainer' },
+        // { label: "Home", icon: <FaHome />, path: '/' },
+        // { icon: '', path: '/leadstabcontainer' },
     ];
 
     let centralAction = {
@@ -32,8 +27,6 @@ const getNavConfig = (userAppType) => {
         case 'A':
             navItems = [
                 { label: "Home", icon: <FaHome />, path: '/' },
-                { label: "Receipts", icon: <FaFileInvoice />, path: '/MoneyReceipts' },
-                { label: "Reports", icon: <FaFolderOpen />, path: '/leadstabcontainer' },
                 { label: "Profile", icon: <FaUserTie />, path: '/AdminProfile' },
             ];
 
@@ -43,37 +36,9 @@ const getNavConfig = (userAppType) => {
                 path: '/EnquiryForm',
                 isCentral: true
             };
+
             break;
 
-        case 'C':
-            navItems = [
-                { label: "Home", icon: <FaHome />, path: '/' },
-                { label: "UpComings", icon: <FaRocket />, path: '/VendorTable' },
-                { label: "Bookings", icon: <FaCheckCircle />, path: '/VendorBookedTable' },
-                { label: "Profile", icon: <FaUserTie />, path: '/VendorProfile' },
-            ];
-            centralAction = {
-                label: "Media",
-                icon: <FaLink />,
-                path: '/VendorTable',
-                isCentral: true
-            };
-            break;
-
-        case 'E':
-            navItems = [
-                { label: "Home", icon: <FaHome />, path: '/' },
-                { label: "UpComings", icon: <FaRocket />, path: '/DecorationTable' },
-                { label: "Bookings", icon: <FaCheckCircle />, path: '/DecorationBookedTable' },
-                { label: "Profile", icon: <FaUserTie />, path: '/DecorationProfile' },
-            ];
-            centralAction = {
-                label: "Media",
-                icon: <FaLink />,
-                path: '/DecorationOtherForm',
-                isCentral: true
-            };
-            break;
         default:
             break;
     }
@@ -98,7 +63,8 @@ const BottomNavigationBar = ({ userAppType }) => {
 
     return (
         <div className="bottom-nav-bar">
-            {navItems.slice(0, 2).map(item => (
+            {/* LEFT (sirf first item → Home) */}
+            {navItems.slice(0, 1).map(item => (
                 <div
                     key={item.label}
                     className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
@@ -109,6 +75,7 @@ const BottomNavigationBar = ({ userAppType }) => {
                 </div>
             ))}
 
+            {/* CENTER (Enquiry) */}
             <div
                 className={`nav-item central-action ${isActive(centralAction.path) ? 'central-active' : ''}`}
                 onClick={() => handleNavigation(centralAction.path)}
@@ -121,7 +88,8 @@ const BottomNavigationBar = ({ userAppType }) => {
                 <span className="nav-label">{centralAction.label}</span>
             </div>
 
-            {navItems.slice(2).map(item => (
+            {/* RIGHT (second item → Profile) */}
+            {navItems.slice(1).map(item => (
                 <div
                     key={item.label}
                     className={`nav-item ${isActive(item.path) ? 'active' : ''}`}

@@ -16,18 +16,6 @@ const BackButton = ({ setActiveTab }) => {
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const [panelAccess, setPanelAccess] = useState({});
 
-  // const routeToTab = {
-  //   "/": "Dashboard",
-  //   "/EnquiryDetails": "EnquiryDetails",
-  //   "/leads": "Leads",
-  //   "/BookingTable": "Bookings",
-  //   "/MoneyReceipts": "MoneyReceipts",
-  //   "/Accountant": "Accountant",
-  // };
-
-  // const activeTab = location.pathname === "/" ? "Dashboard" : null;
-
-
   const containerStyle = { position: "fixed", top: 0, left: 0, width: "100vw", backgroundColor: "#d1f3fe", zIndex: 9999, padding: "3px 10px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", boxShadow: "inset -2px -2px 5px #7abfd6" };
   const fixedGroupStyle = { display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 };
   const scrollGroupStyle = { display: "flex", alignItems: "center", gap: "10px", overflowX: "auto", padding: "4px 0", whiteSpace: "nowrap", flex: 1 };
@@ -93,72 +81,22 @@ const BackButton = ({ setActiveTab }) => {
 
   const PANEL_META = {
     /* ================= BOOKINGS ================= */
-    Bookings: {
-      label: "Booking",
+    Enquiry: {
+      label: "Enquiry",
       routes: {
-        Dates: { label: "Booked Dates", path: "/AllBookingDatesList" },
-        AllBookingDatesList: { label: "All Booking Dates", path: "/AllBookingDatesList" },
-        Enquiry: { label: "Enquiry", path: "/EnquiryForm" },
-        Lead: { label: "Lead", path: "/bookingLead" },
-        Book: { label: "Book", path: "/Booking" },
-        Rooms: { label: "Rooms", path: "/RoomBookings" },
+        Enquiry: { label: "Enquiry Form", path: "/EnquiryForm" },
 
         "Enquiry Record": { label: "Enquiry Record", path: "/leadstabcontainer?tab=enquiry" },
-        "Lead Record": { label: "Lead Record", path: "/leadstabcontainer?tab=leads" },
-        "Book Record": { label: "Book Record", path: "/leadstabcontainer?tab=bookings" },
-
-        "Past Enquiry": { label: "Past Enquiry", path: "/PastLeadsTabContainer?tab=PastEnquiry" },
-        "Dropped Leads": { label: "Dropped Leads", path: "/PastLeadsTabContainer?tab=dropped" },
-        "Cancelled Bookings": { label: "Cancelled Bookings", path: "/PastLeadsTabContainer?tab=cancelled" },
       },
     },
 
-    /* ================= RECEIPTS ================= */
-    Receipts: {
-      label: "Receipts",
+    /* ================= BOOKINGS ================= */
+    WaterPark: {
+      label: "WaterPark",
       routes: {
-        Receipt: { label: "Receipt", path: "/MoneyReceipt" },
-        Voucher: { label: "Voucher", path: "/Receipts" },
-        Record: { label: "Record", path: "/MoneyReceipts" },
-        Approve: { label: "Receipt Approve", path: "/ApprovalPage" },
-      },
-    },
+        // WaterPark: { label: "Enquiry Form", path: "/EnquiryForm" },
 
-    /* ================= ACCOUNTS ================= */
-    // Accountant: {
-    //   label: "Cash flow",
-    //   routes: {
-    //     Cashflow: { label: "Cashflow", path: "/AccountantForm" },
-    //     Record: { label: "Record", path: "/Accountant" },
-    //   },
-    // },
-
-    /* ================= VENDOR ================= */
-    Vendor: {
-      label: "Event Management",
-      routes: {
-        UpComing: { label: "UpComing", path: "/VendorTable" },
-        Booked: { label: "Booked", path: "/VendorBookedTable" },
-        Dropped: { label: "Dropped", path: "/VendorDeoppedTable" },
-      },
-    },
-
-    /* ================= DECORATION ================= */
-    Decoration: {
-      label: "Decoration Management",
-      routes: {
-        UpComing: { label: "UpComing", path: "/DecorationTable" },
-        Booked: { label: "Booked", path: "/DecorationBookedTable" },
-        Dropped: { label: "Dropped", path: "/DecorationDeoppedTable" },
-      },
-    },
-
-    /* ================= CATERING ================= */
-    Catering: {
-      label: "Catering",
-      routes: {
-        Assign: { label: "Assign", path: "/CateringAssign" },
-        Records: { label: "Records", path: "/CateringAssigned" },
+        "WaterPark Record": { label: "WaterPark Record", path: "/leadstabcontainer?tab=waterpark" },
       },
     },
 
@@ -167,8 +105,6 @@ const BackButton = ({ setActiveTab }) => {
       label: "Utilities",
       routes: {
         WhatsappMessage: { label: "WhatsApp Message", path: "/WhatsappMessage" },
-        Menu: { label: "Menu", path: "/MenuItems" },
-        GST: { label: "GST", path: "/GSTSummary" },
       },
     },
 
@@ -176,7 +112,6 @@ const BackButton = ({ setActiveTab }) => {
     Settings: {
       label: "Settings",
       routes: {
-        Business: { label: "Business Stats", path: "/StatsPage" },
         Access: { label: "Access", path: "/UserAccessPanel" },
       },
     },
