@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
-// import CalendarPopup from '../pages/CalendarPopup';
 import { doc, collection, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import BackButton from "../components/BackButton";
-import BottomNavigationBar from './BottomNavigationBar';
-
-import './Prebook.css';
-import { FaEnvelopeOpenText, FaFolderOpen, FaTrashAlt, FaUserShield, } from "react-icons/fa";
+import { FaEnvelopeOpenText, FaFolderOpen, FaUserShield, FaWhatsapp } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { IoCloudOfflineOutline } from "react-icons/io5";
 import { requestNotificationPermission } from "../firebaseConfig";
+import BackButton from "../components/BackButton";
+import BottomNavigationBar from './BottomNavigationBar';
+import './Prebook.css';
 
 const Prebook = () => {
   const navigate = useNavigate();
-  // const [showCalendar, setShowCalendar] = useState(false);
   const [userAppType, setUserAppType] = useState(null);
   const [userName] = useState('');
   const [panelAccess, setPanelAccess] = useState({});
@@ -23,24 +20,12 @@ const Prebook = () => {
   const [appPower, setAppPower] = useState(true);
   const [showPowerPopup, setShowPowerPopup] = useState(false);
   const showAll = userAppType === "A";
-  const [totalBookings, setTotalBookings] = useState(0);
-  const [totalLeads, setTotalLeads] = useState(0);
+  const [totalWaterpark, setTotalWaterpark] = useState(0);
   const [totalEnquiries, setTotalEnquiries] = useState(0);
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
 
   useEffect(() => {
     const unsubscribes = [];
-
-    // 🔹 PREBOOKINGS
-    const prebookingsRef = collection(db, "prebookings");
-    unsubscribes.push(
-      onSnapshot(prebookingsRef, (snapshot) => {
-        let count = 0;
-        snapshot.forEach((docSnap) => {
-          count += Object.keys(docSnap.data()).length;
-        });
-        setTotalBookings(count);
-      })
-    );
 
     // 🔹 ENQUIRIES
     const enquiryRef = collection(db, "enquiry");
@@ -55,14 +40,14 @@ const Prebook = () => {
     );
 
     // 🔹 LEADS
-    const bookingLeadsRef = collection(db, "bookingLeads");
+    const bookingWaterparkRef = collection(db, "WaterPark");
     unsubscribes.push(
-      onSnapshot(bookingLeadsRef, (snapshot) => {
+      onSnapshot(bookingWaterparkRef, (snapshot) => {
         let count = 0;
         snapshot.forEach((docSnap) => {
           count += Object.keys(docSnap.data()).length;
         });
-        setTotalLeads(count);
+        setTotalWaterpark(count);
       })
     );
 
@@ -83,6 +68,35 @@ const Prebook = () => {
 
     return () => unsub();
   }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("notificationsEnabled");
+    if (saved === "true") {
+      setNotificationEnabled(true);
+    }
+  }, []);
+
+  const handleNotificationClick = async () => {
+    try {
+      // 🔥 agar OFF hai → ON karo
+      if (!notificationEnabled) {
+        await requestNotificationPermission();
+
+        if (Notification.permission === "granted") {
+          setNotificationEnabled(true);
+          localStorage.setItem("notificationsEnabled", "true");
+        }
+      }
+      // 🔥 agar ON hai → OFF karo
+      else {
+        setNotificationEnabled(false);
+        localStorage.setItem("notificationsEnabled", "false");
+      }
+
+    } catch (err) {
+      console.error("Notification error:", err);
+    }
+  };
 
   const togglePower = async () => {
     const ref = doc(db, "appControl", "appStatus");
@@ -196,14 +210,12 @@ const Prebook = () => {
     return value;
   };
 
-  const animatedBookings = useAnimatedCounter(totalBookings);
-  const animatedLeads = useAnimatedCounter(totalLeads);
+  const animatedWaterpark = useAnimatedCounter(totalWaterpark);
   const animatedEnquiries = useAnimatedCounter(totalEnquiries);
 
   const metricRoutes = {
     Enquiries: "/leadstabcontainer?tab=enquiry",
-    Leads: "/leadstabcontainer?tab=leads",
-    Bookings: "/leadstabcontainer?tab=bookings",
+    Waterpark: "/leadstabcontainer?tab=waterpark",
   };
 
   const MetricCard = ({ value, label, onClick, disabled }) => {
@@ -248,15 +260,17 @@ const Prebook = () => {
 
       <div className="prebook-wrapper">
 
-        <button onClick={requestNotificationPermission}>
-          Enable Notifications 🔔
-        </button>
-
         {/* APP STYLE BANNER */}
         <div className="app-banner">
           {/* LEFT */}
           <div className="banner-left">
-            <p className="banner-hello">Hi ! {userName}</p>
+            <p className="banner-hello">Hi ! {userName}
+              <span className="enable-notifications-styles">
+                <button onClick={handleNotificationClick}>
+                  {notificationEnabled ? "🔔" : "🔕"}
+                </button>
+              </span>
+            </p>
 
             <h1>
               Banquet<br />Management App
@@ -283,20 +297,12 @@ const Prebook = () => {
                 onClick={() => navigate(metricRoutes.Enquiries)}
               />
 
-              {/* Leads */}
+              {/* Waterpark */}
               <MetricCard
-                value={animatedLeads}
-                label="Leads"
-                disabled={!hasAccess("Bookings", "Lead")}
-                onClick={() => navigate(metricRoutes.Leads)}
-              />
-
-              {/* Bookings */}
-              <MetricCard
-                value={animatedBookings}
-                label="Bookings"
-                disabled={!hasAccess("Bookings", "Book")}
-                onClick={() => navigate(metricRoutes.Bookings)}
+                value={animatedWaterpark}
+                label="Water Park"
+                disabled={!hasAccess("Bookings", "Waterpark")}
+                onClick={() => navigate(metricRoutes.Waterpark)}
               />
 
             </div>
@@ -304,7 +310,6 @@ const Prebook = () => {
         </div>
 
         <div>
-
           {/* BOOKINGS */}
           {showAll || Object.keys(panelAccess.Bookings || {}).some(item => hasAccess("Bookings", item)) ? (
             <div className="service-section">
@@ -312,7 +317,17 @@ const Prebook = () => {
               <div className="service-grid">
                 {hasAccess("Bookings", "Enquiry") && <ServiceBox label="Enquiry Form" onClick={() => navigate('/EnquiryForm')} icon={<FaEnvelopeOpenText />} />}
                 {(hasAccess("Bookings", "Lead Record") || hasAccess("Bookings", "Enquiry Record") || hasAccess("Bookings", "Book Record")) && (<ServiceBox label="Reports" onClick={() => navigate('/leadstabcontainer')} icon={<FaFolderOpen />} />)}
-                {(hasAccess("Bookings", "Past Enquiry") || hasAccess("Bookings", "Dropped Leads") || hasAccess("Bookings", "Cancelled Bookings")) && (<ServiceBox label="Dropped" onClick={() => navigate('/PastLeadsTabContainer')} icon={<FaTrashAlt />} />)}
+                {/* {(hasAccess("Bookings", "Past Enquiry") || hasAccess("Bookings", "Dropped Leads") || hasAccess("Bookings", "Cancelled Bookings")) && (<ServiceBox label="Dropped" onClick={() => navigate('/PastLeadsTabContainer')} icon={<FaTrashAlt />} />)} */}
+              </div>
+            </div>
+          ) : null}
+
+          {/* UTILITIES */}
+          {showAll || Object.keys(panelAccess.Utilities || {}).some(item => hasAccess("Utilities", item)) ? (
+            <div className="service-section">
+              <h3 className="service-section-text">Utilities</h3>
+              <div className="service-grid">
+                {hasAccess("Utilities", "WhatsappMessage") && <ServiceBox label="Message" onClick={() => navigate('/WhatsappMessage')} icon={<FaWhatsapp />} />}
               </div>
             </div>
           ) : null}

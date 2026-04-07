@@ -16,6 +16,7 @@ const EnquiryDetails = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [availableFY, setAvailableFY] = useState([]);
+
   const getCurrentFinancialYear = () => {
     // Get the current time in Asia/Kolkata timezone accurately
     const now = new Date();
@@ -36,6 +37,7 @@ const EnquiryDetails = () => {
     // Financial year starts in April (month 4)
     return month >= 4 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
   };
+
   const [currentUserName, setCurrentUserName] = useState("");
   const [financialYear, setFinancialYear] = useState("");
   const [filteredEnquiries, setFilteredEnquiries] = useState([]);
@@ -48,6 +50,11 @@ const EnquiryDetails = () => {
   const [activeHighlight, setActiveHighlight] = useState(null);
   const [activeSource, setActiveSource] = useState(null);
   const [winFilter, setWinFilter] = useState(null);
+
+  const getSortDate = (enq) => {
+    if (enq.bookingType === "multi") return new Date(enq.fromDate);
+    return new Date(enq.functionDate);
+  };
 
   useEffect(() => {
     const auth = getAuth();
@@ -252,7 +259,12 @@ const EnquiryDetails = () => {
       .replace("{name}", enquiry.name || "")
       .replace("{functionDate}", enquiry.functionDate ? formatDate(enquiry.functionDate) : "-")
       .replace("{pax}", enquiry.pax || "")
-      .replace("{functionType}", enquiry.functionType || "")
+      .replace(
+        "{functionType}",
+        Array.isArray(enquiry.functionTypes)
+          ? enquiry.functionTypes.join(", ")
+          : enquiry.functionTypes || ""
+      )
       .replace("{dayNight}", enquiry.dayNight || "");
 
     // 🧨 REMOVE ONLY "Guest Name" (anywhere, any greeting)
@@ -503,7 +515,7 @@ const EnquiryDetails = () => {
 
   const handleDateChange = async (enquiryId, index, newData) => {
     try {
-      const enquiry = enquiries.find(e => e.id === enquiryId);
+      const enquiry = enquiries.find(e => e.fieldId === enquiryId);
       if (!enquiry) return;
 
       const updatedFollowUps = Array.isArray(enquiry.followUpDetails)
@@ -538,15 +550,28 @@ const EnquiryDetails = () => {
       const monthRef = doc(db, "enquiry", enquiry.monthYear);
 
       await updateDoc(monthRef, {
-        [`${enquiryId}.followUpDetails`]: updatedFollowUps,
+        [`${enquiry.fieldId}.followUpDetails`]: updatedFollowUps,
       });
 
       console.log(`✅ Follow-up ${index + 1} updated for ${enquiry.name}`);
 
       // Reset edit mode after save
+      // 🔥 close edit mode
       setEditing(prev => ({
         ...prev,
-        [enquiryId]: { ...prev[enquiryId], [index]: false },
+        [enquiryId]: {
+          ...prev[enquiryId],
+          [index]: false
+        }
+      }));
+
+      // 🔥 CLEAR temp data (IMPORTANT FIX)
+      setTempFollowUps(prev => ({
+        ...prev,
+        [enquiryId]: {
+          ...prev[enquiryId],
+          [index]: {}
+        }
       }));
     } catch (error) {
       console.error("❌ Error updating follow-up:", error);
@@ -561,10 +586,14 @@ const EnquiryDetails = () => {
       const t = search.toLowerCase();
 
       data = data.filter(enq => {
+
         // Search in ANY string/number field
-        const plainMatch = Object.values(enq).some(v =>
-          String(v || "").toLowerCase().includes(t)
-        );
+        const plainMatch = Object.values(enq).some(v => {
+          if (Array.isArray(v)) {
+            return v.join(" ").toLowerCase().includes(t);
+          }
+          return String(v || "").toLowerCase().includes(t);
+        });
 
         if (plainMatch) return true;
 
@@ -602,8 +631,8 @@ const EnquiryDetails = () => {
 
     // --- Sorting ---
     data.sort((a, b) => {
-      const A = new Date(a[sortField]);
-      const B = new Date(b[sortField]);
+      const A = getSortDate(a);
+      const B = getSortDate(b);
       return sortAsc ? A - B : B - A;
     });
 
@@ -671,7 +700,7 @@ const EnquiryDetails = () => {
           await setDoc(
             pastRef,
             {
-              [enq.id]: {
+              [enq.fieldId]: {
                 ...enq,
                 autoMovedAt: serverTimestamp(),
                 autoMovedReason: "Expired Enquiry"
@@ -681,7 +710,7 @@ const EnquiryDetails = () => {
           );
 
           await updateDoc(currentRef, {
-            [enq.id]: deleteField()
+            [enq.fieldId]: deleteField()
           });
         }
       }
@@ -768,6 +797,18 @@ const EnquiryDetails = () => {
     if (p > 0) return "#fd7575";     // Red
 
     return null;
+  };
+
+  const getDisplayEventDate = (enq) => {
+    if (enq.bookingType === "multi") {
+      if (enq.fromDate && enq.toDate) {
+        return `${formatDate(enq.fromDate)} → ${formatDate(enq.toDate)}`;
+      }
+      return "-";
+    }
+
+    // single booking
+    return formatDate(enq.functionDate);
   };
 
   return (
@@ -1025,10 +1066,9 @@ const EnquiryDetails = () => {
               <th>Function Type</th>
               <th>Notes</th>
               <th>Day/Night</th>
-              {/* <th>Share Media</th> */}
+
               <th>Edit</th>
-              <th>Convert To Lead</th>
-              <th>Send To Bookings</th>
+
               <th>Share Media</th>
 
               {[
@@ -1074,7 +1114,7 @@ const EnquiryDetails = () => {
 
               return (
                 <tr
-                  key={enq.id}
+                  key={enq.fieldId}
                   style={{
                     backgroundColor: rowBg,
                     transition: "0.3s ease"
@@ -1087,7 +1127,7 @@ const EnquiryDetails = () => {
                   <td style={{ backgroundColor: rowBg }} >
                     <div style={{ display: "flex", flexDirection: "column" }}>
 
-                      <span>{formatDate(enq.functionDate)}</span>
+                      <span>{getDisplayEventDate(enq)}</span>
 
                       {(() => {
 
@@ -1096,43 +1136,6 @@ const EnquiryDetails = () => {
                           : [];
 
                         const completed = followUps.length;
-
-                        // ✅ If 5 completed → ONLY show buttons
-                        if (completed >= 5) {
-                          return (
-                            <div style={{ marginTop: "6px", display: "flex", flexDirection: "column", gap: "4px" }}>
-                              <button
-                                style={{
-                                  backgroundColor: "#4CAF50",
-                                  color: "white",
-                                  border: "none",
-                                  padding: "4px 6px",
-                                  borderRadius: "4px",
-                                  fontSize: "11px",
-                                  cursor: "pointer"
-                                }}
-                                onClick={() => navigate("/BookingLead", { state: { enquiry: enq } })}
-                              >
-                                Send to Lead
-                              </button>
-
-                              <button
-                                style={{
-                                  backgroundColor: "#FF9800",
-                                  color: "white",
-                                  border: "none",
-                                  padding: "4px 6px",
-                                  borderRadius: "4px",
-                                  fontSize: "11px",
-                                  cursor: "pointer"
-                                }}
-                                onClick={() => navigate("/booking", { state: { enquiry: enq, sourceDoc: enq.monthYear } })}
-                              >
-                                Send to Booking
-                              </button>
-                            </div>
-                          );
-                        }
 
                         // ⭐ If 1–4 followups → show stars
                         if (completed > 0) {
@@ -1205,7 +1208,11 @@ const EnquiryDetails = () => {
 
                   <td style={{ backgroundColor: rowBg }}>{enq.pax}</td>
 
-                  <td style={{ backgroundColor: rowBg }}>{enq.functionType}</td>
+                  <td style={{ backgroundColor: rowBg }}>
+                    {Array.isArray(enq.functionTypes)
+                      ? enq.functionTypes.join(", ")
+                      : enq.functionTypes || "-"}
+                  </td>
 
                   <td style={{ backgroundColor: rowBg }}>{enq.note}</td>
 
@@ -1217,33 +1224,6 @@ const EnquiryDetails = () => {
                       onClick={() => navigate("/EnquiryForm", { state: { enquiry: enq } })}
                     >
                       <div style={{ fontSize: '21px' }} >✏️</div>
-                    </button>
-                  </td>
-
-                  <td style={{ backgroundColor: rowBg }}>
-                    <button
-                      className="booking-btn"
-                      style={{ backgroundColor: "#4CAF50", marginLeft: "5px", color: "white" }}
-                      onClick={() => {
-                        // 👉 only navigate, do not delete yet
-                        navigate("/BookingLead", { state: { enquiry: enq } });
-                      }}
-                    >
-                      Convert to Lead
-                    </button>
-
-                  </td>
-
-                  <td style={{ backgroundColor: rowBg }}>
-                    <button
-                      className="booking-btn"
-                      style={{ backgroundColor: "#FF9800", marginLeft: "5px", color: "white" }}
-                      onClick={() => {
-                        // 👉 only navigate, do not delete yet
-                        navigate("/booking", { state: { enquiry: enq, sourceDoc: enq.monthYear } });
-                      }}
-                    >
-                      Send to Bookings
                     </button>
                   </td>
 
@@ -1311,14 +1291,15 @@ const EnquiryDetails = () => {
 
                   {[0, 1, 2, 3, 4].map(index => {
                     const followUp = enq.followUpDetails?.[index] || {};
-                    const isActive = editing[enq.id]?.[index];
+                    const isActive = editing[enq.fieldId]?.[index];
 
-                    const prevFollowUp = enq.followUpDetails?.[index - 1];
-                    const canAdd = index === 0 || prevFollowUp?.createdAt;
+                    const canAdd =
+                      index === 0 ||
+                      enq.followUpDetails?.some(f => f?.createdAt);
 
                     return (
                       <td
-                        key={`${enq.id}-followup-${index}`}
+                        key={`${enq.fieldId}-followup-${index}`}
                         style={{
                           verticalAlign: "top",
                           overflow: "hidden",
@@ -1335,9 +1316,9 @@ const EnquiryDetails = () => {
                               <label style={{ fontSize: "12px" }}>Next FollowUp Date:</label>
                               <input
                                 type="date"
-                                value={getTempFollowUp(enq.id, index).date ?? followUp.date ?? ''}
+                                value={getTempFollowUp(enq.fieldId, index).date ?? followUp.date ?? ''}
                                 onChange={(e) =>
-                                  setTempFollowUp(enq.id, index, { date: e.target.value })
+                                  setTempFollowUp(enq.fieldId, index, { date: e.target.value })
                                 }
                                 style={{ flex: 1, padding: "4px", borderRadius: "4px" }}
                               />
@@ -1347,9 +1328,9 @@ const EnquiryDetails = () => {
                               <label style={{ fontSize: "12px" }}>Next FollowUp Time:</label>
                               <input
                                 type="time"
-                                value={getTempFollowUp(enq.id, index).time ?? followUp.time ?? ''}
+                                value={getTempFollowUp(enq.fieldId, index).time ?? followUp.time ?? ''}
                                 onChange={(e) =>
-                                  setTempFollowUp(enq.id, index, { time: e.target.value })
+                                  setTempFollowUp(enq.fieldId, index, { time: e.target.value })
                                 }
                                 style={{ flex: 1, padding: "4px", borderRadius: "4px" }}
                               />
@@ -1357,9 +1338,9 @@ const EnquiryDetails = () => {
 
                             <textarea
                               placeholder="Remark"
-                              value={getTempFollowUp(enq.id, index).remark ?? followUp.remark ?? ''}
+                              value={getTempFollowUp(enq.fieldId, index).remark ?? followUp.remark ?? ''}
                               onChange={(e) =>
-                                setTempFollowUp(enq.id, index, { remark: e.target.value })
+                                setTempFollowUp(enq.fieldId, index, { remark: e.target.value })
                               }
                               style={{
                                 width: "100%",
@@ -1382,9 +1363,9 @@ const EnquiryDetails = () => {
                                 onClick={() => {
                                   const update = {
                                     ...followUp,
-                                    ...getTempFollowUp(enq.id, index)
+                                    ...getTempFollowUp(enq.fieldId, index)
                                   };
-                                  handleDateChange(enq.id, index, update);
+                                  handleDateChange(enq.fieldId, index, update)
                                 }}
                               >
                                 Save
@@ -1399,7 +1380,7 @@ const EnquiryDetails = () => {
                                   borderRadius: "4px",
                                   cursor: "pointer"
                                 }}
-                                onClick={() => handleDateChange(enq.id, index, {})}
+                                onClick={() => handleDateChange(enq.fieldId, index, {})}
                               >
                                 Clear
                               </button>
@@ -1414,7 +1395,7 @@ const EnquiryDetails = () => {
                                   borderRadius: "4px",
                                   cursor: "pointer"
                                 }}
-                                onClick={() => handleCancelEdit(enq.id, index)}
+                                onClick={() => handleCancelEdit(enq.fieldId, index)}
                               >
                                 Cancel
                               </button>
@@ -1471,7 +1452,7 @@ const EnquiryDetails = () => {
                                     fontSize: "11px",
                                     cursor: "pointer"
                                   }}
-                                  onClick={() => handleEdit(enq.id, index)}
+                                  onClick={() => handleEdit(enq.fieldId, index)}
                                 >
                                   {followUp.date ? "Edit" : "+ Add"}
                                 </button>

@@ -780,7 +780,7 @@ section,
 }
 
 .nav-item.active {
-    color: var(--primary);
+    color: black
 }
 
 .nav-icon {
@@ -1250,10 +1250,17 @@ body {
 }
 
 .service-box {
-  overflow: visible !important;
-  position: relative;
+    overflow: visible !important;
+    position: relative;
 }
 
 .service-grid {
-  overflow: visible;
+    overflow: visible;
+}
+
+.enable-notifications-styles button {
+    border-radius: 10px;
+    background   : linear-gradient(90deg, #007dcb, #4fbcff);
+    box-shadow   : 1px 1px 2px black;
+    margin-left  : 10px;
 }

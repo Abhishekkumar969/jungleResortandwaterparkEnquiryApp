@@ -6,7 +6,7 @@ import CancelledBookings from '../../Book/CancelledLeads/CancelledLeadsTable';
 import '../../styles/LeadsTabContainer.css';
 import BackButton from "../../components/BackButton";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import { db } from "../../../firebaseConfig";
 import { getAuth } from "firebase/auth";
 
 const PastLeadsTabContainer = () => {

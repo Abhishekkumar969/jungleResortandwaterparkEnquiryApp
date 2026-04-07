@@ -135,13 +135,12 @@ body {
 .form-group input,
 .form-group button,
 .form-group select {
-    padding         : 14px 20px;
-    /* border       : 1px solid #f1f1f1; */
-    border-radius   : 5px;
-    font-size       : 14px;
-    transition      : border 0.3s ease, box-shadow 0.3s ease;
-    border          : none;
-    box-shadow      : inset 2px 2px 5px rgba(255, 255, 255, 0.8), inset -1px -1px 5px #00000045;
+    border-radius: 5px;
+    font-size    : 14px;
+    padding      : 15px 8px;
+    transition   : border 0.3s ease, box-shadow 0.3s ease;
+    border       : none;
+    box-shadow   : inset 2px 2px 5px rgba(255, 255, 255, 0.8), inset -1px -1px 5px #00000045;
 }
 
 .form-group input:focus,
@@ -522,4 +521,158 @@ textarea {
         opacity  : 1;
         transform: translateY(0);
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 🔥 LABEL */
+.required-label {
+    color        : red;
+    font-weight  : 500;
+    margin-bottom: 4px;
+}
+
+/* 🔥 DATE INPUT */
+.date-input {
+    padding      : 10px;
+    border-radius: 10px;
+    border       : 1px solid #ddd;
+    background   : #fafafa8b;
+    transition   : 0.2s;
+}
+
+.date-input:focus {
+    border-color: #00bbff;
+    box-shadow  : 0 0 0 2px rgba(0, 187, 255, 0.2);
+}
+
+/* 🔥 RANGE INPUT */
+.range-input {
+    padding      : 10px;
+    border-radius: 10px;
+    border       : 1px solid #ddd;
+    background   : #fafafa;
+    cursor       : pointer;
+}
+
+.range-input:hover {
+    border-color: #00bbff;
+    background  : #f0faff;
+}
+
+/* 🔥 WRAPPER */
+.calendar-wrapper {
+    position: relative;
+}
+
+/* 🔥 CALENDAR BOX */
+.custom-calendar {
+    position        : absolute;
+    top             : 100%;
+    left            : 0;
+    width           : 100%;
+    /* max-width    : 340px; */
+    background      : #fff;
+    border-radius   : 14px;
+    padding         : 12px;
+    margin-top      : 6px;
+    box-shadow      : 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index         : 999;
+}
+
+/* 🔥 HEADER */
+.calendar-header {
+    display        : flex;
+    justify-content: space-between;
+    align-items    : center;
+    margin-bottom  : 8px;
+}
+
+.calendar-header span {
+    font-weight: 600;
+}
+
+.calendar-header button {
+    border       : none;
+    background   : #56d9fa;
+    padding      : 5px 10px;
+    border-radius: 6px;
+    cursor       : pointer;
+}
+
+.calendar-header button:hover {
+    background: #00bbff;
+    color     : #fff;
+}
+
+/* 🔥 GRID */
+.calendar-grid {
+    display              : grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap                  : 6px;
+}
+
+/* 🔥 WEEK */
+.calendar-week {
+    font-size : 11px;
+    text-align: center;
+    color     : #02838f;
+}
+
+/* 🔥 DAY */
+.calendar-day {
+    padding      : 8px;
+    text-align   : center;
+    border-radius: 8px;
+    cursor       : pointer;
+    transition   : 0.2s;
+}
+
+.calendar-day:hover {
+    background: #e1f5fe;
+}
+
+/* 🔥 SELECTED */
+.calendar-day.selected {
+    background : #00bbff;
+    color      : white;
+    font-weight: 600;
+}
+
+/* 🔥 RANGE */
+.calendar-day.in-range {
+    background: #b3e5fc;
+}
+
+/* 🔥 EMPTY */
+.calendar-empty {
+    visibility: hidden;
 }

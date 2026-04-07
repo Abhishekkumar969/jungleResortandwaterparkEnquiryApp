@@ -2,14 +2,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
-
 import EnquiryDetails from "../../Enquiry/EnquiryDetails";
-// import BookingLeadsTable from "./BookingLeadsTable";
-// import AllBookings from "../../Book/AllLeads/BookingLeadsTable";
-
+import WaterParkDetails from "../../WaterPark/WaterParkTabContainer";
 import "../../styles/LeadsTabContainer.css";
 import BackButton from "../../components/BackButton";
+import { db } from "../../firebaseConfig";
 
 const LeadsTabContainer = () => {
     const location = useLocation();
@@ -76,8 +73,7 @@ const LeadsTabContainer = () => {
 
         const accessibleTabs = [];
         if (hasAccess("Enquiry Record")) accessibleTabs.push("enquiry");
-        // if (hasAccess("Lead Record")) accessibleTabs.push("leads");
-        // if (hasAccess("Book Record")) accessibleTabs.push("bookings");
+        if (hasAccess("Water Park")) accessibleTabs.push("waterpark");
 
         let defaultTab = null;
 
@@ -99,10 +95,10 @@ const LeadsTabContainer = () => {
         switch (activeTab) {
             case "enquiry":
                 return <EnquiryDetails />;
-            // case "leads":
-            //     return <BookingLeadsTable />;
-            // case "bookings":
-            //     return <AllBookings />;
+
+            case "waterpark": // ✅ FIX
+                return <WaterParkDetails />;
+
             default:
                 return <p style={{ textAlign: "center" }}>No access</p>;
         }
@@ -125,23 +121,15 @@ const LeadsTabContainer = () => {
                         </button>
                     )}
 
-                    {hasAccess("Lead Record") && (
+                    {hasAccess("Water Park") && (
                         <button
-                            className={activeTab === "leads" ? "active" : ""}
-                            onClick={() => handleTabClick("leads")}
+                            className={activeTab === "waterpark" ? "active" : ""}
+                            onClick={() => handleTabClick("waterpark")}
                         >
-                            Leads
+                            Water Park
                         </button>
                     )}
 
-                    {hasAccess("Book Record") && (
-                        <button
-                            className={activeTab === "bookings" ? "active" : ""}
-                            onClick={() => handleTabClick("bookings")}
-                        >
-                            Bookings
-                        </button>
-                    )}
                 </div>
 
                 <div>{renderActiveComponent()}</div>

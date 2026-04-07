@@ -10,17 +10,12 @@ import { getAuth } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 
 const MESSAGE_TYPES = [
-    "Back Balance Amount Request",
-    "Advance Amount Request",
-    "Enquiry",
-    "Lead",
-    "Booked",
-    "Google Rating"
+    "Enquiry"
 ];
 
 const WhatsappMessage = () => {
     const navigate = useNavigate();
-    const [selectedType, setSelectedType] = useState("");
+    const [selectedType, setSelectedType] = useState("Enquiry");
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState({});
     const [saving, setSaving] = useState(false);
@@ -66,7 +61,7 @@ const WhatsappMessage = () => {
         }
     }, [selectedType, messages]);
 
-    const PLACEHOLDERS = ["{name}", "{functionDate}", "{dueAmount}"];
+    const PLACEHOLDERS = ["{name}", "{functionDate}"];
 
     const getTokenAtCursor = (value, cursor) => {
         for (const token of PLACEHOLDERS) {
@@ -244,6 +239,7 @@ const WhatsappMessage = () => {
                     value={selectedType}
                     onChange={e => setSelectedType(e.target.value)}
                     className={styles.select}
+                    style={{ display: "none" }}
                 >
                     <option value="">-- Select Message Type --</option>
                     {MESSAGE_TYPES.map(type => (
