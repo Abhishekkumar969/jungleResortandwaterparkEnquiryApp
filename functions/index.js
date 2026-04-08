@@ -10,7 +10,9 @@ exports.newEnquiryNotification = onDocumentWritten(
     const before = event.data?.before?.data() || {};
     const after = event.data?.after?.data() || {};
 
-    const newKeys = Object.keys(after).filter(key => !before[key]);
+    const newKeys = Object.keys(after).filter(
+      key => key !== "lastUpdated" && !before[key]
+    );
 
     if (newKeys.length === 0) {
       console.log("❌ No new enquiry detected");
@@ -33,7 +35,7 @@ exports.newEnquiryNotification = onDocumentWritten(
       tokens: tokens,
       notification: {
         title: "📩 New Enquiry",
-        body: `${newKeys.length} new enquiry added`
+        body: `New Enquiry Added From App`
       }
     });
 
