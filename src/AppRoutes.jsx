@@ -13,7 +13,6 @@ import WhatsappMessage from './pages/WhatsappMessage';
 import UserAccessPanel from './pages/UserAccessPanel';
 import AdminProfile from './pages/AdminProfile';
 import PaymentBar from "./MonthlyPayment/PaymentBar";
-import AutoLogoutTimer from "./hooks/AutoLogoutTimer";
 
 export default function AppRoutes() {
     const navigate = useNavigate();
@@ -71,8 +70,6 @@ export default function AppRoutes() {
 
     return (
         <>
-            <AutoLogoutTimer />
-
             <Routes>
                 <Route path="/" element={<PrivateRoute><Prebook /></PrivateRoute>} />
                 <Route path="/leadstabcontainer" element={<PrivateRoute><LeadsTabContainer /></PrivateRoute>} />
