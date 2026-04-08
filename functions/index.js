@@ -30,17 +30,14 @@ exports.newEnquiryNotification = onDocumentWritten(
 
     if (tokens.length === 0) return;
 
-    // ✅ NEW METHOD
-    await admin.messaging().sendEachForMulticast({
+    const newEnquiryId = newKeys[0]; // 🔥 latest enquiry
+
+    const res = await admin.messaging().sendEachForMulticast({
       tokens,
-      notification: {
+      data: {
+        url: `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry&id=${newEnquiryId}`,
         title: "📩 New Enquiry",
-        body: `New Enquiry Added`
-      },
-      webpush: {
-        fcmOptions: {
-          link: "https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry"
-        }
+        body: `New enquiry received`
       }
     });
 
