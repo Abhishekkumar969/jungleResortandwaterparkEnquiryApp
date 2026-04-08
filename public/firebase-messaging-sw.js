@@ -10,3 +10,38 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
+
+
+messaging.onBackgroundMessage(function (payload) {
+    console.log("🔥 BG PAYLOAD:", payload);
+
+    self.registration.showNotification(payload.data.title, {
+        body: payload.data.body,
+        icon: "/logo192.png",
+        data: {
+            url: payload.data.url
+        }
+    });
+});
+
+self.addEventListener("notificationclick", function (event) {
+    event.notification.close();
+
+    const url = event.notification.data?.url || "/";
+
+    event.waitUntil(
+        clients.matchAll({ type: "window", includeUncontrolled: true })
+            .then((clientList) => {
+
+                for (const client of clientList) {
+                    if (client.url.includes("jrenquiry.netlify.app")) {
+                        client.focus();
+                        client.navigate(url);
+                        return;
+                    }
+                }
+
+                return clients.openWindow(url);
+            })
+    );
+});
