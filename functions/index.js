@@ -1,41 +1,34 @@
-const {setGlobalOptions} = require("firebase-functions/v2");
-const {onDocumentCreated} = require("firebase-functions/v2/firestore");
+const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
 
-setGlobalOptions({maxInstances: 10});
+exports.newEnquiryNotification = functions.firestore
+  .document("enquiry/{docId}")
+  .onUpdate(async (change, context) => {
 
+    const before = change.before.data();
+    const after = change.after.data();
 
-// 🔥 1. ALL COLLECTIONS (basic)
-exports.allCollectionsNotification = onDocumentCreated(
-    "{collectionId}/{docId}",
-    async (event) => {
-      const data = event.data.data();
+    // 🔥 detect new field added
+    const beforeKeys = Object.keys(before || {});
+    const afterKeys = Object.keys(after || {});
 
-      await admin.messaging().send({
-        notification: {
-          title: "🔥 New Booking",
-          body: `${data.name} booked ₹${data.total}`,
-        },
-        token: "PASTE_YOUR_TOKEN_HERE",
-      });
-    },
-);
+    if (afterKeys.length <= beforeKeys.length) return null;
 
+    const payload = {
+      notification: {
+        title: "📩 New Enquiry",
+        body: "New enquiry received"
+      }
+    };
 
-// 🔥 2. YOUR MAIN BOOKING COLLECTION
-exports.bookingNotification = onDocumentCreated(
-    "WaterPark/{month}/{bookingId}",
-    async (event) => {
-      const data = event.data.data();
+    const snap = await admin.firestore().collection("fcmTokens").get();
 
-      await admin.messaging().send({
-        notification: {
-          title: "🔥 New Booking",
-          body: `${data.name} booked ₹${data.total}`,
-        },
-        topic: "admin",
-      });
-    },
-);
+    const tokens = [];
+    snap.forEach(doc => tokens.push(doc.data().token));
+
+    if (tokens.length === 0) return null;
+
+    return admin.messaging().sendToDevice(tokens, payload);
+  });
