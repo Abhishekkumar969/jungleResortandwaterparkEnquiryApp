@@ -17,9 +17,8 @@ export default function App() {
       setAuthUser(user);
       setAuthChecked(true);
 
-      // 🔔 USER LOGIN KE BAAD NOTIFICATION ENABLE
       if (user) {
-        requestNotificationPermission();
+        requestNotificationPermission(); // ✅ YAHI SAHI HAI
       }
     });
 

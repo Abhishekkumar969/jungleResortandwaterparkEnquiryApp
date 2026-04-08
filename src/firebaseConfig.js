@@ -1,12 +1,12 @@
 // Import Firebase SDK functions 
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage } from 'firebase/storage';
 import { getAuth } from "firebase/auth";
 import { getMessaging, getToken } from "firebase/messaging";
 
-// Firebase configuration using environment variables
+// Firebase config
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
     authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -17,14 +17,15 @@ const firebaseConfig = {
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
+// Init
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const db = getFirestore(app); // Initialize Firestore
+const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 const messaging = getMessaging(app);
 
+// 🔔 REQUEST + SAVE TOKEN
 export const requestNotificationPermission = async () => {
     try {
         const permission = await Notification.requestPermission();
@@ -35,12 +36,25 @@ export const requestNotificationPermission = async () => {
             });
 
             console.log("🔥 FCM TOKEN:", token);
+
+            if (!token) {
+                console.log("❌ TOKEN NULL");
+                return;
+            }
+
+            await setDoc(doc(db, "fcmTokens", token), {
+                token,
+                createdAt: new Date().toISOString()
+            });
+
+            console.log("✅ TOKEN SAVED");
+
             return token;
         } else {
             console.log("❌ Permission denied");
         }
     } catch (error) {
-        console.error("Error getting token:", error);
+        console.error("❌ ERROR:", error);
     }
 };
 
