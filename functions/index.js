@@ -4,14 +4,16 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 exports.newEnquiryNotification = functions.firestore
-  .document("enquiry/{docId}")
-  .onWrite(async (change, context) => {
+  .document("enquiry/{monthYear}")
+  .onUpdate(async (change, context) => {
 
-    const before = change.before.exists ? change.before.data() : {};
-    const after = change.after.exists ? change.after.data() : {};
+    const before = change.before.data() || {};
+    const after = change.after.data() || {};
 
-    // 🔥 find NEW keys (actual new enquiry)
-    const newKeys = Object.keys(after).filter(key => !before.hasOwnProperty(key));
+    // 🔥 detect new entries (keys)
+    const newKeys = Object.keys(after).filter(
+      key => !before.hasOwnProperty(key)
+    );
 
     if (newKeys.length === 0) {
       console.log("❌ No new enquiry");
@@ -34,7 +36,10 @@ exports.newEnquiryNotification = functions.firestore
 
     console.log("TOKENS:", tokens);
 
-    if (tokens.length === 0) return null;
+    if (tokens.length === 0) {
+      console.log("❌ No tokens found");
+      return null;
+    }
 
     return admin.messaging().sendToDevice(tokens, payload);
   });
