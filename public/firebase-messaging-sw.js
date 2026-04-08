@@ -11,30 +11,6 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
-    console.log("🔥 BG PAYLOAD:", payload);
-
-    const title = payload.data.title || "Notification";
-    const body = payload.data.body || "";
-    const url = payload.data.url || "/";
-
-    self.registration.showNotification(title, {
-        body,
-        icon: "/logo192.png",
-        badge: "/badge.png",
-        image: "/badge.png",
-        vibrate: [200, 100, 200],
-        requireInteraction: true,
-        data: { url }
-    });
-});
-
 self.addEventListener("notificationclick", function (event) {
     event.notification.close();
-
-    const url = event.notification.data?.url || "/";
-
-    event.waitUntil(
-        clients.openWindow(url)
-    );
 });
