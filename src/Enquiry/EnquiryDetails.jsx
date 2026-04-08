@@ -145,7 +145,8 @@ const EnquiryDetails = () => {
         Object.entries(monthData).forEach(([fieldId, enquiry]) => {
           allEnquiries.push({
             id: fieldId,
-            monthYear: docSnap.id, // e.g. "Sep2025"
+            fieldId: fieldId, // 🔥 ADD THIS
+            monthYear: docSnap.id,
             ...enquiry,
           });
         });
@@ -425,51 +426,50 @@ const EnquiryDetails = () => {
     }
   }, [availableFY, financialYear]);
 
-  const moveLeadToDrop = (leadId, removeOriginal = false, reason = '', monthYear) => {
+  const moveLeadToDrop = async (leadId, removeOriginal = false, reason = '', monthYear) => {
     try {
       const monthRef = doc(db, "enquiry", monthYear);
 
-      // Listen to the month document in real-time
-      const unsubscribe = onSnapshot(monthRef, async (monthSnap) => {
-        if (!monthSnap.exists()) return;
+      // ✅ Direct fetch (NO onSnapshot)
+      const monthSnap = await getDoc(monthRef);
 
-        const monthData = monthSnap.data();
-        const leadData = monthData[leadId];
-        if (!leadData) return;
+      if (!monthSnap.exists()) return;
 
-        // Determine monthYear for pastEnquiry based on enquiryDate
-        const enquiryDateObj = new Date(leadData.enquiryDate);
-        const monthNames = [
-          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        ];
-        const pastMonthYear = `${monthNames[enquiryDateObj.getMonth()]}${enquiryDateObj.getFullYear()}`;
-        const pastRef = doc(db, "pastEnquiry", pastMonthYear);
+      const monthData = monthSnap.data();
+      const leadData = monthData[leadId];
+      if (!leadData) return;
 
-        // Move lead to pastEnquiry
-        await setDoc(
-          pastRef,
-          {
-            [leadId]: {
-              ...leadData,
-              droppedAt: new Date(),
-              dropReason: reason || "No reason provided"
-            }
-          },
-          { merge: true }
-        );
+      // Determine monthYear for pastEnquiry
+      const enquiryDateObj = new Date(leadData.enquiryDate);
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const pastMonthYear = `${monthNames[enquiryDateObj.getMonth()]}${enquiryDateObj.getFullYear()}`;
 
-        // Optionally remove original lead
-        if (removeOriginal) {
-          await updateDoc(monthRef, { [leadId]: deleteField() });
-        }
+      const pastRef = doc(db, "pastEnquiry", pastMonthYear);
 
-        // Unsubscribe after operation to avoid repeated triggers
-        unsubscribe();
-      });
+      // ✅ Move to pastEnquiry
+      await setDoc(
+        pastRef,
+        {
+          [leadId]: {
+            ...leadData,
+            droppedAt: new Date(),
+            dropReason: reason || "No reason provided"
+          }
+        },
+        { merge: true }
+      );
+
+      // ✅ Remove from enquiry
+      if (removeOriginal) {
+        await updateDoc(monthRef, {
+          [leadId]: deleteField()
+        });
+      }
+
+      console.log("✅ Dropped successfully");
 
     } catch (error) {
-      console.error("Error moving lead to pastEnquiry:", error);
+      console.error("❌ Error moving lead:", error);
     }
   };
 
@@ -491,7 +491,7 @@ const EnquiryDetails = () => {
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const monthYear = `${monthNames[date.getMonth()]}${date.getFullYear()}`;
 
-    await moveLeadToDrop(lead.id, true, reason, monthYear);
+    await moveLeadToDrop(lead.fieldId, true, reason, monthYear);
   };
 
   const handleEdit = (enquiryId, index) => {

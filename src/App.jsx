@@ -1,6 +1,7 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { requestNotificationPermission } from "./firebaseConfig";
 import AppRoutes from "./AppRoutes";
 import LoginPage from "./auth/LoginPage";
 import AppLoading from "./AppLoading/AppLoading";
@@ -11,10 +12,18 @@ export default function App() {
 
   useEffect(() => {
     const auth = getAuth();
-    return onAuthStateChanged(auth, (user) => {
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
       setAuthChecked(true);
+
+      // 🔔 USER LOGIN KE BAAD NOTIFICATION ENABLE
+      if (user) {
+        requestNotificationPermission();
+      }
     });
+
+    return () => unsubscribe();
   }, []);
 
   if (!authChecked) return <AppLoading />;
