@@ -33,10 +33,6 @@ exports.newEnquiryNotification = onDocumentWritten(
     const res = await admin.messaging().sendEachForMulticast({
       tokens,
 
-      notification: {
-        title: "📩 New Enquiry",
-        body: "New Enquiry Added From App"
-      },
 
       data: {
         url: url, // 🔥 service worker ke liye
@@ -47,7 +43,11 @@ exports.newEnquiryNotification = onDocumentWritten(
           link: url // 🔥 CLICK FIX (MOST IMPORTANT)
         },
 
+
         notification: {
+          title: "📩 New Enquiry",
+          body: "New Enquiry Added From App",
+
           icon: "/logo192.png",
           badge: "/badge.png",
           image: "/badge.png",
