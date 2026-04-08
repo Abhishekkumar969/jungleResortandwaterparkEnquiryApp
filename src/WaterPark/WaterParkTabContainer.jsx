@@ -500,8 +500,9 @@ const WaterParkTable = () => {
                             </th>
                             <th>Mobile</th>
                             <th>Tickets</th>
-                            <th>Payment Id</th>
                             <th>Total Amt</th>
+                            <th>User Id</th>
+                            <th>Payment Id</th>
                             <th>Notes</th>
                             <th>Day/Night</th>
                             {[
@@ -512,7 +513,7 @@ const WaterParkTable = () => {
                                 <th key={header}>{header}</th>
                             ))}
 
-                            <th>Source</th>
+                            {/* <th>Source</th> */}
 
                         </tr>
                     </thead>
@@ -658,13 +659,16 @@ const WaterParkTable = () => {
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
-                                        {enq.paymentId ? enq.paymentId : "Payment Cancelled"}
-                                    </td>
-
-                                    <td style={{ backgroundColor: rowBg }}>
                                         ₹ {enq.total?.toLocaleString("en-IN")}
                                     </td>
 
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {enq.id}
+                                    </td>
+
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {enq.paymentId ? enq.paymentId : "Payment Cancelled"}
+                                    </td>
 
                                     <td style={{ backgroundColor: rowBg }}>{enq.note}</td>
 
@@ -847,9 +851,9 @@ const WaterParkTable = () => {
                                         );
                                     })}
 
-                                    <td style={{ backgroundColor: rowBg }}>{enq.source}
+                                    {/* <td style={{ backgroundColor: rowBg }}>{enq.source}
                                         <div style={{ color: "gray", fontSize: "13px" }}> {enq.referredBy} </div>
-                                    </td>
+                                    </td> */}
 
                                 </tr>
                             )
