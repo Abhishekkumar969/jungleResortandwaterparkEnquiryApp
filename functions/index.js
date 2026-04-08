@@ -5,21 +5,25 @@ admin.initializeApp();
 
 exports.newEnquiryNotification = functions.firestore
   .document("enquiry/{docId}")
-  .onUpdate(async (change, context) => {
+  .onWrite(async (change, context) => {
 
-    const before = change.before.data();
-    const after = change.after.data();
+    const before = change.before.exists ? change.before.data() : {};
+    const after = change.after.exists ? change.after.data() : {};
 
-    // 🔥 detect new field added
-    const beforeKeys = Object.keys(before || {});
-    const afterKeys = Object.keys(after || {});
+    // 🔥 find NEW keys (actual new enquiry)
+    const newKeys = Object.keys(after).filter(key => !before.hasOwnProperty(key));
 
-    if (afterKeys.length <= beforeKeys.length) return null;
+    if (newKeys.length === 0) {
+      console.log("❌ No new enquiry");
+      return null;
+    }
+
+    console.log("🔥 New enquiry keys:", newKeys);
 
     const payload = {
       notification: {
         title: "📩 New Enquiry",
-        body: "New enquiry received"
+        body: `${newKeys.length} new enquiry added`
       }
     };
 
@@ -27,6 +31,8 @@ exports.newEnquiryNotification = functions.firestore
 
     const tokens = [];
     snap.forEach(doc => tokens.push(doc.data().token));
+
+    console.log("TOKENS:", tokens);
 
     if (tokens.length === 0) return null;
 
