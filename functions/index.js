@@ -5,12 +5,11 @@ admin.initializeApp();
 
 exports.newEnquiryNotification = functions.firestore
   .document("enquiry/{monthYear}")
-  .onUpdate(async (change, context) => {
+  .onWrite(async (change, context) => {
 
-    const before = change.before.data() || {};
-    const after = change.after.data() || {};
+    const before = change.before.exists ? change.before.data() : {};
+    const after = change.after.exists ? change.after.data() : {};
 
-    // 🔥 detect new entries (keys)
     const newKeys = Object.keys(after).filter(
       key => !before.hasOwnProperty(key)
     );
@@ -21,13 +20,6 @@ exports.newEnquiryNotification = functions.firestore
     }
 
     console.log("🔥 New enquiry keys:", newKeys);
-
-    const payload = {
-      notification: {
-        title: "📩 New Enquiry",
-        body: `${newKeys.length} new enquiry added`
-      }
-    };
 
     const snap = await admin.firestore().collection("fcmTokens").get();
 
@@ -41,5 +33,10 @@ exports.newEnquiryNotification = functions.firestore
       return null;
     }
 
-    return admin.messaging().sendToDevice(tokens, payload);
+    return admin.messaging().sendToDevice(tokens, {
+      notification: {
+        title: "📩 New Enquiry",
+        body: `${newKeys.length} new enquiry added`
+      }
+    });
   });
