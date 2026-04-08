@@ -30,16 +30,26 @@ exports.newEnquiryNotification = onDocumentWritten(
 
     if (tokens.length === 0) return;
 
-    const newEnquiryId = newKeys[0];
 
     const res = await admin.messaging().sendEachForMulticast({
       tokens,
-      data: {
-        url: `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry&id=${newEnquiryId}`,
+
+      notification: {
         title: "📩 New Enquiry",
-        body: "New enquiry received From App",
+        body: "New Enquiry Added From App"
+      },
+
+      data: {
+        url: `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`,
         type: "NEW_ENQUIRY"
+      },
+
+      webpush: {
+        fcmOptions: {
+          link: `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`
+        }
       }
+
     });
 
     console.log("✅ FCM RESPONSE:", res);
