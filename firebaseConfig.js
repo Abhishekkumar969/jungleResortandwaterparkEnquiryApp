@@ -4,6 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage } from 'firebase/storage';
 import { getAuth } from "firebase/auth";
+import { getMessaging, getToken } from "firebase/messaging";
 
 // Firebase configuration using environment variables
 const firebaseConfig = {
@@ -14,7 +15,6 @@ const firebaseConfig = {
     messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.REACT_APP_FIREBASE_APP_ID,
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-
 };
 
 // Initialize Firebase
@@ -23,5 +23,25 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app); // Initialize Firestore
 const storage = getStorage(app);
 const auth = getAuth(app);
+const messaging = getMessaging(app);
 
-export { db, app, storage, analytics, auth };
+export const requestNotificationPermission = async () => {
+    try {
+        const permission = await Notification.requestPermission();
+
+        if (permission === "granted") {
+            const token = await getToken(messaging, {
+                vapidKey: process.env.REACT_APP_FIREBASE_VAPID_KEY
+            });
+
+            console.log("🔥 FCM TOKEN:", token);
+            return token;
+        } else {
+            console.log("❌ Permission denied");
+        }
+    } catch (error) {
+        console.error("Error getting token:", error);
+    }
+};
+
+export { db, app, storage, analytics, auth, messaging };
