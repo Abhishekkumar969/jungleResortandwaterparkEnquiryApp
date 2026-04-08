@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/FixedTable.css"
 import "./EnquiryStats"
 import { getAuth } from "firebase/auth";
+import { useLocation } from "react-router-dom";
 
 const EnquiryDetails = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -16,6 +17,17 @@ const EnquiryDetails = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [availableFY, setAvailableFY] = useState([]);
+  const location = useLocation();
+  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    if (id) {
+      setSelectedEnquiry(id);
+    }
+  }, [location]);
 
   const getCurrentFinancialYear = () => {
     // Get the current time in Asia/Kolkata timezone accurately
@@ -811,6 +823,16 @@ const EnquiryDetails = () => {
     return formatDate(enq.functionDate);
   };
 
+  useEffect(() => {
+    if (selectedEnquiry) {
+      const timer = setTimeout(() => {
+        setSelectedEnquiry(null);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [selectedEnquiry]);
+
   return (
     <div className="leads-table-container" >
 
@@ -1115,8 +1137,20 @@ const EnquiryDetails = () => {
               return (
                 <tr
                   key={enq.fieldId}
+                  ref={(el) => {
+                    if (selectedEnquiry === enq.fieldId && el) {
+                      el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                  }}
                   style={{
-                    backgroundColor: rowBg,
+                    backgroundColor:
+                      selectedEnquiry === enq.fieldId
+                        ? "#fff3cd"
+                        : rowBg,
+                    animation:
+                      selectedEnquiry === enq.fieldId
+                        ? "blink 1s 3"
+                        : "none",
                     transition: "0.3s ease"
                   }}
                 >

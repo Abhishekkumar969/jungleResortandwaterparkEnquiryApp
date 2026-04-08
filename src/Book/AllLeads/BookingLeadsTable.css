@@ -1178,3 +1178,17 @@
     overflow-y: auto;
     overflow-x: auto;
 }
+
+@keyframes blink {
+    0% {
+        background-color: #fff3cd;
+    }
+
+    50% {
+        background-color: #ffd54f;
+    }
+
+    100% {
+        background-color: #fff3cd;
+    }
+}
