@@ -299,7 +299,7 @@ const EnquiryPage = () => {
             };
 
             // 🔹 Save/update enquiry in Firestore
-            await setDoc(monthDocRef, { [fieldIdToUse]: dataToSave, lastUpdated: new Date().toISOString() }, { merge: true });
+            await setDoc(monthDocRef, { [fieldIdToUse]: dataToSave }, { merge: true });
 
             setToast(formData.fieldId ? "✅ Enquiry updated successfully!" : "✅ Enquiry submitted successfully!");
 
