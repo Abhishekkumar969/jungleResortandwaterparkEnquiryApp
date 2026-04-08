@@ -28,8 +28,7 @@ exports.newEnquiryNotification = onDocumentWritten(
 
     console.log("TOKENS:", tokens);
 
-    if (tokens.length === 0) return;
-
+    const url = `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`;
 
     const res = await admin.messaging().sendEachForMulticast({
       tokens,
@@ -40,13 +39,19 @@ exports.newEnquiryNotification = onDocumentWritten(
       },
 
       data: {
-        url: `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`,
-        type: "NEW_ENQUIRY"
+        url: url, // 🔥 service worker ke liye
       },
 
       webpush: {
         fcmOptions: {
-          link: `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`
+          link: url // 🔥 CLICK FIX (MOST IMPORTANT)
+        },
+
+        notification: {
+          icon: "/logo192.png",
+          badge: "/badge.png",
+          image: "/badge.png",
+          requireInteraction: true
         }
       }
 
