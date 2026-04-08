@@ -11,16 +11,21 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-
 messaging.onBackgroundMessage(function (payload) {
     console.log("🔥 BG PAYLOAD:", payload);
 
-    self.registration.showNotification(payload.data.title, {
-        body: payload.data.body,
+    const title = payload.data.title || "Notification";
+    const body = payload.data.body || "";
+    const url = payload.data.url || "/";
+
+    self.registration.showNotification(title, {
+        body,
         icon: "/logo192.png",
-        data: {
-            url: payload.data.url
-        }
+        badge: "/badge.png",
+        vibrate: [200, 100, 200],
+        tag: "new-enquiry",
+        renotify: true,
+        data: { url }
     });
 });
 
@@ -35,9 +40,7 @@ self.addEventListener("notificationclick", function (event) {
 
                 for (const client of clientList) {
                     if (client.url.includes("jrenquiry.netlify.app")) {
-                        client.focus();
-                        client.navigate(url);
-                        return;
+                        return client.focus();
                     }
                 }
 
