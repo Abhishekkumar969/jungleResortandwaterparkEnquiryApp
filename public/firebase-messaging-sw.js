@@ -22,9 +22,9 @@ messaging.onBackgroundMessage(function (payload) {
         body,
         icon: "/logo192.png",
         badge: "/badge.png",
+        image: "/badge.png",
         vibrate: [200, 100, 200],
-        tag: "new-enquiry",
-        renotify: true,
+        requireInteraction: true,
         data: { url }
     });
 });
@@ -35,16 +35,6 @@ self.addEventListener("notificationclick", function (event) {
     const url = event.notification.data?.url || "/";
 
     event.waitUntil(
-        clients.matchAll({ type: "window", includeUncontrolled: true })
-            .then((clientList) => {
-
-                for (const client of clientList) {
-                    if (client.url.includes("jrenquiry.netlify.app")) {
-                        return client.focus();
-                    }
-                }
-
-                return clients.openWindow(url);
-            })
+        clients.openWindow(url)
     );
 });
