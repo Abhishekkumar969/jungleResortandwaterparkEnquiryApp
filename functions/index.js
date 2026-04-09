@@ -89,3 +89,95 @@ exports.newEnquiryNotification = onDocumentWritten(
     }
   }
 );
+
+
+exports.newWaterParkNotification = onDocumentWritten(
+  "WaterPark/{monthYear}",
+  async (event) => {
+    try {
+      console.log("🚀 WATERPARK FUNCTION TRIGGERED");
+
+      const before = event.data?.before?.data() || {};
+      const after = event.data?.after?.data() || {};
+
+      // 🔥 ONLY NEW KEYS DETECT (FINAL FIX)
+      const newKeys = Object.keys(after).filter(
+        key => key !== "lastUpdated" && !(key in before)
+      );
+
+      if (newKeys.length === 0) {
+        console.log("❌ No new WaterPark booking");
+        return;
+      }
+
+      console.log("🔥 NEW WATERPARK KEYS:", newKeys);
+
+      // ✅ latest booking pick
+      const latestKey = newKeys[newKeys.length - 1];
+      const booking = after[latestKey];
+
+      const name = booking?.name || "Guest";
+      const mobile = booking?.phone || "";
+      const total = booking?.tickets?.total || "";
+
+      console.log("📌", name, mobile, total);
+
+      // ✅ tokens
+      const snap = await admin.firestore().collection("fcmTokens").get();
+
+      const tokens = snap.docs
+        .map(doc => doc.data().token)
+        .filter(Boolean);
+
+      if (tokens.length === 0) {
+        console.log("❌ No tokens found");
+        return;
+      }
+
+      const url = `https://jrenquiry.netlify.app/leadstabcontainer?tab=waterpark`;
+
+      const res = await admin.messaging().sendEachForMulticast({
+        tokens,
+
+        data: {
+          url: url,
+          mobile: mobile
+        },
+
+        webpush: {
+          fcmOptions: {
+            link: url
+          },
+
+          notification: {
+            title: "🌊 WaterPark Booking",
+
+            // 🔥 FULL DETAILS
+            body: `👤 ${name}\n📞 ${mobile}\n💰 ₹${total}`,
+
+            icon: "/logo192.png",
+            image: "/logo192.png",
+            badge: "/badge.png",
+            requireInteraction: true,
+
+            data: {
+              url: url,
+              mobile: mobile
+            },
+
+            actions: [
+              { action: "call", title: "📞 Call Now" },
+              { action: "whatsapp", title: "💬 WhatsApp" }
+            ]
+          }
+        }
+      });
+
+      console.log("✅ WATERPARK SUCCESS:", res.successCount);
+      console.log("❌ WATERPARK FAIL:", res.failureCount);
+
+    } catch (err) {
+      console.error("🔥 WATERPARK ERROR:", err);
+    }
+  }
+);
