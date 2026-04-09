@@ -16,58 +16,68 @@ const ScannerPage = () => {
         const scanner = new Html5Qrcode("reader");
         let isScannerRunning = false;
 
-        scanner.start(
-            { facingMode: "user" },
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            async (decodedText) => {
-                try {
-                    if (isScannerRunning) {
-                        await scanner.stop();
-                        isScannerRunning = false;
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+
+                const backCamera = devices.find(device =>
+                    device.label.toLowerCase().includes("back")
+                ) || devices[devices.length - 1];
+
+                scanner.start(
+                    backCamera.id,   // ✅ yaha change
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+
+                    async (decodedText) => {
+                        try {
+                            if (isScannerRunning) {
+                                await scanner.stop();
+                                isScannerRunning = false;
+                            }
+
+                            const data = JSON.parse(decodedText);
+                            const ticketId = data.ticketId;
+
+                            setScannedData(ticketId);
+                            setLoading(true);
+
+                            const today = new Date();
+                            const month = today.toLocaleString("en-US", { month: "short" });
+                            const year = today.getFullYear();
+                            const monthDoc = `${month}${year}`;
+
+                            const docRef = doc(db, "WaterPark", monthDoc);
+                            const snap = await getDoc(docRef);
+
+                            if (!snap.exists()) {
+                                alert("❌ Ticket not found");
+                                return;
+                            }
+
+                            const ticketData = snap.data()[ticketId];
+
+                            if (!ticketData) {
+                                alert("❌ Invalid Ticket");
+                                return;
+                            }
+
+                            setTicket({ ...ticketData, id: ticketId, monthDoc });
+
+                        } catch (err) {
+                            console.error(err);
+                            alert("❌ Invalid QR");
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+
+                    (errorMessage) => {
+                        // ignore
                     }
+                ).then(() => {
+                    isScannerRunning = true;
+                });
 
-                    const data = JSON.parse(decodedText);
-                    const ticketId = data.ticketId;
-
-                    setScannedData(ticketId);
-                    setLoading(true);
-
-                    const today = new Date();
-                    const month = today.toLocaleString("en-US", { month: "short" });
-                    const year = today.getFullYear();
-                    const monthDoc = `${month}${year}`;
-
-                    const docRef = doc(db, "WaterPark", monthDoc);
-                    const snap = await getDoc(docRef);
-
-                    if (!snap.exists()) {
-                        alert("❌ Ticket not found");
-                        return;
-                    }
-
-                    const ticketData = snap.data()[ticketId];
-
-                    if (!ticketData) {
-                        alert("❌ Invalid Ticket");
-                        return;
-                    }
-
-                    setTicket({ ...ticketData, id: ticketId, monthDoc });
-
-                } catch (err) {
-                    console.error(err);
-                    alert("❌ Invalid QR");
-                } finally {
-                    setLoading(false);
-                }
-            },
-            (errorMessage) => {
-                // scan error ignore (important for desktop)
             }
-        ).then(() => {
-            isScannerRunning = true;
-        }).catch(err => {
-            console.error("Camera start failed:", err);
         });
 
         return () => {
