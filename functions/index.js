@@ -21,58 +21,39 @@ exports.newEnquiryNotification = onDocumentWritten(
 
     console.log("🔥 NEW KEYS:", newKeys);
 
-    const latestKey = newKeys[newKeys.length - 1];
-    const enquiryData = after[latestKey];
-
-    const name = enquiryData?.name || "Unknown";
-    const mobile = enquiryData?.mobile1 || "No Number";
-
-    const functionTypes = Array.isArray(enquiryData?.functionTypes)
-      ? enquiryData.functionTypes.join(", ")
-      : "General Enquiry";
-
     const snap = await admin.firestore().collection("fcmTokens").get();
 
     const tokens = [];
     snap.forEach(doc => tokens.push(doc.data().token));
 
-    if (tokens.length === 0) {
-      console.log("❌ No FCM tokens found");
-      return;
-    }
+    console.log("TOKENS:", tokens);
+
+    const url = `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`;
 
     const res = await admin.messaging().sendEachForMulticast({
       tokens,
 
+
       data: {
-        url: url,
-        mobile: mobile
+        url: url, // 🔥 service worker ke liye
       },
 
       webpush: {
         fcmOptions: {
-          link: url
+          link: url // 🔥 CLICK FIX (MOST IMPORTANT)
         },
 
         notification: {
           title: "📩 New Enquiry",
-          body: `👤 ${name}\n📞 ${mobile}\n🎉 ${functionTypes}`,
+          body: "New Enquiry Added From App",
 
           icon: "/logo192.png",
           badge: "/badge.png",
-          requireInteraction: true,
-
-          data: {
-            url: url,
-            mobile: mobile
-          },
-
-          actions: [
-            { action: "call", title: "📞 Call Now" },
-            { action: "whatsapp", title: "💬 WhatsApp" }
-          ]
+          image: "/badge.png",
+          requireInteraction: true
         }
       }
+
     });
 
     console.log("✅ FCM RESPONSE:", res);
