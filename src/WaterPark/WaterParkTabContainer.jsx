@@ -44,6 +44,7 @@ const WaterParkTable = () => {
     const [editing, setEditing] = useState({});
     const [tempFollowUps, setTempFollowUps] = useState({});
     const [paymentFilter, setPaymentFilter] = useState("payment");
+    const [visitStatusFilter, setVisitStatusFilter] = useState("all");
 
     useEffect(() => {
         const auth = getAuth();
@@ -356,11 +357,22 @@ const WaterParkTable = () => {
             data = data.filter(enq => !enq.paymentId);
         }
 
+        // 🟣 Visited Filter (ONLY when Booked selected)
+        if (paymentFilter === "payment") {
+            if (visitStatusFilter === "visited") {
+                data = data.filter(enq => enq.visitedAt);
+            }
+
+            if (visitStatusFilter === "nonvisited") {
+                data = data.filter(enq => !enq.visitedAt);
+            }
+        }
+
         // "all" → no filter
 
         setFilteredEnquiries(data);
 
-    }, [search, fromDate, toDate, financialYear, sortField, sortAsc, paymentFilter, enquiries, visitFilter]);
+    }, [search, fromDate, toDate, visitStatusFilter, financialYear, sortField, sortAsc, paymentFilter, enquiries, visitFilter]);
 
     const handleCancelEdit = (enquiryId, index) => {
         setEditing(prev => ({
@@ -423,8 +435,7 @@ const WaterParkTable = () => {
 
                 </div>
 
-                <div style={{ display: "flex", gap: "10px", margin: "12px 0px" }}>
-
+                <div style={{ display: "flex", gap: "10px", margin: "12px 0px", marginRight: "50px" }}>
                     {["payment", "nonpayment", "all"].map(type => (
                         <button
                             key={type}
@@ -442,8 +453,33 @@ const WaterParkTable = () => {
                             {type === "payment" ? "Booked" : type === "nonpayment" ? "Cancelled" : "All"}
                         </button>
                     ))}
-
                 </div>
+
+                {paymentFilter === "payment" && (
+                    <div style={{ display: "flex", gap: "10px", margin: "12px 0px" }}>
+                        {["visited", "nonvisited", "all"].map(type => (
+                            <button
+                                key={type}
+                                onClick={() => setVisitStatusFilter(type)}
+                                style={{
+                                    padding: "6px 12px",
+                                    borderRadius: "6px",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    backgroundColor: visitStatusFilter === type ? "#6f42c1" : "#e0e0e0",
+                                    color: visitStatusFilter === type ? "#fff" : "#000",
+                                    fontWeight: "600"
+                                }}
+                            >
+                                {type === "visited"
+                                    ? "Visited"
+                                    : type === "nonvisited"
+                                        ? "Non-Visited"
+                                        : "All"}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="filters-container">
@@ -503,6 +539,7 @@ const WaterParkTable = () => {
                             <th>Total Amt</th>
                             <th>User Id</th>
                             <th>Payment Id</th>
+                            <th>Visited At</th>
                             <th>Notes</th>
                             <th>Day/Night</th>
                             {[
@@ -659,7 +696,7 @@ const WaterParkTable = () => {
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
-                                        ₹ {enq.total?.toLocaleString("en-IN")}
+                                        ₹{enq.total?.toLocaleString("en-IN")}
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
@@ -668,6 +705,20 @@ const WaterParkTable = () => {
 
                                     <td style={{ backgroundColor: rowBg }}>
                                         {enq.paymentId ? enq.paymentId : "Payment Cancelled"}
+                                    </td>
+
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {enq.visitedAt
+                                            ? new Date(enq.visitedAt).toLocaleString("en-GB", {
+                                                timeZone: "Asia/Kolkata",
+                                                day: "2-digit",
+                                                month: "2-digit",
+                                                year: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: true,
+                                            })
+                                            : " "}
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>{enq.note}</td>
