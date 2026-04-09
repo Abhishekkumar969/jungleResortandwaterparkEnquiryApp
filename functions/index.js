@@ -6,56 +6,85 @@ admin.initializeApp();
 exports.newEnquiryNotification = onDocumentWritten(
   "enquiry/{monthYear}",
   async (event) => {
+    try {
+      const before = event.data?.before?.data() || {};
+      const after = event.data?.after?.data() || {};
 
-    const before = event.data?.before?.data() || {};
-    const after = event.data?.after?.data() || {};
+      // ✅ Detect new / updated keys properly
+      const newKeys = Object.keys(after).filter(key => {
+        if (key === "lastUpdated") return false;
 
-    const newKeys = Object.keys(after).filter(
-      key => key !== "lastUpdated" && !before[key]
-    );
+        const beforeVal = before[key];
+        const afterVal = after[key];
 
-    if (newKeys.length === 0) {
-      console.log("❌ No new enquiry detected");
-      return;
-    }
+        return !beforeVal || JSON.stringify(beforeVal) !== JSON.stringify(afterVal);
+      });
 
-    console.log("🔥 NEW KEYS:", newKeys);
-
-    const snap = await admin.firestore().collection("fcmTokens").get();
-
-    const tokens = [];
-    snap.forEach(doc => tokens.push(doc.data().token));
-
-    console.log("TOKENS:", tokens);
-
-    const url = `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`;
-
-    const res = await admin.messaging().sendEachForMulticast({
-      tokens,
-
-
-      data: {
-        url: url, // 🔥 service worker ke liye
-      },
-
-      webpush: {
-        fcmOptions: {
-          link: url // 🔥 CLICK FIX (MOST IMPORTANT)
-        },
-
-        notification: {
-          title: "📩 New Enquiry",
-          body: "New Enquiry Added From App",
-
-          icon: "/logo192.png",
-          badge: "/badge.png",
-          image: "/badge.png",
-          requireInteraction: true
-        }
+      if (newKeys.length === 0) {
+        console.log("❌ No new enquiry detected");
+        return;
       }
 
-    });
+      console.log("🔥 NEW KEYS:", newKeys);
 
-    console.log("✅ FCM RESPONSE:", res);
+      // ✅ Latest enquiry pick kar (important)
+      const latestKey = newKeys[newKeys.length - 1];
+      const enquiry = after[latestKey];
+
+      const source = enquiry?.source || "App";
+
+      // ✅ Tokens fetch
+      const snap = await admin.firestore().collection("fcmTokens").get();
+
+      const tokens = snap.docs
+        .map(doc => doc.data().token)
+        .filter(Boolean); // 🔥 remove undefined/null
+
+      if (tokens.length === 0) {
+        console.log("❌ No tokens found");
+        return;
+      }
+
+      console.log("📱 TOKENS COUNT:", tokens.length);
+
+      const url = `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`;
+
+      // ✅ Send notification
+      const res = await admin.messaging().sendEachForMulticast({
+        tokens,
+
+        data: {
+          url: url,
+        },
+
+        webpush: {
+          fcmOptions: {
+            link: url
+          },
+
+          notification: {
+            title: "📩 New Enquiry",
+            body: `New enquiry from ${source}`,
+
+            icon: "/logo192.png",
+            badge: "/badge.png",
+            requireInteraction: true
+          }
+        }
+      });
+
+      console.log("✅ SUCCESS COUNT:", res.successCount);
+      console.log("❌ FAILURE COUNT:", res.failureCount);
+
+      // 🔥 OPTIONAL: remove invalid tokens
+      res.responses.forEach((resp, idx) => {
+        if (!resp.success) {
+          console.log("❌ Invalid token:", tokens[idx]);
+        }
+      });
+
+    } catch (err) {
+      console.error("🔥 FUNCTION ERROR:", err);
+    }
   }
 );
