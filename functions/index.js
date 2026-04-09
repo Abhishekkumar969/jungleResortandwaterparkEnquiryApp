@@ -1,24 +1,91 @@
+const Razorpay = require("razorpay");
+const { defineSecret } = require("firebase-functions/params");
+const { onRequest } = require("firebase-functions/v2/https");
+
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
 
+
+
+// ================== 🔐 RAZORPAY ==================
+const razorpayKey = defineSecret("RAZORPAY_KEY");
+const razorpaySecret = defineSecret("RAZORPAY_SECRET");
+
+exports.createRazorpayOrder = onRequest(
+  {
+    secrets: ["RAZORPAY_KEY", "RAZORPAY_SECRET"],
+  },
+  async (req, res) => {
+
+    // ✅ CORS headers (FIRST THING)
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    // ✅ HANDLE PREFLIGHT
+    if (req.method === "OPTIONS") {
+      return res.status(204).send("");
+    }
+
+    try {
+      let body = req.body;
+
+      if (!body || Object.keys(body).length === 0) {
+        try {
+          body = JSON.parse(req.rawBody.toString());
+        } catch (e) {
+          body = {};
+        }
+      }
+
+      const { amount } = body;
+
+      console.log("FINAL BODY:", body);
+      console.log("AMOUNT:", amount);
+
+      if (!amount) {
+        return res.status(400).json({ error: "Amount required" });
+      }
+
+      const razorpay = new Razorpay({
+        key_id: razorpayKey.value(),
+        key_secret: razorpaySecret.value(),
+      });
+
+      const order = await razorpay.orders.create({
+        amount: amount * 100,
+        currency: "INR",
+        receipt: "receipt_" + Date.now(),
+      });
+
+      return res.json(order);
+
+    } catch (err) {
+      console.error("FULL ERROR:", err?.error || err);
+      return res.status(500).json({ error: "Failed to create order" });
+    }
+  }
+);
+
+
+
+
+// ================== 🔔 ENQUIRY ==================
 exports.newEnquiryNotification = onDocumentWritten(
   "enquiry/{monthYear}",
   async (event) => {
     try {
+      console.log("🚀 ENQUIRY FUNCTION TRIGGERED");
+
       const before = event.data?.before?.data() || {};
       const after = event.data?.after?.data() || {};
 
-      // ✅ Detect new / updated keys properly
-      const newKeys = Object.keys(after).filter(key => {
-        if (key === "lastUpdated") return false;
-
-        const beforeVal = before[key];
-        const afterVal = after[key];
-
-        return !beforeVal || JSON.stringify(beforeVal) !== JSON.stringify(afterVal);
-      });
+      // 🔥 ONLY NEW KEYS (STABLE)
+      const newKeys = Object.keys(after).filter(
+        key => key !== "lastUpdated" && !(key in before)
+      );
 
       if (newKeys.length === 0) {
         console.log("❌ No new enquiry detected");
@@ -27,62 +94,47 @@ exports.newEnquiryNotification = onDocumentWritten(
 
       console.log("🔥 NEW KEYS:", newKeys);
 
-      // ✅ Latest enquiry pick kar (important)
+      // ✅ Latest enquiry
       const latestKey = newKeys[newKeys.length - 1];
       const enquiry = after[latestKey];
 
-      const source = enquiry?.source || "App";
+      // 🔥 DATA EXTRACT
+      const name = enquiry?.name || "Guest";
+      const mobile = enquiry?.mobile1 || "";
+      const functionTypes = Array.isArray(enquiry?.functionTypes)
+        ? enquiry.functionTypes.join(", ")
+        : "General";
 
-      // ✅ Tokens fetch
+      console.log("📌", name, mobile, functionTypes);
+
+      // ✅ TOKENS
       const snap = await admin.firestore().collection("fcmTokens").get();
 
       const tokens = snap.docs
         .map(doc => doc.data().token)
-        .filter(Boolean); // 🔥 remove undefined/null
+        .filter(Boolean);
 
       if (tokens.length === 0) {
         console.log("❌ No tokens found");
         return;
       }
-
-      console.log("📱 TOKENS COUNT:", tokens.length);
-
+      const source = enquiry?.source || "App";
       const url = `https://jrenquiry.netlify.app/leadstabcontainer?tab=enquiry`;
 
-      // ✅ Send notification
+      // ✅ SEND NOTIFICATION
       const res = await admin.messaging().sendEachForMulticast({
         tokens,
 
         data: {
+          title: `📩 New Enquiry (${source})`,
+          body: `👤 ${name}\n📞 ${mobile}\n🎉 ${functionTypes}`,
           url: url,
-        },
-
-        webpush: {
-          fcmOptions: {
-            link: url
-          },
-
-          notification: {
-            title: "📩 New Enquiry",
-            body: `New enquiry from ${source}`,
-
-            icon: "/logo192.png",
-            image: "/logo192.png",
-            badge: "/badge.png",
-            requireInteraction: true
-          }
+          mobile: mobile
         }
       });
 
       console.log("✅ SUCCESS COUNT:", res.successCount);
       console.log("❌ FAILURE COUNT:", res.failureCount);
-
-      // 🔥 OPTIONAL: remove invalid tokens
-      res.responses.forEach((resp, idx) => {
-        if (!resp.success) {
-          console.log("❌ Invalid token:", tokens[idx]);
-        }
-      });
 
     } catch (err) {
       console.error("🔥 FUNCTION ERROR:", err);
@@ -91,6 +143,9 @@ exports.newEnquiryNotification = onDocumentWritten(
 );
 
 
+
+
+// ================== 🌊 WATERPARK ==================
 exports.newWaterParkNotification = onDocumentWritten(
   "WaterPark/{monthYear}",
   async (event) => {
@@ -140,36 +195,10 @@ exports.newWaterParkNotification = onDocumentWritten(
         tokens,
 
         data: {
+          title: "🌊 WaterPark Booking",
+          body: `👤 ${name}\n📞 ${mobile}\n💰 ₹${total}`,
           url: url,
           mobile: mobile
-        },
-
-        webpush: {
-          fcmOptions: {
-            link: url
-          },
-
-          notification: {
-            title: "🌊 WaterPark Booking",
-
-            // 🔥 FULL DETAILS
-            body: `👤 ${name}\n📞 ${mobile}\n💰 ₹${total}`,
-
-            icon: "/logo192.png",
-            image: "/logo192.png",
-            badge: "/badge.png",
-            requireInteraction: true,
-
-            data: {
-              url: url,
-              mobile: mobile
-            },
-
-            actions: [
-              { action: "call", title: "📞 Call Now" },
-              { action: "whatsapp", title: "💬 WhatsApp" }
-            ]
-          }
         }
       });
 
