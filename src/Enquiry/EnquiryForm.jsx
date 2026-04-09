@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../styles/Booking.css";
 import { db } from "../firebaseConfig";
 import { doc, setDoc, collection, deleteField, getDoc, getDocs } from "firebase/firestore";
-import BackButton from "../components/BackButton";
 import FunctionTypeSelector from "./FunctionTypeSelector";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from "firebase/auth";
+import BackButton from "../components/BackButton";
 import BottomNavigationBar from "../components/BottomNavigationBar";
 
 const EnquiryPage = () => {

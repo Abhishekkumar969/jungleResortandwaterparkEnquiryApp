@@ -1102,7 +1102,6 @@ const EnquiryDetails = () => {
               ))}
 
               <th>Source</th>
-              <th>Win Probability</th>
               <th>Drop</th>
             </tr>
           </thead>
@@ -1504,8 +1503,6 @@ const EnquiryDetails = () => {
                   <td style={{ backgroundColor: rowBg }}>{enq.source}
                     <div style={{ color: "gray", fontSize: "13px" }}> {enq.referredBy} </div>
                   </td>
-
-                  <td style={{ backgroundColor: rowBg }}>{enq.winProbability}</td>
 
                   <td style={{ backgroundColor: rowBg }}>
                     <button

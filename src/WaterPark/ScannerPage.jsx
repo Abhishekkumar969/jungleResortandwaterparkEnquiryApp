@@ -2,21 +2,29 @@ import React, { useEffect, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import BackButton from "../components/BackButton";
+import BottomNavigationBar from "../components/BottomNavigationBar";
+import { useNavigate } from 'react-router-dom';
 
 const ScannerPage = () => {
+    const navigate = useNavigate();
     const [scannedData, setScannedData] = useState(null);
     const [ticket, setTicket] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const scanner = new Html5Qrcode("reader");
+        let isScannerRunning = false;
 
         scanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 250 },
+            { facingMode: "user" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
             async (decodedText) => {
                 try {
-                    scanner.stop();
+                    if (isScannerRunning) {
+                        await scanner.stop();
+                        isScannerRunning = false;
+                    }
 
                     const data = JSON.parse(decodedText);
                     const ticketId = data.ticketId;
@@ -24,7 +32,6 @@ const ScannerPage = () => {
                     setScannedData(ticketId);
                     setLoading(true);
 
-                    // 🔥 month detect
                     const today = new Date();
                     const month = today.toLocaleString("en-US", { month: "short" });
                     const year = today.getFullYear();
@@ -53,11 +60,20 @@ const ScannerPage = () => {
                 } finally {
                     setLoading(false);
                 }
+            },
+            (errorMessage) => {
+                // scan error ignore (important for desktop)
             }
-        );
+        ).then(() => {
+            isScannerRunning = true;
+        }).catch(err => {
+            console.error("Camera start failed:", err);
+        });
 
         return () => {
-            scanner.stop().catch(() => { });
+            if (isScannerRunning) {
+                scanner.stop().catch(() => { });
+            }
         };
     }, []);
 
@@ -86,51 +102,66 @@ const ScannerPage = () => {
 
     return (
         <div style={{ padding: "10px" }}>
+            <BackButton />
 
-            <h2 style={{ textAlign: "center" }}>🎯 Scan Ticket</h2>
+            <div style={{ margin: "70px 0px" }}>
+                <h2 style={{ textAlign: "center" }}>🎯 Scan Ticket</h2>
 
-            {!ticket && <div id="reader" style={{ width: "100%" }} />}
+                {!ticket &&
+                    <div
+                        id="reader"
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            overflow: "hidden"
+                        }}
+                    />
+                }
 
-            {loading && <p>Loading...</p>}
+                {loading && <p>Loading...</p>}
 
-            {ticket && (
-                <div style={{
-                    marginTop: "20px",
-                    padding: "15px",
-                    borderRadius: "10px",
-                    background: ticket.visited ? "#ffcdd2" : "#c8e6c9"
-                }}>
-                    <p>Ticket ID: {scannedData}</p>
-                    <h3>{ticket.name}</h3>
-                    <p>📅 Visit: {ticket.visitDate}</p>
-                    <p>📞 {ticket.phone}</p>
+                {ticket && (
+                    <div style={{
+                        marginTop: "20px",
+                        padding: "15px",
+                        borderRadius: "10px",
+                        background: ticket.visited ? "#ffcdd2" : "#c8e6c9"
+                    }}>
+                        <p>Ticket ID: {scannedData}</p>
+                        <h3>{ticket.name}</h3>
+                        <p>📅 Visit: {ticket.visitDate}</p>
+                        <p>📞 {ticket.phone}</p>
 
-                    {ticket.visited && (
-                        <p style={{ color: "red", fontWeight: "bold" }}>
-                            ❌ Already Visited
-                        </p>
-                    )}
+                        {ticket.visited && (
+                            <p style={{ color: "red", fontWeight: "bold" }}>
+                                ❌ Already Visited
+                            </p>
+                        )}
 
-                    {!ticket.visited && (
-                        <button
-                            onClick={handleVisit}
-                            style={{
-                                marginTop: "10px",
-                                padding: "10px",
-                                width: "100%",
-                                background: "#4CAF50",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontWeight: "bold"
-                            }}
-                        >
-                            ✅ Mark Visit
-                        </button>
-                    )}
+                        {!ticket.visited && (
+                            <button
+                                onClick={handleVisit}
+                                style={{
+                                    marginTop: "10px",
+                                    padding: "10px",
+                                    width: "100%",
+                                    background: "#4CAF50",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: "bold"
+                                }}
+                            >
+                                ✅ Mark Visit
+                            </button>
+                        )}
 
-                </div>
-            )}
+                    </div>
+                )}
+            </div>
+
+            <BottomNavigationBar navigate={navigate} />
+
         </div>
     );
 };

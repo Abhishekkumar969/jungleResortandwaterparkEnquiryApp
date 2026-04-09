@@ -289,14 +289,6 @@ const Prebook = () => {
                 onClick={() => navigate(metricRoutes.Waterpark)}
               />
 
-              {/* Enquiries */}
-              <MetricCard
-                value={animatedEnquiries}
-                label="Enquiries"
-                disabled={!hasAccess("Bookings", "Enquiry")}
-                onClick={() => navigate(metricRoutes.Enquiries)}
-              />
-
             </div>
           </div>
         </div>
