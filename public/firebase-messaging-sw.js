@@ -13,4 +13,24 @@ const messaging = firebase.messaging();
 
 self.addEventListener("notificationclick", function (event) {
     event.notification.close();
+
+    const action = event.action;
+    const data = event.notification.data || {};
+
+    const mobile = data.mobile;
+
+    if (action === "call") {
+        event.waitUntil(
+            clients.openWindow(`tel:${mobile}`)
+        );
+    } else if (action === "whatsapp") {
+        event.waitUntil(
+            clients.openWindow(`https://wa.me/${mobile}`)
+        );
+    } else {
+        // default click
+        event.waitUntil(
+            clients.openWindow(data.url || "/")
+        );
+    }
 });
