@@ -11,6 +11,52 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+
+// 🔥 IMPORTANT: override default notification
+messaging.onBackgroundMessage(function (payload) {
+    console.log("🔥 BG MESSAGE:", payload);
+
+    const data = payload.data || {};
+
+    const title = data.title;
+    const options = {
+        body: data.body,
+        icon: "/logo192.png",
+        badge: "/badge.png",
+        requireInteraction: true,
+
+        data: {
+            url: data.url,
+            mobile: data.mobile
+        },
+
+        actions: [
+            { action: "call", title: "📞 Call Now" },
+            { action: "whatsapp", title: "💬 WhatsApp" }
+        ]
+    };
+
+    self.registration.showNotification(title, options);
+});
+
+
+// 🔥 CLICK HANDLER (FINAL)
 self.addEventListener("notificationclick", function (event) {
     event.notification.close();
+
+    const action = event.action;
+    const data = event.notification.data || {};
+
+    const mobile = data.mobile;
+    const url = data.url;
+
+    console.log("ACTION:", action, "DATA:", data);
+
+    if (action === "call" && mobile) {
+        event.waitUntil(clients.openWindow(`tel:${mobile}`));
+    } else if (action === "whatsapp" && mobile) {
+        event.waitUntil(clients.openWindow(`https://wa.me/${mobile}`));
+    } else {
+        event.waitUntil(clients.openWindow(url || "/"));
+    }
 });
