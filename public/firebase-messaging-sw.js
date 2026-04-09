@@ -44,19 +44,47 @@ messaging.onBackgroundMessage(function (payload) {
 self.addEventListener("notificationclick", function (event) {
     event.notification.close();
 
-    const action = event.action;
+    const action = event.action || "";
     const data = event.notification.data || {};
 
     const mobile = data.mobile;
     const url = data.url;
 
-    console.log("ACTION:", action, "DATA:", data);
+    console.log("ACTION:", action);
+    console.log("MOBILE:", mobile);
 
-    if (action === "call" && mobile) {
-        event.waitUntil(clients.openWindow(`tel:${mobile}`));
-    } else if (action === "whatsapp" && mobile) {
-        event.waitUntil(clients.openWindow(`https://wa.me/${mobile}`));
+    // 🔥 HARD CHECK (NO BUG)
+    if (action === "call") {
+        console.log("📞 CALL CLICKED");
+
+        // mobile only environment me hi kaam karega
+        if (/Android|iPhone/i.test(navigator.userAgent)) {
+            event.waitUntil(clients.openWindow(`tel:${mobile}`));
+        } else {
+            // desktop fallback
+            event.waitUntil(
+                clients.openWindow(`https://wa.me/${mobile}`)
+            );
+        }
+
+    } else if (action === "whatsapp") {
+        console.log("💬 WHATSAPP CLICKED");
+
+        const phone = mobile;
+
+        // 🔥 Try opening app first
+        event.waitUntil(
+            clients.openWindow(`whatsapp://send?phone=${phone}`)
+                .catch(() => {
+                    // 🔥 fallback to web
+                    return clients.openWindow(`https://wa.me/${phone}`);
+                })
+        );
     } else {
-        event.waitUntil(clients.openWindow(url || "/"));
+        console.log("🌐 DEFAULT CLICK");
+
+        event.waitUntil(
+            clients.openWindow(url || "/")
+        );
     }
 });
