@@ -12,7 +12,6 @@ const LeadsTabContainer = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tabFromURL = queryParams.get("tab");
-
     const [activeTab, setActiveTab] = useState(null);
     const [panelAccess, setPanelAccess] = useState({});
     const [userAppType, setUserAppType] = useState(null);

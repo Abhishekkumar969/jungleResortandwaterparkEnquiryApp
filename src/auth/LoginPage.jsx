@@ -267,13 +267,9 @@ export default function MoonSunLogin() {
                                 <option style={{ color: 'black' }} value=" ">✨ Choose Role</option>
                                 <option style={{ color: 'black' }} value="D">🤝 Partner</option>
                                 <option style={{ color: 'black' }} value="B">📊 Manager</option>
-                                <option style={{ color: 'black' }} value="I">👩‍💻 Accounts Manager</option>
                                 <option style={{ color: 'black' }} value="H">📞 Enquiry Executive</option>
                                 <option style={{ color: 'black' }} value="F">💰 Accountant</option>
                                 <option style={{ color: 'black' }} value="G">👩‍💻 User</option>
-                                <option style={{ color: 'black' }} value="C">📦 Event Manager</option>
-                                <option style={{ color: 'black' }} value="E">🎉 Decoration Manager</option>
-                                <option style={{ color: 'black' }} value="O">🏛️ Official</option>
                             </select>
 
                             <div
@@ -320,13 +316,9 @@ export default function MoonSunLogin() {
                                 <option style={{ color: 'black' }} value="A">🛡️ Admin</option>
                                 <option style={{ color: 'black' }} value="D">🤝 Partner</option>
                                 <option style={{ color: 'black' }} value="B">📊 Manager</option>
-                                <option style={{ color: 'black' }} value="I">👩‍💻 Accounts Manager</option>
                                 <option style={{ color: 'black' }} value="H">📞 Enquiry Executive</option>
                                 <option style={{ color: 'black' }} value="F">💰 Accountant</option>
                                 <option style={{ color: 'black' }} value="G">👩‍💻 User</option>
-                                <option style={{ color: 'black' }} value="C">📦 Event Manager</option>
-                                <option style={{ color: 'black' }} value="E">🎉 Decoration Manager</option>
-                                <option style={{ color: 'black' }} value="O">🏛️ Official</option>
                             </select>
 
                             <div

@@ -1,49 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    FaHome,
-    // FaFolderOpen,
-    FaUserTie,
-    FaEnvelopeOpenText,
-} from "react-icons/fa";
+import { FaHome, FaFolderOpen, FaEnvelopeOpenText, } from "react-icons/fa";
 
-const getNavConfig = (userAppType) => {
-
-    let navItems = [
-        { icon: '', path: '/leadstabcontainer' },
-        // { label: "Home", icon: <FaHome />, path: '/' },
-        // { icon: '', path: '/leadstabcontainer' },
-    ];
-
-    let centralAction = {
-        label: "Enquiry",
-        icon: <FaEnvelopeOpenText />,
-        path: '/EnquiryForm',
-        isCentral: true
+const getNavConfig = () => {
+    return {
+        navItems: [
+            { label: "Home", icon: <FaHome />, path: '/' },
+            { label: "Reports", icon: <FaFolderOpen />, path: '/leadstabcontainer' },
+        ],
+        centralAction: {
+            label: "Enquiry",
+            icon: <FaEnvelopeOpenText />,
+            path: '/EnquiryForm',
+            isCentral: true
+        }
     };
-
-    switch (userAppType) {
-
-        case 'A':
-            navItems = [
-                { label: "Home", icon: <FaHome />, path: '/' },
-                { label: "Profile", icon: <FaUserTie />, path: '/AdminProfile' },
-            ];
-
-            centralAction = {
-                label: "Enquiry",
-                icon: <FaEnvelopeOpenText />,
-                path: '/EnquiryForm',
-                isCentral: true
-            };
-
-            break;
-
-        default:
-            break;
-    }
-
-    return { navItems, centralAction };
 };
 
 const BottomNavigationBar = ({ userAppType }) => {
@@ -63,7 +34,6 @@ const BottomNavigationBar = ({ userAppType }) => {
 
     return (
         <div className="bottom-nav-bar">
-            {/* LEFT (sirf first item → Home) */}
             {navItems.slice(0, 1).map(item => (
                 <div
                     key={item.label}

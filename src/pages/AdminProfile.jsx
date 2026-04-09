@@ -149,7 +149,7 @@ const AdminProfile = () => {
       <div className={styles.backButtonWrapper}>
         <BackButton />
       </div>
-      
+
       <div className={styles.container}>
 
         {adminProfile ? (

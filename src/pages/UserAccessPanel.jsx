@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, deleteDoc, doc, updateDoc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, deleteDoc, doc, updateDoc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import '../styles/UserAccessTable.css';
 import BackButton from "../components/BackButton";
@@ -17,26 +17,13 @@ const UserAccessPanel = () => {
     const [accessRequests, setAccessRequests] = useState([]);
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [loadingRequests, setLoadingRequests] = useState(true);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [prebookings, setPrebookings] = useState([]);
-    const [selectedPrebookingIds, setSelectedPrebookingIds] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [users, setUsers] = useState([]);
-    const [showBankAssign, setShowBankAssign] = useState(false);
-    const [selectedBankUsers, setSelectedBankUsers] = useState([]);
-    const [showLockerAssign, setShowLockerAssign] = useState(false);
-    const [selectedLockerUsers, setSelectedLockerUsers] = useState([]);
     const [userAppType, setUserAppType] = useState(null);
-    const [showAddBankModal, setShowAddBankModal] = useState(false);
-    const [bankNames, setBankNames] = useState([""]);
     const [showAccessModal, setShowAccessModal] = useState(false);
     const [selectedSection, setSelectedSection] = useState("");
     const [selectedItem, setSelectedItem] = useState("");
     const [selectedAccess, setSelectedAccess] = useState([]);
     const [allAccess, setAllAccess] = useState([]);
     const [accessCounts, setAccessCounts] = useState({});
-    const [bookingAccessRoles, setBookingAccessRoles] = useState({ bookRecord: [] });
     const [panelAccessData, setPanelAccessData] = useState({});
 
     useEffect(() => {
@@ -47,47 +34,48 @@ const UserAccessPanel = () => {
         const unsubscribers = [];
 
         try {
-            /** 🔸 1. Listen to accountant documents (BankNames, AssignBank, AssignLocker) */
-            const accountantRefs = [
-                doc(db, "accountant", "BankNames"),
-                doc(db, "accountant", "AssignBank"),
-                doc(db, "accountant", "AssignLocker"),
-            ];
 
-            accountantRefs.forEach((ref, index) => {
-                const unsub = onSnapshot(ref, (snap) => {
-                    if (!snap.exists()) return;
-                    const data = snap.data();
-                    if (index === 0) setBankNames(data.banks || []);
-                    if (index === 1) setSelectedBankUsers(data.users || []);
-                    if (index === 2) setSelectedLockerUsers(data.users || []);
-                });
-                unsubscribers.push(unsub);
-            });
-
-            /** 🔸 2. Listen to all usersAccess (auto-updates approved + allAccess + userAppType) */
             const unsubUsers = onSnapshot(collection(db, "usersAccess"), (snap) => {
                 const allUsers = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
                 const nonAdminUsers = allUsers.filter((u) => u.accessToApp !== "A");
 
-                setUsers(nonAdminUsers);
-                setApprovedUsers(nonAdminUsers.filter((u) => u.accessToApp && u.accessToApp !== "A"));
+                setApprovedUsers(nonAdminUsers);
                 setLoadingUsers(false);
 
-                // Current logged-in user’s app type
                 if (user) {
                     const currentUser = allUsers.find((u) => u.id === user.email);
                     if (currentUser) setUserAppType(currentUser.accessToApp);
                 }
 
-                // Unique accessToApp values
                 const accessArr = allUsers
                     .map((u) => u.accessToApp || [])
                     .flat()
                     .filter(Boolean);
+
                 setAllAccess([...new Set(accessArr)]);
             });
+
             unsubscribers.push(unsubUsers);
+
+            const unsubPanel = onSnapshot(collection(db, "pannelAccess"), (snap) => {
+                const counts = {};
+                const fullData = {};
+
+                snap.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    fullData[docSnap.id] = data;
+
+                    Object.entries(data).forEach(([key, value]) => {
+                        counts[`${docSnap.id}-${key}`] = Array.isArray(value) ? value.length : 0;
+                    });
+                });
+
+                setPanelAccessData(fullData);   // ✅ AB USE HO RHA HAI
+                setAccessCounts(counts);
+            });
+
+            unsubscribers.push(unsubPanel);
 
             /** 🔸 3. Listen to pending access requests */
             const unsubRequests = onSnapshot(collection(db, "accessRequests"), (snap) => {
@@ -110,32 +98,6 @@ const UserAccessPanel = () => {
 
             unsubscribers.push(unsubRequests);
 
-            /** 🔸 4. Listen to panelAccess for live access counts */
-            const unsubPanel = onSnapshot(collection(db, "pannelAccess"), (snap) => {
-                const counts = {};
-                const fullData = {};
-
-                snap.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    fullData[docSnap.id] = data;
-
-                    if (docSnap.id === "Bookings") {
-                        setBookingAccessRoles({
-                            book: data.Book || [],
-                            bookRecord: data["Book Record"] || [],
-                        });
-                    }
-
-                    Object.entries(data).forEach(([key, value]) => {
-                        counts[`${docSnap.id}-${key}`] = Array.isArray(value) ? value.length : 0;
-                    });
-                });
-
-                setPanelAccessData(fullData);   // 🔥 REQUIRED
-                setAccessCounts(counts);
-            });
-            unsubscribers.push(unsubPanel);
-
         } catch (err) {
             console.error("❌ Real-time subscription error:", err);
         }
@@ -143,51 +105,6 @@ const UserAccessPanel = () => {
         return () => unsubscribers.forEach((unsub) => unsub && unsub());
     }, []);
 
-    const canShowBookedAutoEdit = (accessToApp) => {
-        return (
-            bookingAccessRoles.bookRecord.includes(accessToApp)
-        );
-    };
-
-    const handleAddBankClick = () => setShowAddBankModal(true);
-    const addBankInput = () => setBankNames(prev => [...prev, ""]);
-    const updateBankName = (index, value) =>
-        setBankNames(prev => prev.map((b, i) => (i === index ? value : b)));
-
-    const saveBanks = async () => {
-        try {
-            const filteredBanks = bankNames.filter(b => b.trim());
-            if (!filteredBanks.length) return alert("Add at least one bank name!");
-            await setDoc(doc(db, "accountant", "BankNames"), {
-                banks: filteredBanks,
-                updatedAt: new Date().toISOString(),
-            });
-            setShowAddBankModal(false);
-            alert("✅ Banks saved!");
-        } catch (err) {
-            console.error(err);
-            alert("❌ Error saving banks");
-        }
-    };
-
-    const openEditPopup = async (user) => {
-        setSelectedUser(user);
-        setShowEditModal(true);
-
-        const snapshot = await getDocs(collection(db, 'prebookings'));
-        const allPrebookings = [];
-
-        snapshot.forEach((docSnap) => {
-            const monthId = docSnap.id;
-            const monthData = docSnap.data();
-            Object.entries(monthData).forEach(([bookingId, bookingData]) => {
-                allPrebookings.push({ id: bookingId, monthId, ...bookingData });
-            });
-        });
-
-        setPrebookings(allPrebookings);
-        setSelectedPrebookingIds(user.editablePrebookings || []);
-    };
 
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -227,36 +144,6 @@ const UserAccessPanel = () => {
         return () => clearInterval(interval);
     }, [approvedUsers]);
 
-    const saveEditPermissions = async () => {
-        try {
-            const userRef = doc(db, 'usersAccess', selectedUser.email);
-
-            const now = new Date();
-            const minutes = selectedUser.editMinutes || 10;
-
-            // Set expiry timestamp in ISO format
-            const expiryTime = new Date(now.getTime() + minutes * 60 * 1000);
-
-            await updateDoc(userRef, {
-                editablePrebookings: selectedPrebookingIds,
-                editData: "enable",
-                editExpiry: expiryTime.toISOString(), // <-- new field
-            });
-
-            setApprovedUsers(prev =>
-                prev.map(user =>
-                    user.email === selectedUser.email
-                        ? { ...user, editablePrebookings: selectedPrebookingIds, editData: "enable", editExpiry: expiryTime.toISOString() }
-                        : user
-                )
-            );
-
-            setShowEditModal(false);
-        } catch (err) {
-            console.error(err);
-            alert("Error saving permissions.");
-        }
-    };
 
     const toggleAccess = async (email, currentAccess) => {
         try {
@@ -371,72 +258,29 @@ const UserAccessPanel = () => {
     };
 
     const accessSections = {
-        ReportSection: [
-            { label: "📈 Daily Report", key: "DailyReport", color: "#f668eeff", textColor: getTextColor("#e33adb") },
-            { label: "📈 Balance Report", key: "BalanceReport", color: "#f668eeff", textColor: getTextColor("#e33adb") },
-        ],
         Bookings: [
-            { label: "📅 Booked Dates", key: "Dates", color: "#fbc169ff", textColor: getTextColor("#ff7b00ff") },
-            // { label: "📨 AllBookingDatesList", key: "AllBookingDatesList", color: "#fbc169ff", textColor: getTextColor("#ff7b00ff") },
             { label: "📨 Enquiry", key: "Enquiry", color: "#fbc169ff", textColor: getTextColor("#ff9900") },
-            { label: "🚀 Lead", key: "Lead", color: "#fbc169ff", textColor: getTextColor("#ff6600") },
-            { label: "💒 Book", key: "Book", color: "#fbc169ff", textColor: getTextColor("#ffcc66") },
-            // { label: "🏨 Rooms", key: "Rooms", color: "#fbc169ff", textColor: getTextColor("#ffcc66") },
             { label: "🗂️ Enquiry Record", key: "Enquiry Record", color: "#fbc169ff", textColor: getTextColor("#ffb84d") },
-            { label: "🗂️ Lead Record", key: "Lead Record", color: "#fbc169ff", textColor: getTextColor("#ffe6b3") },
-            { label: "🗂️ Book Record", key: "Book Record", color: "#fbc169ff", textColor: getTextColor("#fff2cc") },
-            { label: "🗑️ Past Enquiry", key: "Past Enquiry", color: "#fbc169ff", textColor: getTextColor("#fff9e6") },
-            { label: "🗑️ Dropped Leads", key: "Dropped Leads", color: "#fbc169ff", textColor: getTextColor("#fff9e6") },
-            { label: "🗑️ Cancelled Bookings", key: "Cancelled Bookings", color: "#fbc169ff", textColor: getTextColor("#fff9e6") },
-        ],
-        Receipts: [
-            { label: "🧾 Receipt", key: "Receipt", color: "#f49fd1", textColor: getTextColor("#e33adb") },
-            { label: "🎟️ Voucher", key: "Voucher", color: "#f49fd1", textColor: getTextColor("#f062c0") },
-            { label: "📚 Record", key: "Record", color: "#f49fd1", textColor: getTextColor("#f49fd1") },
-            { label: "📈 Record Stats", key: "RecordStats", color: "#f49fd1", textColor: getTextColor("#f49fd1") },
 
-            { label: "✅ Receipt Approve", key: "Approve", color: "#f49fd1", textColor: getTextColor("#f7c3e0") },
+            { label: "scanner", key: "scanner", color: "#fbc169ff", textColor: getTextColor("#ff9900") },
+            { label: "Water Park Records", key: "Water Park", color: "#fbc169ff", textColor: getTextColor("#ffb84d") },
+
+            { label: "🗑️ Past Enquiry", key: "Past Enquiry", color: "#fbc169ff", textColor: getTextColor("#fff9e6") },
         ],
-        // Locker: [
-        //     { label: "💸 Lockers", key: "Lockers", color: "#a9f67fff", textColor: getTextColor("#49ab10") },
-        //     { label: "📇 Record", key: "Record", color: "#a9f67fff", textColor: getTextColor("#7acc4d") },
-        // ],
         Utilities: [
             { label: "Whatsapp Message", key: "WhatsappMessage", color: "#80cfd6", textColor: getTextColor("#0393a7") },
-            { label: "🍽 Menu", key: "Menu", color: "#80cfd6", textColor: getTextColor("#0393a7") },
-            { label: "📅 All Dates", key: "All Dates", color: "#80cfd6", textColor: getTextColor("#4db8bf") },
-            { label: "💹 GST", key: "GST", color: "#80cfd6", textColor: getTextColor("#80cfd6") },
-        ],
-        Vendor: [
-            { label: "🪩 UpComing", key: "UpComing", color: "#ff8383ff", textColor: getTextColor("#e33a6d") },
-            { label: "🗂️ Booked", key: "Booked", color: "#ff8383ff", textColor: getTextColor("#e36190") },
-            { label: "🗑️ Dropped", key: "Dropped", color: "#ff8383ff", textColor: getTextColor("#e88fb5") },
-        ],
-        Decoration: [
-            { label: "🌸 UpComings", key: "UpComing", color: "#b473e3", textColor: getTextColor("#e33adb") },
-            { label: "🗂️ Booked", key: "Booked", color: "#b473e3", textColor: getTextColor("#8f3ae3") },
-            { label: "🗑️ Dropped", key: "Dropped", color: "#b473e3", textColor: getTextColor("#b473e3") },
-        ],
-        Catering: [
-            { label: "👨‍🍳 Assign", key: "Assign", color: "#83d2d1ff", textColor: getTextColor("#e33adb") },
-            { label: "🗂️ Records", key: "Records", color: "#83d2d1ff", textColor: getTextColor("#8f3ae3") },
         ],
         Settings: [
-            { label: "📈 Business Stats", key: "Business", color: "#fba472ff", textColor: getTextColor("#e33adb") },
             { label: "🔐 Access", key: "Access", color: "#fba472ff", textColor: getTextColor("#8f3ae3") },
         ],
     };
 
     const roleNames = {
         B: "📊 Manager",
-        C: "📦 Event Manager",
         D: "🤝 Partner",
-        E: "🎉 Decoration Manager",
         F: "💰 Accountant",
         G: "👩‍💻 User",
         H: "📞 Enquiry Executive",
-        O: "🏛️ Official",
-        I: "👩‍💻 Accounts Manager"
     };
 
     const UserAccessBtns = {
@@ -497,29 +341,6 @@ const UserAccessPanel = () => {
 
         return roleMap;
     };
-
-    const MiniList = ({ items, renderItem }) => (
-        <div
-            style={{
-                marginTop: "8px",
-                background: "#ffffff",
-                borderRadius: "6px",
-                padding: "6px",
-                fontSize: "12px",
-                color: "#000",
-            }}
-        >
-            {items.length > 0 ? (
-                <ol style={{ margin: "4px 0 0", paddingLeft: "16px" }}>
-                    {items.map(renderItem)}
-                </ol>
-            ) : (
-                <div style={{ fontStyle: "italic", color: "#666" }}>
-                    No data
-                </div>
-            )}
-        </div>
-    );
 
     return (
         <div className="page-scroller">
@@ -622,8 +443,6 @@ const UserAccessPanel = () => {
                                     <tr>
                                         <th>Name</th>
                                         <th>App Role</th>
-                                        <th>Always Edit Booked</th>
-                                        <th>Timer Edit Booked</th>
                                         <th>Id Premission</th>
                                         <th>Email</th>
                                         <th>Approved At</th>
@@ -658,119 +477,6 @@ const UserAccessPanel = () => {
                                                 </div>
                                             </td>
 
-                                            {/* 🔹 Always Edit Toggle Column */}
-                                            <td>
-                                                {canShowBookedAutoEdit(u.accessToApp) ? (
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            alignItems: "center",
-                                                            justifyContent: "center",
-                                                            padding: "4px 0",
-                                                        }}
-                                                    >
-                                                        <div
-                                                            onClick={async () => {
-                                                                try {
-                                                                    const newStatus = u.alwayEdit === "On" ? "Off" : "On";
-                                                                    const userRef = doc(db, "usersAccess", u.email);
-                                                                    await updateDoc(userRef, { alwayEdit: newStatus });
-                                                                    setApprovedUsers(prev =>
-                                                                        prev.map(user =>
-                                                                            user.email === u.email
-                                                                                ? { ...user, alwayEdit: newStatus }
-                                                                                : user
-                                                                        )
-                                                                    );
-                                                                } catch (err) {
-                                                                    console.error("Error updating always edit:", err);
-                                                                }
-                                                            }}
-                                                            style={{
-                                                                position: "relative",
-                                                                width: "60px",
-                                                                height: "30px",
-                                                                backgroundColor: u.alwayEdit === "On" ? "#4CAF50" : "#ccc",
-                                                                borderRadius: "30px",
-                                                                cursor: "pointer",
-                                                            }}
-                                                        >
-                                                            <div
-                                                                style={{
-                                                                    position: "absolute",
-                                                                    top: "3px",
-                                                                    left: u.alwayEdit === "On" ? "32px" : "3px",
-                                                                    width: "24px",
-                                                                    height: "24px",
-                                                                    backgroundColor: "#fff",
-                                                                    borderRadius: "50%",
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                ) : null}
-                                            </td>
-
-                                            <td>
-                                                {canShowBookedAutoEdit(u.accessToApp) ? (
-                                                    u.editData === "enable" ? (
-                                                        <button
-                                                            style={{ width: '100%' }}
-                                                            className="button edit-enabled"
-                                                            onClick={async () => {
-                                                                try {
-                                                                    const userRef = doc(db, "usersAccess", u.email);
-
-                                                                    await updateDoc(userRef, {
-                                                                        editablePrebookings: [],
-                                                                        editData: "disable",
-                                                                        editExpiry: null,
-                                                                    });
-
-                                                                    setApprovedUsers(prev =>
-                                                                        prev.map(user =>
-                                                                            user.email === u.email
-                                                                                ? {
-                                                                                    ...user,
-                                                                                    editablePrebookings: [],
-                                                                                    editData: "disable",
-                                                                                    editExpiry: null
-                                                                                }
-                                                                                : user
-                                                                        )
-                                                                    );
-                                                                } catch (err) {
-                                                                    console.error(err);
-                                                                    alert("Error disabling edit access.");
-                                                                }
-                                                            }}
-                                                        >
-                                                            <span style={{ color: "#000000ff" }}>Editing Enabled</span>
-
-                                                            {u.editExpiry && (
-                                                                <div style={{ marginTop: '5px', color: "#040404ff" }}>
-                                                                    Edit Expiry:
-                                                                    {new Date(u.editExpiry).toLocaleTimeString("en-IN", {
-                                                                        hour: "2-digit",
-                                                                        minute: "2-digit",
-                                                                        hour12: true,
-                                                                        timeZone: "Asia/Kolkata",
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                        </button>
-                                                    ) : (
-                                                        <button
-                                                            style={{ width: '100%' }}
-                                                            className="button edit-data"
-                                                            onClick={() => openEditPopup(u)}
-                                                        >
-                                                            Grant Access
-                                                        </button>
-                                                    )
-                                                ) : null}
-                                            </td>
-
                                             <td>
                                                 <div style={{ display: "flex", justifyContent: "center" }}>
                                                     <button
@@ -800,453 +506,6 @@ const UserAccessPanel = () => {
                         </div>
                     )}
                 </div>
-
-                <Modal
-                    isOpen={showEditModal}
-                    onRequestClose={() => setShowEditModal(false)}
-                    contentLabel="Edit Access Modal"
-                    className="modal"
-                    overlayClassName="overlay"
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            gap: "10px",
-                        }}
-                    >
-                        <div style={{
-                            width: 'fit-content',
-                        }}>
-                            <button style={{
-                                width: 'fit-content',
-                                borderRadius: '1200px'
-                            }}
-                                onClick={() => setShowEditModal(false)}>X
-                            </button>
-                        </div>
-                    </div>
-
-                    <h2>Grant Edit Access For:
-                        <div>Name: <span style={{ color: "#03c0b9ff" }}>{selectedUser?.name}</span>, Email: <span style={{ color: "#03c0b9ff" }}> {selectedUser?.email} </span> </div>
-                    </h2>
-
-                    {/* Search Input */}
-                    <input
-                        type="text"
-                        placeholder="Search by name, event, mobile..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
-                        style={{
-                            width: "100%",
-                            padding: "8px",
-                            marginBottom: "12px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                        }}
-                    />
-
-                    <div style={{ marginBottom: "12px", display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'space-between' }}>
-
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <label>
-                                <span> Timer: </span>
-                                <select
-                                    value={selectedUser?.editMinutes || 10} // default 10
-                                    onChange={(e) =>
-                                        setSelectedUser(prev => ({ ...prev, editMinutes: parseInt(e.target.value) }))
-                                    }
-                                    style={{ width: '80px', marginLeft: '5px', padding: '4px' }}
-                                >
-                                    {Array.from({ length: 12 }, (_, i) => (i + 1) * 10).map((minutes) => (
-                                        <option key={minutes} value={minutes}>
-                                            {minutes} min
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-                        </div>
-
-
-                        {/* Select / Unselect Button */}
-                        <button
-                            style={{ padding: "6px 12px" }}
-                            onClick={() => {
-                                const filteredIds = prebookings
-                                    .filter((p) => {
-                                        const name = p.name?.toLowerCase() || "";
-                                        const mobile1 = p.mobile1 || "";
-                                        const event = p.functionType?.toLowerCase() || "";
-                                        return (
-                                            name.includes(searchTerm) ||
-                                            event.includes(searchTerm) ||
-                                            mobile1.includes(searchTerm)
-                                        );
-                                    })
-                                    .map((p) => p.id);
-
-                                const allSelected = filteredIds.every((id) =>
-                                    selectedPrebookingIds.includes(id)
-                                );
-
-                                setSelectedPrebookingIds((prev) =>
-                                    allSelected
-                                        ? prev.filter((id) => !filteredIds.includes(id)) // unselect all filtered
-                                        : [...new Set([...prev, ...filteredIds])] // select all filtered
-                                );
-                            }}
-                        >
-                            {(() => {
-                                const filteredIds = prebookings
-                                    .filter((p) => {
-                                        const name = p.name?.toLowerCase() || "";
-                                        const mobile1 = p.mobile1 || "";
-                                        const event = p.functionType?.toLowerCase() || "";
-                                        return (
-                                            name.includes(searchTerm) ||
-                                            event.includes(searchTerm) ||
-                                            mobile1.includes(searchTerm)
-                                        );
-                                    })
-                                    .map((p) => p.id);
-
-                                const allSelected = filteredIds.every((id) =>
-                                    selectedPrebookingIds.includes(id)
-                                );
-
-                                return allSelected ? "Unselect All (Filtered)" : "Select All (Filtered)";
-                            })()}
-                        </button>
-
-                    </div>
-
-
-                    {/* Prebookings List */}
-                    <div
-                        style={{
-                            maxHeight: "25vh",
-                            overflowY: "auto",
-                            border: "1px solid #ccc",
-                            padding: "10px",
-                            borderRadius: "6px",
-                        }}
-                    >
-                        {prebookings
-                            .filter((p) => {
-                                const name = p.name?.toLowerCase() || "";
-                                const mobile1 = p.mobile1 || "";
-                                const event = p.functionType?.toLowerCase() || "";
-                                return (
-                                    name.includes(searchTerm) ||
-                                    event.includes(searchTerm) ||
-                                    mobile1.includes(searchTerm)
-                                );
-                            })
-                            .map((p) => (
-                                <div key={p.id} style={{ marginBottom: "6px" }}>
-                                    <label style={{ cursor: "pointer" }}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPrebookingIds.includes(p.id)}
-                                            onChange={(e) => {
-                                                const checked = e.target.checked;
-                                                setSelectedPrebookingIds((prev) =>
-                                                    checked
-                                                        ? [...prev, p.id]
-                                                        : prev.filter((id) => id !== p.id)
-                                                );
-                                            }}
-                                        />
-                                        {" "}
-                                        <strong>{p.name || "No Name"}</strong> ({p.mobile1 || "N/A"}) –{" "}
-                                        {p.functionType || "No Event"}
-                                    </label>
-                                </div>
-                            ))}
-                    </div>
-
-                    {/* Actions */}
-                    <div
-                        style={{
-                            marginTop: "20px",
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "10px",
-
-                        }}
-                    >
-                        <button style={{ backgroundColor: 'green', width: '100%' }} onClick={saveEditPermissions}>Save Access</button>
-                    </div>
-
-                </Modal>
-
-                <div className="assign-container access-requests">
-                    <h2 className="assign-title">🎯 Assign</h2>
-
-                    <div
-                        style={{
-                            marginTop: "20px",
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "16px",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        {/* 🏦 Add Banks */}
-                        <button
-                            onClick={handleAddBankClick}
-                            style={{
-                                padding: "16px",
-                                background: "#ffaa7cff",
-                                color: "black",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                width: "260px",
-                                textAlign: "left",
-                                fontSize: "15px",
-                                fontWeight: "800"
-                            }}
-                        >
-                            ➕ Add Banks
-
-                            <MiniList
-                                items={bankNames.filter(b => b.trim())}
-                                renderItem={(b, i) => <li key={i}>{b}</li>}
-                            />
-                        </button>
-
-                        {/* 🏦 Assign Bank */}
-                        <button
-                            onClick={() => {
-                                setShowBankAssign(!showBankAssign);
-                                setShowLockerAssign(false);
-                            }}
-                            style={{
-                                padding: "16px",
-                                background: "#87c1ffff",
-                                color: "black",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                width: "260px",
-                                textAlign: "left",
-                                fontSize: "15px",
-                                fontWeight: "800"
-                            }}
-                        >
-                            🏦 Assign Bank
-
-                            <MiniList
-                                items={selectedBankUsers}
-                                renderItem={(u, i) => (
-                                    <li key={i}>
-                                        {u.name} – {roleNames[u.accessToApp]}
-                                    </li>
-                                )}
-                            />
-                        </button>
-
-                        {/* 🔐 Assign Locker */}
-                        <button
-                            onClick={() => {
-                                setShowLockerAssign(!showLockerAssign);
-                                setShowBankAssign(false);
-                            }}
-                            style={{
-                                padding: "16px",
-                                background: "#f97cf9ff",
-                                color: "black",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                width: "260px",
-                                textAlign: "left",
-                                fontSize: "15px",
-                                fontWeight: "800"
-                            }}
-                        >
-                            🔐 Assign Locker
-
-                            <MiniList
-                                items={selectedLockerUsers}
-                                renderItem={(u, i) => (
-                                    <li key={i}>
-                                        {u.name} – {roleNames[u.accessToApp]}
-                                    </li>
-                                )}
-                            />
-                        </button>
-                    </div>
-                </div>
-
-                <Modal
-                    isOpen={showAddBankModal}
-                    onRequestClose={() => setShowAddBankModal(false)}
-                    contentLabel="Add Banks Modal"
-                    className="modal"
-                    overlayClassName="overlay"
-                >
-                    <h2>Add Bank Names</h2>
-
-                    {bankNames.map((name, idx) => (
-                        <div key={idx} style={{ marginBottom: "8px", display: "flex", gap: "8px" }}>
-                            <input
-                                type="text"
-                                value={name}
-                                placeholder={`Bank Name ${idx + 1}`}
-                                onChange={(e) => updateBankName(idx, e.target.value)}
-                                style={{ flex: 1, padding: "6px" }}
-                            />
-                        </div>
-                    ))}
-                    <div style={{ display: "flex", justifyContent: "right", gap: "10px" }}>
-                        <button onClick={addBankInput} style={{ marginBottom: "10px", backgroundColor: '#3f8acbff' }}>Add Another</button>
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-                        <button onClick={saveBanks} style={{ backgroundColor: 'green', color: 'white' }}>Save Banks</button>
-                        <button onClick={() => setShowAddBankModal(false)} style={{ backgroundColor: 'gray', color: 'white' }}>Cancel</button>
-                    </div>
-                </Modal>
-
-                {showBankAssign && (
-                    <div className="assign-container bank-assign">
-                        <button
-                            onClick={() => setShowBankAssign(false)}
-                            className="close-btn"
-                        >
-                            ✕
-                        </button>
-                        <h3 className="assign-title">Assign - Bank</h3>
-
-                        <div className="table-responsive">
-                            <table className="assign-table">
-                                <thead>
-                                    <tr>
-                                        <th>Assign</th>
-                                        <th>Name</th>
-                                        <th>Access</th>
-                                        <th>Email</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {users.map((u) => (
-                                        <tr key={u.id}>
-                                            <td className="center">
-                                                <input
-                                                    type="checkbox"
-                                                    value={u.id}
-                                                    checked={selectedBankUsers.some((user) => user.id === u.id)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) setSelectedBankUsers((prev) => [...prev, u]);
-                                                        else setSelectedBankUsers((prev) => prev.filter((user) => user.id !== u.id));
-                                                    }}
-                                                    className="custom-checkbox bank-checkbox"
-                                                />
-                                            </td>
-                                            <td>{u.name}</td>
-                                            <td>{roleNames[u.accessToApp] || u.accessToApp}</td>
-                                            <td>{u.email}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="btn-container">
-                            <button
-                                onClick={async () => {
-                                    try {
-                                        await setDoc(doc(db, "accountant", "AssignBank"), {
-                                            type: "Bank",
-                                            users: selectedBankUsers.map((u) => ({
-                                                id: u.id,
-                                                name: u.name,
-                                                email: u.email,
-                                                accessToApp: u.accessToApp,
-                                            })),
-                                            updatedAt: new Date().toISOString(),
-                                        });
-                                        setShowBankAssign(false);
-                                    } catch (err) {
-                                        console.error(err);
-                                        alert("Error saving bank assignment ❌");
-                                    }
-                                }}
-                                className="save-btn"
-                            >
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {showLockerAssign && (
-                    <div className="assign-container locker-assign">
-                        <button onClick={() => setShowLockerAssign(false)} className="close-btn">✕</button>
-                        <h3 className="assign-title">Assign - Locker</h3>
-
-                        <div className="table-responsive">
-                            <table className="assign-table">
-                                <thead>
-                                    <tr>
-                                        <th >Assign</th>
-                                        <th >Name</th>
-                                        <th >Access</th>
-                                        <th >Email</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {users.map(u => (
-                                        <tr key={u.id}>
-                                            <td className="center">
-                                                <input
-                                                    type="checkbox"
-                                                    value={u.id}
-                                                    checked={selectedLockerUsers.some(user => user.id === u.id)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) setSelectedLockerUsers(prev => [...prev, u]);
-                                                        else setSelectedLockerUsers(prev => prev.filter(user => user.id !== u.id));
-                                                    }}
-                                                    className="custom-checkbox locker-checkbox"
-                                                    onMouseOver={e => e.currentTarget.style.transform = "scale(1.2)"}  // hover effect
-                                                    onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
-                                                />
-                                            </td>
-                                            <td>{u.name}</td>
-                                            <td>
-                                                {roleNames[u.accessToApp] || u.accessToApp}
-                                            </td>
-                                            <td>{u.email}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="btn-container">
-                            <button
-                                onClick={async () => {
-                                    try {
-                                        await setDoc(doc(db, "accountant", "AssignLocker"), {
-                                            type: "Locker",
-                                            users: selectedLockerUsers.map(u => ({ id: u.id, name: u.name, email: u.email, accessToApp: u.accessToApp })),
-                                            updatedAt: new Date().toISOString(),
-                                        });
-                                        setShowLockerAssign(false);
-                                    } catch (err) {
-                                        console.error(err);
-                                        alert("Error saving locker assignment ❌");
-                                    }
-                                }}
-                                className="save-btn"
-                            >
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                )}
 
                 {/* 🧩 Icon Wise Access */}
                 <div className="assign-container access-requests" >

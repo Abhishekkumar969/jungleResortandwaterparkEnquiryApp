@@ -11,7 +11,7 @@ import LeadsTabContainer from './Lead/AllLeads/LeadsTabContainer';
 import EnquiryForm from "./Enquiry/EnquiryForm";
 import WhatsappMessage from './pages/WhatsappMessage';
 import UserAccessPanel from './pages/UserAccessPanel';
-import AdminProfile from './pages/AdminProfile';
+// import AdminProfile from './pages/AdminProfile';
 import PaymentBar from "./MonthlyPayment/PaymentBar";
 import ScannerPage from "./WaterPark/ScannerPage";
 
@@ -77,7 +77,7 @@ export default function AppRoutes() {
                 <Route path="/WhatsappMessage" element={<PrivateRoute><WhatsappMessage /></PrivateRoute>} />
                 <Route path="/UserAccessPanel" element={<PrivateRoute><UserAccessPanel /></PrivateRoute>} />
                 <Route path="/EnquiryForm" element={<PrivateRoute><EnquiryForm /></PrivateRoute>} />
-                <Route path="/AdminProfile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} />
+                {/* <Route path="/AdminProfile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} /> */}
                 <Route path="/scanner" element={<ScannerPage />} />
                 <Route path="/login" element={<LoginPage />} />
             </Routes>

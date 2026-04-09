@@ -16,7 +16,6 @@ const Prebook = () => {
   const [userAppType, setUserAppType] = useState(null);
   const [userName] = useState('');
   const [panelAccess, setPanelAccess] = useState({});
-  const [adminFirmName, setAdminFirmName] = useState('');
   const [appPower, setAppPower] = useState(true);
   const [showPowerPopup, setShowPowerPopup] = useState(false);
   const showAll = userAppType === "A";
@@ -116,20 +115,6 @@ const Prebook = () => {
   };
 
   useEffect(() => {
-    const accessCollection = collection(db, "usersAccess");
-    const unsubscribe = onSnapshot(accessCollection, (snapshot) => {
-      snapshot.forEach((docItem) => {
-        const data = docItem.data();
-        if (data.accessToApp === "A" && data.firmName) {
-          setAdminFirmName(data.firmName);
-        }
-      });
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
     const accessCollectionRef = collection(db, 'pannelAccess');
     const unsubscribe = onSnapshot(
       accessCollectionRef,
@@ -210,8 +195,8 @@ const Prebook = () => {
     return value;
   };
 
-  const animatedWaterpark = useAnimatedCounter(totalWaterpark);
   const animatedEnquiries = useAnimatedCounter(totalEnquiries);
+  const animatedWaterpark = useAnimatedCounter(totalWaterpark);
 
   const metricRoutes = {
     Enquiries: "/leadstabcontainer?tab=enquiry",
@@ -277,9 +262,9 @@ const Prebook = () => {
             </h1>
 
             <p className="banner-sub">
-              Exclusively Designed For<br />
-              {adminFirmName || "Loading..."}
+              Exclusively Designed...
             </p>
+
           </div>
 
           {/* RIGHT */}
@@ -317,9 +302,7 @@ const Prebook = () => {
               <div className="service-grid">
                 {hasAccess("Bookings", "Enquiry") && <ServiceBox label="Enquiry Form" onClick={() => navigate('/EnquiryForm')} icon={<FaEnvelopeOpenText />} />}
                 {(hasAccess("Bookings", "Lead Record") || hasAccess("Bookings", "Enquiry Record") || hasAccess("Bookings", "Book Record")) && (<ServiceBox label="Reports" onClick={() => navigate('/leadstabcontainer')} icon={<FaFolderOpen />} />)}
-
-                {hasAccess("scanner", "scanner") && <ServiceBox label="Scanner" onClick={() => navigate('/scanner')} icon={<FaQrcode />} />}
-
+                {hasAccess("Bookings", "scanner") && <ServiceBox label="Scanner" onClick={() => navigate('/scanner')} icon={<FaQrcode />} />}
               </div>
             </div>
           ) : null}
