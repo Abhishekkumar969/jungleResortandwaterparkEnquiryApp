@@ -300,8 +300,8 @@ const Prebook = () => {
               <h3 className="service-section-text">Bookings</h3>
               <div className="service-grid">
                 {hasAccess("Bookings", "Enquiry") && <ServiceBox label="Enquiry Form" onClick={() => navigate('/EnquiryForm')} icon={<FaEnvelopeOpenText />} />}
-                {(hasAccess("Bookings", "Lead Record") || hasAccess("Bookings", "Enquiry Record") || hasAccess("Bookings", "Book Record")) && (<ServiceBox label="Reports" onClick={() => navigate('/leadstabcontainer')} icon={<FaFolderOpen />} />)}
                 {hasAccess("Bookings", "scanner") && <ServiceBox label="Scanner" onClick={() => navigate('/scanner')} icon={<FaQrcode />} />}
+                {(hasAccess("Bookings", "Lead Record") || hasAccess("Bookings", "Enquiry Record") || hasAccess("Bookings", "Book Record")) && (<ServiceBox label="Reports" onClick={() => navigate('/leadstabcontainer')} icon={<FaFolderOpen />} />)}
               </div>
             </div>
           ) : null}
