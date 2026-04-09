@@ -1036,7 +1036,7 @@ section,
     align-items   : center;
 }
 
-/* ================= CARD ================= */
+/* ==================== CARD ==================== */
 .subscription-card {
     width     : 125px;
     height    : 125px;
@@ -1121,11 +1121,7 @@ section,
 }
 
 .app-rectbox {
-    background: linear-gradient(135deg,
-            #77d5fe 0%,
-            #1792cb 50%,
-            #90f4ff 100%);
-
+    background   : linear-gradient(135deg, #77d5fe 0%, #1792cb 50%, #90f4ff 100%);
     width        : 100%;
     padding      : 3px 0px;
     border-radius: 20px;

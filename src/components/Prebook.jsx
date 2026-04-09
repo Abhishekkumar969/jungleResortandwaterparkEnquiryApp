@@ -14,7 +14,6 @@ import './Prebook.css';
 const Prebook = () => {
   const navigate = useNavigate();
   const [userAppType, setUserAppType] = useState(null);
-  const [userName] = useState('');
   const [panelAccess, setPanelAccess] = useState({});
   const [appPower, setAppPower] = useState(true);
   const [showPowerPopup, setShowPowerPopup] = useState(false);
@@ -205,7 +204,7 @@ const Prebook = () => {
 
   const MetricCard = ({ value, label, onClick, disabled }) => {
 
-    if (disabled) return null; // 🔥 ye line add kar
+    if (disabled) return null;
 
     return (
       <div
@@ -249,7 +248,7 @@ const Prebook = () => {
         <div className="app-banner">
           {/* LEFT */}
           <div className="banner-left">
-            <p className="banner-hello">Hi ! {userName}
+            <p className="banner-hello">Hi !
               <span className="enable-notifications-styles">
                 <button onClick={handleNotificationClick}>
                   {notificationEnabled ? "🔔" : "🔕"}
@@ -286,8 +285,16 @@ const Prebook = () => {
               <MetricCard
                 value={animatedWaterpark}
                 label="Water Park"
-                disabled={!hasAccess("Bookings", "Waterpark")}
+                disabled={!hasAccess("Bookings", "Water Park")}
                 onClick={() => navigate(metricRoutes.Waterpark)}
+              />
+
+              {/* Enquiries */}
+              <MetricCard
+                value={animatedEnquiries}
+                label="Enquiries"
+                disabled={!hasAccess("Bookings", "Enquiry")}
+                onClick={() => navigate(metricRoutes.Enquiries)}
               />
 
             </div>
