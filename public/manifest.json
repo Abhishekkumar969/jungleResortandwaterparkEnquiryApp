@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "short_name": "JR Enquiry",
-  "name": "JR Enquiry App",
+  "short_name": "BMA",
+  "name": "BMA",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
