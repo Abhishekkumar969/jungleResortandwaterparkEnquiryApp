@@ -152,7 +152,7 @@ const EnquiryPage = () => {
         enquiryDate: getTodayIST(),
         note: "",
         winProbability: "",
-        shareMedia: { shareMedia: true, at: formatDateIST(new Date()) }, // <-- DEFAULT SELECTED
+        shareMedia: { shareMedia: false, at: null }, // ✅ FIXED
     });
 
     useEffect(() => {
