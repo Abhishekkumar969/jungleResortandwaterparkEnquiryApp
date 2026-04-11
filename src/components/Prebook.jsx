@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import { doc, collection, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { FaEnvelopeOpenText, FaFolderOpen, FaUserShield, FaWhatsapp, FaQrcode } from "react-icons/fa";
+import { FaEnvelopeOpenText, FaFolderOpen, FaUserShield, FaWhatsapp, FaQrcode, FaTrashAlt } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { IoCloudOfflineOutline } from "react-icons/io5";
 import { requestNotificationPermission } from "../firebaseConfig";
@@ -302,6 +302,7 @@ const Prebook = () => {
                 {hasAccess("Bookings", "Enquiry") && <ServiceBox label="Enquiry Form" onClick={() => navigate('/EnquiryForm')} icon={<FaEnvelopeOpenText />} />}
                 {hasAccess("Bookings", "scanner") && <ServiceBox label="Scanner" onClick={() => navigate('/scanner')} icon={<FaQrcode />} />}
                 {(hasAccess("Bookings", "Lead Record") || hasAccess("Bookings", "Enquiry Record") || hasAccess("Bookings", "Book Record")) && (<ServiceBox label="Reports" onClick={() => navigate('/leadstabcontainer')} icon={<FaFolderOpen />} />)}
+                {(hasAccess("Bookings", "Past Enquiry") || hasAccess("Bookings", "Dropped Leads") || hasAccess("Bookings", "Cancelled Bookings")) && (<ServiceBox label="Dropped" onClick={() => navigate('/PastLeadsTabContainer')} icon={<FaTrashAlt />} />)}
               </div>
             </div>
           ) : null}

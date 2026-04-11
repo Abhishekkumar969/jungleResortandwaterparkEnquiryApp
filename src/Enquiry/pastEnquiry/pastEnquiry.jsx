@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { updateDoc, deleteField, doc, setDoc, collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
 import "../../Book/AllLeads/BookingLeadsTable.css";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/BackButton";
+import { db } from "../../firebaseConfig";
 
 const PastEnquiry = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -715,11 +715,11 @@ const PastEnquiry = () => {
                 <th>Pax</th>
                 <th>Function Type</th>
                 <th>Day/Night</th>
-                <th>Share Media</th>
-                <th>Actions</th>
+                {/* <th>Share Media</th>
+                <th>Actions</th> */}
 
                 <th>Source</th>
-                <th>Win Probability</th>
+                {/* <th>Win Probability</th> */}
 
                 <th>ReSotre</th>
               </tr>
@@ -776,7 +776,7 @@ const PastEnquiry = () => {
                     <td style={{ backgroundColor: rowBg }}>{enq.pax}</td>
                     <td style={{ backgroundColor: rowBg }}>{enq.functionType}</td>
                     <td style={{ backgroundColor: rowBg }}>{enq.dayNight}</td>
-                    <td style={{ color: enq.shareMedia ? "green" : "red", backgroundColor: rowBg }}>
+                    {/* <td style={{ color: enq.shareMedia ? "green" : "red", backgroundColor: rowBg }}>
                       {enq.shareMedia ? "Shared" : "Not Shared"}
                     </td>
                     <td style={{ backgroundColor: rowBg }}>
@@ -808,13 +808,13 @@ const PastEnquiry = () => {
                         Send to Bookings
                       </button>
 
-                    </td>
+                    </td> */}
 
                     <td style={{ backgroundColor: rowBg }}>{enq.source}
                       <div style={{ color: "gray", fontSize: "13px" }}> {enq.referredBy} </div>
                     </td>
 
-                    <td style={{ backgroundColor: rowBg }}>{enq.winProbability}</td>
+                    {/* <td style={{ backgroundColor: rowBg }}>{enq.winProbability}</td> */}
 
                     <td style={{ minWidth: "180px", backgroundColor: rowBg }}>
 

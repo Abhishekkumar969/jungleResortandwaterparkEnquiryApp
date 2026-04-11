@@ -8,10 +8,11 @@ import Prebook from "./components/Prebook";
 import PrivateRoute from "./auth/PrivateRoute";
 import LoginPage from "./auth/LoginPage";
 import LeadsTabContainer from './Lead/AllLeads/LeadsTabContainer';
+import PastLeadsTabContainer from './Lead/AllLeads/PastLeadsTabContainer';
+
 import EnquiryForm from "./Enquiry/EnquiryForm";
 import WhatsappMessage from './pages/WhatsappMessage';
 import UserAccessPanel from './pages/UserAccessPanel';
-// import AdminProfile from './pages/AdminProfile';
 import PaymentBar from "./MonthlyPayment/PaymentBar";
 import ScannerPage from "./WaterPark/ScannerPage";
 
@@ -74,10 +75,11 @@ export default function AppRoutes() {
             <Routes>
                 <Route path="/" element={<PrivateRoute><Prebook /></PrivateRoute>} />
                 <Route path="/leadstabcontainer" element={<PrivateRoute><LeadsTabContainer /></PrivateRoute>} />
+                <Route path="/PastLeadsTabContainer" element={<PrivateRoute><PastLeadsTabContainer /></PrivateRoute>} />
+
                 <Route path="/WhatsappMessage" element={<PrivateRoute><WhatsappMessage /></PrivateRoute>} />
                 <Route path="/UserAccessPanel" element={<PrivateRoute><UserAccessPanel /></PrivateRoute>} />
                 <Route path="/EnquiryForm" element={<PrivateRoute><EnquiryForm /></PrivateRoute>} />
-                {/* <Route path="/AdminProfile" element={<PrivateRoute><AdminProfile /></PrivateRoute>} /> */}
                 <Route path="/scanner" element={<ScannerPage />} />
                 <Route path="/login" element={<LoginPage />} />
             </Routes>
