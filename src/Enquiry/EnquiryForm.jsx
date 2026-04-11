@@ -214,8 +214,13 @@ const EnquiryPage = () => {
         if (!formData.mobile1) tempErrors.mobile1 = "Mobile 1 is required";
         if (!formData.pax) tempErrors.pax = "Pax is required";
 
-        if (!formData.functionDate) tempErrors.functionDate = "Function Date is required";
+        if (bookingType === "single" && !formData.functionDate) {
+            tempErrors.functionDate = "Function Date is required";
+        }
 
+        if (bookingType === "multi" && (!formData.fromDate || !formData.toDate)) {
+            tempErrors.functionDate = "Select date range";
+        }
         // 🔥 FIXED (array validation)
         if (!formData.functionTypes || formData.functionTypes.length === 0) {
             tempErrors.functionType = "Select at least one function";
