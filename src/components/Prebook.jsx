@@ -18,9 +18,10 @@ const Prebook = () => {
   const [appPower, setAppPower] = useState(true);
   const [showPowerPopup, setShowPowerPopup] = useState(false);
   const showAll = userAppType === "A";
-  const [totalWaterpark, setTotalWaterpark] = useState(0);
   const [totalEnquiries, setTotalEnquiries] = useState(0);
   const [notificationEnabled, setNotificationEnabled] = useState(false);
+  const [visitedCount, setVisitedCount] = useState(0);
+  const [nonVisitedCount, setNonVisitedCount] = useState(0);
 
   useEffect(() => {
     const unsubscribes = [];
@@ -37,15 +38,33 @@ const Prebook = () => {
       })
     );
 
-    // 🔹 LEADS
+    // 🔹 WaterPark
     const bookingWaterparkRef = collection(db, "WaterPark");
+
     unsubscribes.push(
       onSnapshot(bookingWaterparkRef, (snapshot) => {
-        let count = 0;
+        let visited = 0;
+        let nonVisited = 0;
+
         snapshot.forEach((docSnap) => {
-          count += Object.keys(docSnap.data()).length;
+          const allBookings = docSnap.data();
+
+          Object.values(allBookings).forEach((data) => {
+
+            const hasPayment = !!data.paymentId;
+            const isVisited = data.visited === true;
+
+            if (isVisited) {
+              visited++;
+            } else if (hasPayment) {
+              nonVisited++;
+            }
+
+          });
         });
-        setTotalWaterpark(count);
+
+        setVisitedCount(visited);
+        setNonVisitedCount(nonVisited);
       })
     );
 
@@ -170,6 +189,7 @@ const Prebook = () => {
     }
   }, []);
 
+  // 🔥 OUTSIDE COMPONENT (TOP OF FILE)
   const useAnimatedCounter = (target, duration = 1500) => {
     const [value, setValue] = useState(0);
 
@@ -187,7 +207,6 @@ const Prebook = () => {
       };
 
       rafId = requestAnimationFrame(animate);
-
       return () => cancelAnimationFrame(rafId);
     }, [target, duration]);
 
@@ -195,7 +214,11 @@ const Prebook = () => {
   };
 
   const animatedEnquiries = useAnimatedCounter(totalEnquiries);
-  const animatedWaterpark = useAnimatedCounter(totalWaterpark);
+  // const animatedWaterpark = useAnimatedCounter(totalWaterpark);
+
+  const animatedVisited = useAnimatedCounter(visitedCount);
+  const animatedNonVisited = useAnimatedCounter(nonVisitedCount);
+
 
   const metricRoutes = {
     Enquiries: "/leadstabcontainer?tab=enquiry",
@@ -281,10 +304,18 @@ const Prebook = () => {
                 onClick={() => navigate(metricRoutes.Enquiries)}
               />
 
-              {/* Waterpark */}
+              {/* Non-Visited */}
               <MetricCard
-                value={animatedWaterpark}
-                label="Water Park"
+                value={animatedNonVisited}
+                label="Pending Water Park"
+                disabled={!hasAccess("Bookings", "Water Park")}
+                onClick={() => navigate(metricRoutes.Waterpark)}
+              />
+
+              {/* Visited */}
+              <MetricCard
+                value={animatedVisited}
+                label="Visited Water Park"
                 disabled={!hasAccess("Bookings", "Water Park")}
                 onClick={() => navigate(metricRoutes.Waterpark)}
               />
