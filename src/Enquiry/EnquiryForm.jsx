@@ -21,6 +21,9 @@ const EnquiryPage = () => {
     const calendarRef = useRef(null);
     const [hoverDate, setHoverDate] = useState(null);
 
+    const auth = getAuth();
+    const currentUserEmail = auth.currentUser?.email || "unknown";
+
     useEffect(() => {
         if (range.start && range.end) {
             setFormData(prev => ({
@@ -152,7 +155,12 @@ const EnquiryPage = () => {
         enquiryDate: getTodayIST(),
         note: "",
         winProbability: "",
-        shareMedia: { shareMedia: false, at: null }, // ✅ FIXED
+        followUp: {
+            date: "",
+            time: "",
+            remark: ""
+        },
+        shareMedia: { shareMedia: false, at: null }
     });
 
     useEffect(() => {
@@ -171,7 +179,13 @@ const EnquiryPage = () => {
                     enquiry.functionTypes ||
                     (enquiry.functionType ? [enquiry.functionType] : []),
 
-                fieldId: enquiry.fieldId,   // 🔥 MUST
+                followUp: enquiry.followUpDetails?.[0] || {
+                    date: "",
+                    time: "",
+                    remark: ""
+                },
+
+                fieldId: enquiry.fieldId,
                 originalMonthYear,
 
                 shareMedia: enquiry.shareMedia || { shareMedia: false, at: null },
@@ -212,18 +226,12 @@ const EnquiryPage = () => {
         const tempErrors = {};
 
         if (!formData.mobile1) tempErrors.mobile1 = "Mobile 1 is required";
+
         if (!formData.pax) tempErrors.pax = "Pax is required";
 
-        if (bookingType === "single" && !formData.functionDate) {
-            tempErrors.functionDate = "Function Date is required";
-        }
-
-        if (bookingType === "multi" && (!formData.fromDate || !formData.toDate)) {
-            tempErrors.functionDate = "Select date range";
-        }
         // 🔥 FIXED (array validation)
         if (!formData.functionTypes || formData.functionTypes.length === 0) {
-            tempErrors.functionType = "Select at least one function";
+            tempErrors.functionTypes = "Select at least one function";
         }
 
         if (!formData.winProbability) {
@@ -301,6 +309,17 @@ const EnquiryPage = () => {
 
                 functionTypes: formData.functionTypes,
 
+                followUpDetails:
+                    formData.followUp?.date || formData.followUp?.remark
+                        ? [
+                            {
+                                ...formData.followUp,
+                                createdAt: formatDateIST(new Date()),
+                                by: currentUserEmail
+                            }
+                        ]
+                        : (enquiry?.followUpDetails || []),
+
             };
 
             // 🔹 Save/update enquiry in Firestore
@@ -323,7 +342,12 @@ const EnquiryPage = () => {
                     dayNight: "Night",
                     enquiryDate: getTodayIST(),
                     winProbability: "",
-                    shareMedia: { shareMedia: false, at: null }, // ✅ updated
+                    followUp: {
+                        date: "",
+                        time: "",
+                        remark: ""
+                    },
+                    shareMedia: { shareMedia: false, at: null },
                 });
             }
 
@@ -657,7 +681,7 @@ const EnquiryPage = () => {
                         {bookingType === "single" ? (
 
                             <div className="form-group">
-                                <label className="required-label">Function Date*</label>
+                                <label className="required-label" style={{ color: "red" }}>Function Date*</label>
                                 <input
                                     type="date"
                                     className="date-input"
@@ -793,7 +817,7 @@ const EnquiryPage = () => {
 
                         {/* Booking Confirmation Probability */}
                         <div className="form-group">
-                            <label>Booking Confirmation Probability</label>
+                            <label style={{ color: "red" }}>Booking Confirmation Probability*</label>
                             <select
                                 onChange={handleWinChange}
                                 value={
@@ -823,6 +847,71 @@ const EnquiryPage = () => {
                                 <option style={{ backgroundColor: 'white' }} value="75-100">75 - 100%</option>
                             </select>
                             {winError && <span className="error">Required</span>}
+                        </div>
+
+                        {/* Follow Up (Optional) */}
+                        <div className="form-group">
+                            <label>Next Follow Up (Optional)</label>
+
+                            <div style={{ display: "flex", gap: "10px", marginBottom: "5px" }}>
+                                <input
+                                    type="date"
+                                    value={formData.followUp?.date || ""}
+                                    onChange={(e) =>
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            followUp: {
+                                                ...prev.followUp,
+                                                date: e.target.value
+                                            }
+                                        }))
+                                    }
+                                />
+
+                                <input
+                                    type="time"
+                                    value={formData.followUp?.time || ""}
+                                    onChange={(e) =>
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            followUp: {
+                                                ...prev.followUp,
+                                                time: e.target.value
+                                            }
+                                        }))
+                                    }
+                                />
+
+                                <div style={{
+                                    width: "100%",
+                                    minHeight: "50px",
+                                    border: "1px solid #adadad",
+                                }}>
+                                    <textarea
+                                        placeholder="Remark..."
+                                        value={formData.followUp?.remark || ""}
+                                        onChange={(e) =>
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                followUp: {
+                                                    ...prev.followUp,
+                                                    remark: e.target.value
+                                                }
+                                            }))
+                                        }
+                                        style={{
+                                            width: "100%",
+                                            minHeight: "50px",
+                                            border: "1px solid #adadad",
+                                            borderRadius: "5px",
+                                            padding: "6px"
+                                        }}
+                                    />
+                                </div>
+
+                            </div>
+
+
                         </div>
 
                         {/* Share Media */}
