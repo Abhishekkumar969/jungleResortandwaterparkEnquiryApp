@@ -531,9 +531,9 @@ const EnquiryPage = () => {
                             </div>
                         </div>
 
-                        {/* Mobile 1 */}
+                        {/* What's App No. */}
                         <div className="form-group">
-                            <label style={{ color: 'red' }}>Mobile 1*:</label>
+                            <label style={{ color: 'red' }}>What's App No.*:</label>
                             <input
                                 type="text"
                                 name="mobile1"
@@ -563,9 +563,9 @@ const EnquiryPage = () => {
                             {errors.mobile1 && <span className="error">{errors.mobile1}</span>}
                         </div>
 
-                        {/* Mobile 2 */}
+                        {/* What's App No. 2 */}
                         <div className="form-group">
-                            <label>Mobile 2:</label>
+                            <label>What's App No. (Optional):</label>
                             <input
                                 type="text"
                                 name="mobile2"
@@ -596,7 +596,7 @@ const EnquiryPage = () => {
                         </div>
 
                         {/* Email */}
-                        <div className="form-group">
+                        <div style={{display:"none"}} className="form-group">
                             <label>Email ID:</label>
                             <input type="email" name="email" value={formData.email} onChange={handleChange} />
                         </div>

@@ -821,7 +821,7 @@ const EnquiryDetails = () => {
 
     // single booking
     return formatDate(enq.functionDate);
-  };
+  }; 
 
   useEffect(() => {
     if (selectedEnquiry) {
@@ -1071,19 +1071,21 @@ const EnquiryDetails = () => {
             <tr style={{ whiteSpace: "nowrap" }}>
               <th>Sl</th>
 
-              <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
-                Event Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
-              </th>
-
-              <th>Name</th>
               <th
                 onClick={() => handleSort("enquiryDate")}
                 style={{ cursor: "pointer", whiteSpace: "nowrap" }}
               >
                 Enquiry Date {sortField === "enquiryDate" ? (sortAsc ? "" : "") : ""}
               </th>
-              <th>Mobile</th>
-              <th>Email</th>
+
+              <th>Name</th>
+
+              <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
+                Event Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
+              </th>
+
+              <th>What's App No.</th>
+              {/* <th>Email</th> */}
               <th>Pax</th>
               <th>Function Type</th>
               <th>Notes</th>
@@ -1157,6 +1159,19 @@ const EnquiryDetails = () => {
                     {finalEnquiries.length - index}.
                   </td>
 
+                  <td style={{ backgroundColor: rowBg }}>{formatDate(enq.enquiryDate)}</td>
+
+
+
+
+                  <td
+                    style={{
+                      backgroundColor: rowBg
+                    }}
+                  >
+                    {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
+                  </td>
+
                   <td style={{ backgroundColor: rowBg }} >
                     <div style={{ display: "flex", flexDirection: "column" }}>
 
@@ -1212,16 +1227,7 @@ const EnquiryDetails = () => {
                     </div>
                   </td>
 
-                  <td
-                    style={{
-                      backgroundColor: rowBg
-                    }}
-                  >
-                    {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
-                  </td>
-
-                  <td style={{ backgroundColor: rowBg }}>{formatDate(enq.enquiryDate)}</td>
-
+                  {/* What's App No. */}
                   <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
                     {enq.mobile1 ? (
                       <a href={`tel:${enq.mobile1}`} style={{ color: '#000000', textDecoration: 'none' }}>
@@ -1237,7 +1243,7 @@ const EnquiryDetails = () => {
                     </div>
                   </td>
 
-                  <td style={{ backgroundColor: rowBg }}>{enq.email}</td>
+                  <td style={{ backgroundColor: rowBg, display: "none" }}>{enq.email}</td>
 
                   <td style={{ backgroundColor: rowBg }}>{enq.pax}</td>
 

@@ -523,17 +523,19 @@ const WaterParkTable = () => {
                         <tr style={{ whiteSpace: "nowrap" }}>
                             <th>Sl</th>
 
-                            <th onClick={() => handleSort("visitDate")} style={{ cursor: "pointer", padding: '4px' }}>
-                                Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
-                            </th>
-
-                            <th>Name</th>
                             <th
                                 onClick={() => handleSort("createdAt")}
                                 style={{ cursor: "pointer", whiteSpace: "nowrap" }}
                             >
                                 Enquiry Date {sortField === "createdAt" ? (sortAsc ? "" : "") : ""}
                             </th>
+
+                            <th>Name</th>
+
+                            <th onClick={() => handleSort("visitDate")} style={{ cursor: "pointer", padding: '4px' }}>
+                                Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
+                            </th>
+
                             <th>Mobile</th>
                             <th>Tickets</th>
                             <th>Total Amt</th>
@@ -575,6 +577,16 @@ const WaterParkTable = () => {
                                 >
                                     <td style={{ backgroundColor: rowBg }}>
                                         {finalEnquiries.length - index}.
+                                    </td>
+
+                                    <td style={{ backgroundColor: rowBg }}>{enq.createdAt}</td>
+
+                                    <td
+                                        style={{
+                                            backgroundColor: rowBg
+                                        }}
+                                    >
+                                        {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }} >
@@ -669,15 +681,6 @@ const WaterParkTable = () => {
                                         </div>
                                     </td>
 
-                                    <td
-                                        style={{
-                                            backgroundColor: rowBg
-                                        }}
-                                    >
-                                        {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
-                                    </td>
-
-                                    <td style={{ backgroundColor: rowBg }}>{enq.createdAt}</td>
 
                                     <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
 
