@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, } from "firebase/firestore";
 import BackButton from "../components/BackButton";
@@ -102,16 +102,21 @@ const BlogAdmin = () => {
         }
     };
 
+    const formRef = useRef(null);
+
+    useEffect(() => {
+        if (editId && formRef.current) {
+            formRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    }, [editId]);
+
     // 🔥 Edit
     const handleEdit = (blog) => {
         setForm(blog);
         setEditId(blog.id);
-
-        // 🔥 Smooth scroll to top
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
     };
 
     // 🔥 Delete
@@ -131,8 +136,11 @@ const BlogAdmin = () => {
         <>
             <BackButton />
 
+            <div ref={formRef} ></div>
             <div style={{ padding: "50px 0px" }}>
-                <div className={styles.container}>
+                <div className={styles.container} >
+
+
                     <h2 className={styles.title}>📝 Blog Manager</h2>
 
                     <div className={`${styles.form} ${editId ? styles.formHighlight : ""}`}>
@@ -238,7 +246,7 @@ const BlogAdmin = () => {
                     </div>
 
                     <div className={styles.blogList}>
-                        <h3>All Blogs</h3>
+                        <h3 >All Blogs</h3>
 
                         {blogs.map((blog) => (
                             <div key={blog.id} className={styles.blogCard}>
@@ -246,7 +254,7 @@ const BlogAdmin = () => {
 
                                     {/* LEFT SIDE (TEXT) */}
                                     <div className={styles.blogText}>
-                                        <h4 className={styles.blogTitle}>{blog.title}</h4>
+                                        <p> <strong>Blog Title:</strong> {blog.title} </p>
 
                                         <p><strong>Slug:</strong> {blog.slug}</p>
 
@@ -258,13 +266,8 @@ const BlogAdmin = () => {
                                             <strong>Content:</strong> {blog.content?.slice(0, 120)}...
                                         </p>
 
-                                        <p className={styles.status}>Status: {blog.status}</p>
+                                        <p className={styles.status}>  <strong> Status: </strong>{blog.status}</p>
 
-                                        {blog.createdAt && (
-                                            <p className={styles.date}>
-                                                Created: {new Date(blog.createdAt.seconds * 1000).toLocaleString()}
-                                            </p>
-                                        )}
                                     </div>
 
                                     {/* RIGHT SIDE (IMAGE) */}
