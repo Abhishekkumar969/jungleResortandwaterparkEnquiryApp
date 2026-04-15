@@ -3,10 +3,10 @@ import { db } from "../firebaseConfig";
 import { getDoc, collection, onSnapshot, query, where, doc, updateDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import styles from "../styles/vendorProfile.module.css";
-import BackButton from "../components/BackButton";
 import makeAnimated from "react-select/animated";
 import CreatableSelect from "react-select/creatable";
 import { useNavigate } from 'react-router-dom';
+import BackButton from "../components/BackButton";
 import BottomNavigationBar from "../components/BottomNavigationBar";
 
 const AdminProfile = () => {

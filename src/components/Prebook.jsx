@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import { doc, collection, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { FaEnvelopeOpenText, FaFolderOpen, FaUserShield, FaWhatsapp, FaQrcode, FaTrashAlt } from "react-icons/fa";
+import { FaEnvelopeOpenText, FaFolderOpen, FaPenFancy, FaUserShield, FaWhatsapp, FaQrcode, FaTrashAlt } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { IoCloudOfflineOutline } from "react-icons/io5";
 import { requestNotificationPermission } from "../firebaseConfig";
@@ -344,6 +344,7 @@ const Prebook = () => {
               <h3 className="service-section-text">Utilities</h3>
               <div className="service-grid">
                 {hasAccess("Utilities", "WhatsappMessage") && <ServiceBox label="Message" onClick={() => navigate('/WhatsappMessage')} icon={<FaWhatsapp />} />}
+                {hasAccess("Utilities", "Blogs") && <ServiceBox label="Blogs" onClick={() => navigate('/BlogAdmin')} icon={<FaPenFancy />} />}
               </div>
             </div>
           ) : null}

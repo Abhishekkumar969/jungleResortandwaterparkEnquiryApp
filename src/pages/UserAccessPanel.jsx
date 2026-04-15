@@ -269,6 +269,7 @@ const UserAccessPanel = () => {
         ],
         Utilities: [
             { label: "Whatsapp Message", key: "WhatsappMessage", color: "#80cfd6", textColor: getTextColor("#0393a7") },
+            { label: "Blogs", key: "Blogs", color: "#80cfd6", textColor: getTextColor("#0393a7") }
         ],
         Settings: [
             { label: "🔐 Access", key: "Access", color: "#fba472ff", textColor: getTextColor("#8f3ae3") },

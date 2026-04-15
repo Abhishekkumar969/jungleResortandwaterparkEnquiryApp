@@ -62,6 +62,7 @@ const EnquiryDetails = () => {
   const [activeHighlight, setActiveHighlight] = useState(null);
   const [activeSource, setActiveSource] = useState(null);
   const [winFilter, setWinFilter] = useState(null);
+  const [activeFunctionType, setActiveFunctionType] = useState(null);
 
   const getSortDate = (enq) => {
     if (enq.bookingType === "multi") return new Date(enq.fromDate);
@@ -665,8 +666,18 @@ const EnquiryDetails = () => {
       });
     }
 
+    // --- Function Type Filter ---
+    if (activeFunctionType) {
+      data = data.filter(enq => {
+        if (Array.isArray(enq.functionTypes)) {
+          return enq.functionTypes.includes(activeFunctionType);
+        }
+        return enq.functionTypes === activeFunctionType;
+      });
+    }
+
     setFilteredEnquiries(data);
-  }, [search, fromDate, toDate, financialYear, winFilter, sortField, sortAsc, enquiries, activeSource]);
+  }, [search, fromDate, activeFunctionType, toDate, financialYear, winFilter, sortField, sortAsc, enquiries, activeSource]);
 
   const handleRefreshPastEnquiry = useCallback(async () => {
     try {
@@ -821,7 +832,7 @@ const EnquiryDetails = () => {
 
     // single booking
     return formatDate(enq.functionDate);
-  }; 
+  };
 
   useEffect(() => {
     if (selectedEnquiry) {
@@ -832,6 +843,36 @@ const EnquiryDetails = () => {
       return () => clearTimeout(timer);
     }
   }, [selectedEnquiry]);
+
+  // 🎯 Function Type Wise Count
+  const functionTypeCounts = finalEnquiries.reduce((acc, enq) => {
+    let types = enq.functionTypes;
+
+    if (!types) return acc;
+
+    // handle string / array both
+    if (!Array.isArray(types)) {
+      types = [types];
+    }
+
+    types.forEach(type => {
+      const t = type.trim() || "Unknown";
+      acc[t] = (acc[t] || 0) + 1;
+    });
+
+    return acc;
+  }, {});
+
+  // 🔥 Check if any filter is active
+  const isAnyFilterActive =
+    search ||
+    fromDate ||
+    toDate ||
+    financialYear ||
+    activeHighlight ||
+    activeSource ||
+    winFilter ||
+    activeFunctionType;
 
   return (
     <div className="leads-table-container" >
@@ -885,7 +926,6 @@ const EnquiryDetails = () => {
             cursor: 'pointer',
             fontSize: '15px',
             whiteSpace: "nowrap",
-
           }}
         >
           Create Enquiry
@@ -893,102 +933,151 @@ const EnquiryDetails = () => {
 
       </div>
 
-      {/* 📊 Source Wise Stats */}
-      <div style={{
-        display: "flex",
-        gap: "15px",
-        margin: "10px 0px",
-        flexWrap: "wrap"
-      }}>
+      {/* Function Type Wise Stats */}
+      <div className="win-prob-legend">
+        <strong>🎉 Functions:</strong>
+        <div style={{
+          display: "flex",
+          gap: "5px",
+          flexWrap: "wrap",
+        }}>
+          {Object.entries(functionTypeCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([type, count]) => {
 
-        {Object.entries(sourceCounts)
-          .sort((a, b) => b[1] - a[1]) // 🔥 decreasing order by count
-          .map(([source, count]) => {
+              const isActive = activeFunctionType === type;
 
-            const isActive = activeSource === source;
-
-            return (
-              <div
-                key={source}
-                onClick={() =>
-                  setActiveSource(prev => prev === source ? null : source)
-                }
-                style={{
-                  ...statBoxStyle("#20ac99"),
-                  cursor: "pointer",
-                  transform: isActive ? "scale(1.05)" : "scale(1)",
-                  transition: "0.2s ease",
-                  backgroundColor: isActive ? "#0d8b7d" : "#20ac99"
-                }}
-              >
-                {source}: <strong>{count}</strong>
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={type}
+                  onClick={() =>
+                    setActiveFunctionType(prev => prev === type ? null : type)
+                  }
+                  style={{
+                    ...statBoxStyle("#f1a7fe"),
+                    cursor: "pointer",
+                    transition: "0.2s ease",
+                    transform: isActive ? "scale(1.05)" : "scale(1)",
+                    fontSize: "12px",
+                    padding: "5px",
+                    backgroundColor: isActive ? "#6d0382" : "#9526ab"
+                  }}
+                >
+                  {type}: <strong>{count}</strong>
+                </div>
+              );
+            })}
+        </div>
       </div>
 
-      {/* 📊 FollowUp Stats */}
-      <div style={{
-        display: "flex",
-        gap: "20px",
-        margin: "15px 0px",
-        flexWrap: "wrap"
-      }}>
+      {/* Source Wise Stats */}
+      <div className="win-prob-legend">
+        <strong>📊 Source:</strong>
+        <div style={{
+          display: "flex",
+          gap: "5px",
+          flexWrap: "wrap",
+        }}>
+          {Object.entries(sourceCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([source, count]) => {
 
-        <div
-          onClick={() => setActiveHighlight(prev => prev === "all" ? null : "all")}
-          style={{
-            ...statBoxStyle("#2196F3"),
-            cursor: "pointer",
-            transform: activeHighlight === "all" ? "scale(1.05)" : "scale(1)",
-            transition: "0.2s ease"
-          }}
+              const isActive = activeSource === source;
 
-        >
-          Total Enquiry: <strong>{totalEnquiryCount}</strong>
+              return (
+                <div
+                  key={source}
+                  onClick={() =>
+                    setActiveSource(prev => prev === source ? null : source)
+                  }
+                  style={{
+                    ...statBoxStyle("#20ac99"),
+                    cursor: "pointer",
+                    transform: isActive ? "scale(1.05)" : "scale(1)",
+                    transition: "0.2s ease",
+                    padding: "5px",
+                    fontSize: "12px",
+                    backgroundColor: isActive ? "#0d8b7d" : "#20ac99"
+                  }}
+                >
+                  {source}: <strong>{count}</strong>
+                </div>
+              );
+            })}
         </div>
+      </div>
 
-        <div
-          onClick={() => setActiveHighlight(prev => prev === "nofollowup" ? null : "nofollowup")}
-          style={{
-            ...statBoxStyle("#f44336"),
-            cursor: "pointer",
-            transform: activeHighlight === "nofollowup" ? "scale(1.05)" : "scale(1)",
-            transition: "0.2s ease"
-          }}
-        >
-          No FollowUp: <strong>{totalPossibleFollowUps - totalCompletedFollowUps} / {totalPossibleFollowUps}</strong>
+      {/* FollowUp Stats */}
+      <div className="win-prob-legend">
+        <strong>📅 FollowUp:</strong>
+        <div style={{
+          display: "flex",
+          gap: "5px",
+          flexWrap: "wrap"
+        }}>
+          <div
+            onClick={() => setActiveHighlight(prev => prev === "all" ? null : "all")}
+            style={{
+              ...statBoxStyle("#2196F3"),
+              cursor: "pointer",
+              transform: activeHighlight === "all" ? "scale(1.05)" : "scale(1)",
+              transition: "0.2s ease",
+              padding: "5px",
+              fontSize: "12px",
+            }}
+
+          >
+            Total Enquiry: <strong>{totalEnquiryCount}</strong>
+          </div>
+
+          <div
+            onClick={() => setActiveHighlight(prev => prev === "nofollowup" ? null : "nofollowup")}
+            style={{
+              ...statBoxStyle("#f44336"),
+              cursor: "pointer",
+              transform: activeHighlight === "nofollowup" ? "scale(1.05)" : "scale(1)",
+              transition: "0.2s ease",
+              padding: "5px",
+              fontSize: "12px",
+            }}
+          >
+            No FollowUp: <strong>{totalPossibleFollowUps - totalCompletedFollowUps} / {totalPossibleFollowUps}</strong>
+          </div>
+
+          <div
+            onClick={() => setActiveHighlight(prev => prev === "today" ? null : "today")}
+            style={{
+              ...statBoxStyle("#ff9800"),
+              cursor: "pointer",
+              transform: activeHighlight === "today" ? "scale(1.05)" : "scale(1)",
+              transition: "0.2s ease",
+              padding: "5px",
+              fontSize: "12px",
+            }}
+          >
+            Today FollowUp: <strong>{todayFollowUpCount}</strong>
+          </div>
+
+          <div
+            onClick={() => setActiveHighlight(prev => prev === "completed" ? null : "completed")}
+            style={{
+              ...statBoxStyle("#4CAF50"),
+              cursor: "pointer",
+              transform: activeHighlight === "completed" ? "scale(1.05)" : "scale(1)",
+              transition: "0.2s ease",
+              padding: "5px",
+              fontSize: "12px",
+            }}
+          >
+            Fully Completed (5/5): <strong>{totalFullyCompletedEnquiries}</strong>
+          </div>
+
         </div>
-
-        <div
-          onClick={() => setActiveHighlight(prev => prev === "today" ? null : "today")}
-          style={{
-            ...statBoxStyle("#ff9800"),
-            cursor: "pointer",
-            transform: activeHighlight === "today" ? "scale(1.05)" : "scale(1)",
-            transition: "0.2s ease"
-          }}
-        >
-          Today FollowUp: <strong>{todayFollowUpCount}</strong>
-        </div>
-
-        <div
-          onClick={() => setActiveHighlight(prev => prev === "completed" ? null : "completed")}
-          style={{
-            ...statBoxStyle("#4CAF50"),
-            cursor: "pointer",
-            transform: activeHighlight === "completed" ? "scale(1.05)" : "scale(1)",
-            transition: "0.2s ease"
-          }}
-        >
-          Fully Completed (5/5): <strong>{totalFullyCompletedEnquiries}</strong>
-        </div>
-
       </div>
 
       <div className="win-prob-legend">
         <strong>🎯 Lead Win Probability :</strong>
-        <ul style={{ display: 'flex', justifyContent: 'space-between', whiteSpace: 'nowrap', listStyle: 'none', maxWidth: '330px', marginBottom: '0px', padding: '4px 5px', gap: '5px' }}>
+        <ul style={{ display: 'flex', justifyContent: 'space-between', whiteSpace: 'nowrap', listStyle: 'none', marginBottom: '0px', padding: '4px 5px', gap: '5px' }}>
 
           <li
             style={{ backgroundColor: '#5ca7b8ff', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
@@ -1039,7 +1128,7 @@ const EnquiryDetails = () => {
             <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
           </div>
 
-          <div className="filter-item">
+          <div className="filter-item" style={{ display: "none" }}>
             <label>Financial Year:</label>
             <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
               <option value="">All</option>
@@ -1047,20 +1136,24 @@ const EnquiryDetails = () => {
             </select>
           </div>
 
-          <button
-            className="clear-btnq"
-            onClick={() => {
-              setSearch('');
-              setFromDate('');
-              setToDate('');
-              setFinancialYear('');
-              setActiveHighlight(null);
-              setActiveSource(null);
-              setWinFilter(null);
-            }}
-          >
-            Clear
-          </button>
+          {isAnyFilterActive && (
+            <button
+              className="clear-btnq"
+              onClick={() => {
+                setSearch('');
+                setFromDate('');
+                setToDate('');
+                setFinancialYear('');
+                setActiveHighlight(null);
+                setActiveSource(null);
+                setWinFilter(null);
+                setActiveFunctionType(null);
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
+
         </div>
       </div>
 
@@ -1080,11 +1173,11 @@ const EnquiryDetails = () => {
 
               <th>Name</th>
 
+              <th>What's App No.</th>
+
               <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
                 Event Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
               </th>
-
-              <th>What's App No.</th>
               {/* <th>Email</th> */}
               <th>Pax</th>
               <th>Function Type</th>
@@ -1161,15 +1254,28 @@ const EnquiryDetails = () => {
 
                   <td style={{ backgroundColor: rowBg }}>{formatDate(enq.enquiryDate)}</td>
 
-
-
-
                   <td
                     style={{
                       backgroundColor: rowBg
                     }}
                   >
                     {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
+                  </td>
+
+                  {/* What's App No. */}
+                  <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
+                    {enq.mobile1 ? (
+                      <a href={`tel:${enq.mobile1}`} style={{ color: '#000000', textDecoration: 'none' }}>
+                        {enq.mobile1}
+                      </a>
+                    ) : " "}
+                    <div style={{ marginTop: '5px' }}>
+                      {enq.mobile2 ? (
+                        <a href={`tel:${enq.mobile2}`} style={{ color: '#000000', textDecoration: 'none' }}>
+                          {enq.mobile2}
+                        </a>
+                      ) : " "}
+                    </div>
                   </td>
 
                   <td style={{ backgroundColor: rowBg }} >
@@ -1224,22 +1330,6 @@ const EnquiryDetails = () => {
 
                       })()}
 
-                    </div>
-                  </td>
-
-                  {/* What's App No. */}
-                  <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
-                    {enq.mobile1 ? (
-                      <a href={`tel:${enq.mobile1}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                        {enq.mobile1}
-                      </a>
-                    ) : " "}
-                    <div style={{ marginTop: '5px' }}>
-                      {enq.mobile2 ? (
-                        <a href={`tel:${enq.mobile2}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                          {enq.mobile2}
-                        </a>
-                      ) : " "}
                     </div>
                   </td>
 
@@ -1531,6 +1621,7 @@ const EnquiryDetails = () => {
               )
             })}
           </tbody>
+
         </table>
 
         {/* Left Scroll Button */}

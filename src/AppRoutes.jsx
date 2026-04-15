@@ -16,6 +16,8 @@ import UserAccessPanel from './pages/UserAccessPanel';
 import PaymentBar from "./MonthlyPayment/PaymentBar";
 import ScannerPage from "./WaterPark/ScannerPage";
 
+import BlogAdmin from './pages/BlogAdmin';
+
 export default function AppRoutes() {
     const navigate = useNavigate();
     const [authUser, setAuthUser] = useState(undefined);
@@ -80,6 +82,9 @@ export default function AppRoutes() {
                 <Route path="/WhatsappMessage" element={<PrivateRoute><WhatsappMessage /></PrivateRoute>} />
                 <Route path="/UserAccessPanel" element={<PrivateRoute><UserAccessPanel /></PrivateRoute>} />
                 <Route path="/EnquiryForm" element={<PrivateRoute><EnquiryForm /></PrivateRoute>} />
+
+                <Route path="/BlogAdmin" element={<PrivateRoute><BlogAdmin /></PrivateRoute>} />
+
                 <Route path="/scanner" element={<ScannerPage />} />
                 <Route path="/login" element={<LoginPage />} />
             </Routes>

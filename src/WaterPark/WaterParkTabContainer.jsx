@@ -393,6 +393,16 @@ const WaterParkTable = () => {
         }));
     };
 
+    // 🔥 Check if any filter is active (WaterPark)
+    const isAnyFilterActive =
+        search ||
+        fromDate ||
+        toDate ||
+        financialYear ||
+        visitFilter !== "upcoming" ||   // default upcoming hai
+        paymentFilter !== "payment" ||  // default payment hai
+        (paymentFilter === "payment" && visitStatusFilter !== "all");
+
     return (
         <div className="leads-table-container" >
 
@@ -494,7 +504,7 @@ const WaterParkTable = () => {
                         <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
                     </div>
 
-                    <div className="filter-item">
+                    <div className="filter-item" style={{ display: "none" }}>
                         <label>Financial Year:</label>
                         <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
                             <option value="">All</option>
@@ -502,17 +512,24 @@ const WaterParkTable = () => {
                         </select>
                     </div>
 
-                    <button
-                        className="clear-btnq"
-                        onClick={() => {
-                            setSearch('');
-                            setFromDate('');
-                            setToDate('');
-                            setFinancialYear('');
-                        }}
-                    >
-                        Clear
-                    </button>
+                    {isAnyFilterActive && (
+                        <button
+                            className="clear-btnq"
+                            onClick={() => {
+                                setSearch('');
+                                setFromDate('');
+                                setToDate('');
+                                setFinancialYear('');
+
+                                // 🔥 reset extra filters also
+                                setVisitFilter("upcoming");
+                                setPaymentFilter("payment");
+                                setVisitStatusFilter("all");
+                            }}
+                        >
+                            Clear Filters
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -532,11 +549,12 @@ const WaterParkTable = () => {
 
                             <th>Name</th>
 
+                            <th>Mobile</th>
+
                             <th onClick={() => handleSort("visitDate")} style={{ cursor: "pointer", padding: '4px' }}>
                                 Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
                             </th>
 
-                            <th>Mobile</th>
                             <th>Tickets</th>
                             <th>Total Amt</th>
                             <th>User Id</th>
@@ -587,6 +605,14 @@ const WaterParkTable = () => {
                                         }}
                                     >
                                         {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
+                                    </td>
+
+                                    <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
+
+                                        <a href={`tel:${enq.phone}`} style={{ color: '#000000', textDecoration: 'none' }}>
+                                            {enq.phone}
+                                        </a>
+
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }} >
@@ -679,15 +705,6 @@ const WaterParkTable = () => {
                                             })()}
 
                                         </div>
-                                    </td>
-
-
-                                    <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
-
-                                        <a href={`tel:${enq.phone}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                                            {enq.phone}
-                                        </a>
-
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
