@@ -1,0 +1,210 @@
+.container {
+    padding  : 24px;
+    color    : #fff;
+    max-width: 1000px;
+    margin   : auto;
+}
+
+.title {
+    font-size    : 24px;
+    font-weight  : 600;
+    margin-bottom: 20px;
+}
+
+/* FORM */
+.form {
+    display          : flex;
+    flex-direction   : column;
+    gap              : 12px;
+    background       : #f2f2f2;
+    padding          : 20px;
+    border-radius    : 10px;
+    /* border        : 1px solid #222; */
+}
+
+.input,
+.textarea,
+.select {
+    padding      : 15px 12px;
+    border-radius: 6px;
+    border       : 1px solid #333;
+    background   : #e4e4e4;
+    color        : #737373;
+    font-size    : 14px;
+    outline      : none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+    color: #737373;
+}
+
+.textarea {
+    resize: none;
+}
+
+/* BUTTON */
+.button {
+    margin-top   : 10px;
+    padding      : 12px;
+    background   : linear-gradient(135deg, #00c6ff, #0072ff);
+    border       : none;
+    border-radius: 6px;
+    color        : white;
+    font-weight  : 600;
+    cursor       : pointer;
+    transition   : 0.3s;
+}
+
+.button:hover {
+    opacity: 0.85;
+}
+
+/* BLOG LIST */
+.blogList {
+    margin-top: 30px;
+}
+
+
+
+
+
+
+
+.blogCard {
+    background   : #f2f2f2;
+    padding      : 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    color        : #000000;
+    border       : 2px solid #c9c9c9;
+    box-shadow   : 3px 3px 1px #cecece;
+}
+
+.blogTitle {
+    font-size  : 16px;
+    font-weight: 500;
+}
+
+.status {
+    font-size : 12px;
+    margin-top: 5px;
+    color     : #000000;
+}
+
+/* ACTION BUTTONS */
+.actions {
+    margin-top: 10px;
+    display   : flex;
+    gap       : 10px;
+}
+
+.editBtn {
+    padding      : 6px 12px;
+    background   : #1e90ff;
+    border       : none;
+    border-radius: 4px;
+    color        : white;
+    cursor       : pointer;
+}
+
+.deleteBtn {
+    padding      : 6px 12px;
+    background   : #ff4d4f;
+    border       : none;
+    border-radius: 4px;
+    color        : white;
+    cursor       : pointer;
+}
+
+.editBtn:hover {
+    background: #187bcd;
+}
+
+.deleteBtn:hover {
+    background: #d9363e;
+}
+
+.field {
+    display       : flex;
+    flex-direction: column;
+    gap           : 4px;
+}
+
+.label {
+    font-size     : 14px;
+    font-weight   : 800;
+    color         : #000000;
+    letter-spacing: 1px;
+}
+
+.helper {
+    font-size    : 12px;
+    color        : #000000;
+    margin-bottom: 4px;
+}
+
+.contentPreview {
+    font-size : 13px;
+    margin-top: 6px;
+}
+
+.date {
+    font-size : 11px;
+    margin-top: 4px;
+}
+
+.blogContentWrapper {
+    display        : flex;
+    justify-content: space-between;
+    gap            : 5px;
+}
+
+.blogText {
+    flex: 1;
+}
+
+.blogImageWrapper {
+    width    : 360px;
+    min-width: 360px;
+    padding  : 10px;
+}
+
+.blogImage {
+    width        : 100%;
+    height       : 100%;
+    object-fit   : cover;
+    border-radius: 6px;
+}
+
+@media (max-width: 600px) {
+    .blogContentWrapper {
+        flex-direction: column;
+    }
+
+    .blogImageWrapper {
+        width: 100%;
+    }
+
+    .blogImage {
+        height: 180px;
+    }
+}
+
+.formHighlight {
+    animation: highlightFlash 0.8s ease;
+}
+
+@keyframes highlightFlash {
+    0% {
+        box-shadow: 0 0 0px rgba(0, 114, 255, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(0, 114, 255, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 0 0px rgba(0, 114, 255, 0);
+    }
+}
