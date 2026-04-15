@@ -935,11 +935,12 @@ const EnquiryDetails = () => {
 
       {/* Function Type Wise Stats */}
       <div className="win-prob-legend">
-        <strong>🎉 Functions:</strong>
+        <strong >🎉 Functions:</strong>
         <div style={{
           display: "flex",
           gap: "5px",
           flexWrap: "wrap",
+          marginTop: "5px"
         }}>
           {Object.entries(functionTypeCounts)
             .sort((a, b) => b[1] - a[1])
@@ -960,7 +961,7 @@ const EnquiryDetails = () => {
                     transform: isActive ? "scale(1.05)" : "scale(1)",
                     fontSize: "12px",
                     padding: "5px",
-                    backgroundColor: isActive ? "#6d0382" : "#9526ab"
+                    backgroundColor: isActive ? "#01aacc" : "#00c3ea"
                   }}
                 >
                   {type}: <strong>{count}</strong>
@@ -977,6 +978,7 @@ const EnquiryDetails = () => {
           display: "flex",
           gap: "5px",
           flexWrap: "wrap",
+          marginTop: "5px"
         }}>
           {Object.entries(sourceCounts)
             .sort((a, b) => b[1] - a[1])
@@ -1013,7 +1015,8 @@ const EnquiryDetails = () => {
         <div style={{
           display: "flex",
           gap: "5px",
-          flexWrap: "wrap"
+          flexWrap: "wrap",
+          marginTop: "5px"
         }}>
           <div
             onClick={() => setActiveHighlight(prev => prev === "all" ? null : "all")}
