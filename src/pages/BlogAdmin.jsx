@@ -9,6 +9,8 @@ import styles from "../styles/BlogAdmin.module.css";
 const BlogAdmin = () => {
     const navigate = useNavigate();
     const [blogs, setBlogs] = useState([]);
+    const [expandedId, setExpandedId] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
         title: "",
@@ -73,6 +75,8 @@ const BlogAdmin = () => {
             return;
         }
 
+        setLoading(true); // 🔥 START LOADING
+
         try {
             if (editId) {
                 await updateDoc(doc(db, "blogs", editId), {
@@ -97,8 +101,11 @@ const BlogAdmin = () => {
                 image: "",
                 status: "draft",
             });
+
         } catch (err) {
             console.error("Error saving blog:", err);
+        } finally {
+            setLoading(false); // 🔥 STOP LOADING
         }
     };
 
@@ -132,6 +139,10 @@ const BlogAdmin = () => {
         }
     };
 
+    const handleToggle = (id) => {
+        setExpandedId((prev) => (prev === id ? null : id));
+    };
+
     return (
         <>
             <BackButton />
@@ -139,7 +150,6 @@ const BlogAdmin = () => {
             <div ref={formRef} ></div>
             <div style={{ padding: "50px 0px" }}>
                 <div className={styles.container} >
-
 
                     <h2 className={styles.title}>📝 Blog Manager</h2>
 
@@ -239,8 +249,15 @@ const BlogAdmin = () => {
                             </select>
                         </div>
 
-                        <button className={styles.button} onClick={handleSubmit}>
-                            {editId ? "Update Blog" : "Publish Blog"}
+                        {/* btns */}
+                        <button
+                            className={styles.button}
+                            onClick={handleSubmit}
+                            disabled={loading}
+                        >
+                            {loading
+                                ? (editId ? "Updating Blog..." : "Publishing Blog...")
+                                : (editId ? "Update Blog" : "Publish Blog")}
                         </button>
 
                     </div>
@@ -248,8 +265,13 @@ const BlogAdmin = () => {
                     <div className={styles.blogList}>
                         <h3 >All Blogs</h3>
 
-                        {blogs.map((blog) => (
+                        {[...blogs].reverse().map((blog, index) => (
                             <div key={blog.id} className={styles.blogCard}>
+
+                                <div className={styles.blogNumber}>
+                                    {blogs.length - index}.
+                                </div>
+
                                 <div className={styles.blogContentWrapper}>
 
                                     {/* LEFT SIDE (TEXT) */}
@@ -263,7 +285,17 @@ const BlogAdmin = () => {
                                         <p><strong>Meta Description:</strong> {blog.metaDescription}</p>
 
                                         <p className={styles.contentPreview}>
-                                            <strong>Content:</strong> {blog.content?.slice(0, 120)}...
+                                            <strong>Content:</strong>{" "}
+                                            {expandedId === blog.id
+                                                ? blog.content
+                                                : blog.content?.slice(0, 120) + "..."}
+
+                                            <button
+                                                className={styles.readMoreBtn}
+                                                onClick={() => handleToggle(blog.id)}
+                                            >
+                                                {expandedId === blog.id ? "Minimise ▲" : "Read More ▼"}
+                                            </button>
                                         </p>
 
                                         <p className={styles.status}>  <strong> Status: </strong>{blog.status}</p>
