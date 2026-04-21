@@ -45,6 +45,7 @@ const WaterParkTable = () => {
     const [tempFollowUps, setTempFollowUps] = useState({});
     const [paymentFilter, setPaymentFilter] = useState("payment");
     const [visitStatusFilter, setVisitStatusFilter] = useState("all");
+    const [confirmVisit, setConfirmVisit] = useState(null);
 
     useEffect(() => {
         const auth = getAuth();
@@ -393,15 +394,27 @@ const WaterParkTable = () => {
         }));
     };
 
-    // 🔥 Check if any filter is active (WaterPark)
     const isAnyFilterActive =
         search ||
         fromDate ||
         toDate ||
         financialYear ||
-        visitFilter !== "upcoming" ||   // default upcoming hai
-        paymentFilter !== "payment" ||  // default payment hai
+        visitFilter !== "upcoming" ||
+        paymentFilter !== "payment" ||
         (paymentFilter === "payment" && visitStatusFilter !== "all");
+
+    const handleVisitClick = async (enq) => {
+        try {
+            await updateDoc(doc(db, "WaterPark", enq.monthYear), {
+                [`${enq.id}.visited`]: true,
+                [`${enq.id}.visitedAt`]: new Date().toISOString()
+            });
+
+        } catch (err) {
+            console.error(err);
+            alert("❌ Error updating");
+        }
+    };
 
     return (
         <div className="leads-table-container" >
@@ -557,9 +570,9 @@ const WaterParkTable = () => {
 
                             <th>Tickets</th>
                             <th>Total Amt</th>
+                            <th>Visit</th>
                             <th>User Id</th>
                             <th>Payment Id</th>
-                            <th>Visited At</th>
                             <th>Notes</th>
                             <th>Day/Night</th>
                             {[
@@ -720,25 +733,43 @@ const WaterParkTable = () => {
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
+                                        {enq.visitedAt ? (
+                                            <div>
+                                                {enq.visitedAt
+                                                    ? new Date(enq.visitedAt).toLocaleString("en-GB", {
+                                                        timeZone: "Asia/Kolkata",
+                                                        day: "2-digit",
+                                                        month: "2-digit",
+                                                        year: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: true,
+                                                    })
+                                                    : " "}
+                                            </div>
+                                        ) : (
+                                            <button
+                                                style={{
+                                                    padding: "6px 10px",
+                                                    background: "#4CAF50",
+                                                    color: "#fff",
+                                                    border: "none",
+                                                    borderRadius: "6px",
+                                                    cursor: "pointer"
+                                                }}
+                                                onClick={() => setConfirmVisit(enq)}
+                                            >
+                                                Mark Visit
+                                            </button>
+                                        )}
+                                    </td>
+
+                                    <td style={{ backgroundColor: rowBg }}>
                                         {enq.id}
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
                                         {enq.paymentId ? enq.paymentId : "Payment Cancelled"}
-                                    </td>
-
-                                    <td style={{ backgroundColor: rowBg }}>
-                                        {enq.visitedAt
-                                            ? new Date(enq.visitedAt).toLocaleString("en-GB", {
-                                                timeZone: "Asia/Kolkata",
-                                                day: "2-digit",
-                                                month: "2-digit",
-                                                year: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: true,
-                                            })
-                                            : " "}
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>{enq.note}</td>
@@ -922,10 +953,6 @@ const WaterParkTable = () => {
                                         );
                                     })}
 
-                                    {/* <td style={{ backgroundColor: rowBg }}>{enq.source}
-                                        <div style={{ color: "gray", fontSize: "13px" }}> {enq.referredBy} </div>
-                                    </td> */}
-
                                 </tr>
                             )
                         })}
@@ -979,7 +1006,76 @@ const WaterParkTable = () => {
             </div>
 
             <div style={{ marginBottom: '50px' }}></div>
+
+
+
+            {confirmVisit && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    background: "rgba(0,0,0,0.5)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 9999
+                }}>
+                    <div style={{
+                        background: "#fff",
+                        padding: "20px",
+                        borderRadius: "10px",
+                        width: "300px",
+                        textAlign: "center"
+                    }}>
+                        <h3>Confirm Visit</h3>
+
+                        <p><b>{confirmVisit.name}</b></p>
+                        <p>{confirmVisit.phone}</p>
+                        <p>Visit Date: {confirmVisit.visitDate}</p>
+
+                        <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+
+                            <button
+                                style={{
+                                    flex: 1,
+                                    padding: "10px",
+                                    background: "#4CAF50",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "6px"
+                                }}
+                                onClick={async () => {
+                                    await handleVisitClick(confirmVisit);
+                                    setConfirmVisit(null);
+                                }}
+                            >
+                                ✅ Confirm
+                            </button>
+
+                            <button
+                                style={{
+                                    flex: 1,
+                                    padding: "10px",
+                                    background: "#f44336",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "6px"
+                                }}
+                                onClick={() => setConfirmVisit(null)}
+                            >
+                                ❌ Cancel
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
         </div>
+
     );
 };
 
