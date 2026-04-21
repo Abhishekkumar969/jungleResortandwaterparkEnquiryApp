@@ -1,191 +1,74 @@
-/* =============================================
-   GLOBAL BASE STYLES
-   Google Fonts are loaded non-blocking via
-   <link preload> in index.html — NOT here.
-   CSS @imports are render-blocking, so we
-   never use them for external fonts.
-   ============================================= */
-
-/* ── Box model ── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* ── Root resets ── */
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
-
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #faf8f3;
-  color: #1a1a1a;
-  /* Fallback font until Google Fonts load */
-  font-family: Georgia, 'Times New Roman', serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: Arial, sans-serif;
+    margin     : 0;
 }
 
-/* ── Typography ── */
 h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Cinzel', Georgia, 'Times New Roman', serif;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin: 0;
-  line-height: 1.2;
+h2 {
+    color: #333;
 }
 
-p,
-span,
-a,
-button,
-input,
-textarea,
-select,
-label {
-  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  font-weight: 400;
-  letter-spacing: 0.4px;
-  line-height: 1.65;
-}
-
-/* ── Links ── */
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* ── Images ── */
-img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-/* ── Buttons ── */
 button {
-  cursor: pointer;
-  border: none;
-  background: none;
+    padding   : 10px 15px;
+    background: blue;
+    color     : white;
+    border    : none;
+    cursor    : pointer;
 }
 
-/* ── Container helper ── */
-.container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
+/* ===== PRINT CLEAN SETUP ===== */
+@media print {
+    @page {
+        size  : A4;
+        margin: 0;
+        /* 🚫 browser header/footer ke liye jagah hi nahi */
+    }
+
+    body {
+        margin : 0;
+        padding: 0;
+    }
+
+    /* Optional: background & colors exact print ke liye */
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust        : exact;
+    }
 }
 
-/* ── Section title utility ── */
-.section-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 600;
-  letter-spacing: 0.6px;
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #print-area,
+    #print-area * {
+        visibility: visible;
+    }
+
+    #print-area {
+        position: absolute;
+        left    : 0;
+        top     : 0;
+        width   : 100%;
+    }
 }
 
-/* ── Scroll padding to account for fixed navbar ── */
-:target {
-  scroll-margin-top: 80px;
-}
 
-/* ── Scrollbar ── */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f0f0f0;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #e72e77, #ff7eb3);
-  border-radius: 8px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #c91a55, #e72e77);
-}
-
-/* ── Focus visible for accessibility ── */
-:focus-visible {
-  outline: 2px solid #e72e77;
-  outline-offset: 3px;
-}
-
-/* ── Utility animations ── */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes shimmer {
-  0%   { background-position: -1000px 0; }
-  100% { background-position:  1000px 0; }
-}
-
-@keyframes bounceSlow {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-10px); }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.7s ease-out forwards;
-}
-
-.shimmer {
-  background: linear-gradient(90deg, #1a1a1a 0%, #d4af37 50%, #1a1a1a 100%);
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
-}
-
-.animate-bounce-slow {
-  animation: bounceSlow 3s ease-in-out infinite;
-}
-
-/* ── Body padding to avoid content under fixed nav ── */
+html,
 body {
-  padding-bottom: 72px; /* space for bottom nav on mobile */
+    height    : 100%;
+    overflow-y: auto;
 }
 
-@media (min-width: 992px) {
-  body {
-    padding-bottom: 0;
-  }
+
+html,
+body {
+    overflow-x: auto;
 }
 
-/* ══════════════════════════════════════════════════
-   RENDERING PERFORMANCE — content-visibility: auto
-   Skips layout+paint for off-screen sections until
-   they approach the viewport. Reduces main-thread
-   work from 8.5s → <4s for Lighthouse audit.
-   ══════════════════════════════════════════════════ */
-
-/* Apply to all known below-fold section wrappers */
-[class*="eventsSection"],
-[class*="gallerySection"],
-[class*="testimonialsSection"],
-[class*="aboutSection"],
-[class*="contactSection"],
-[class*="waterparkSection"],
-[class*="footer"],
-footer {
-  content-visibility: auto;
-  /* Approximate intrinsic height — prevents layout shift when section renders */
-  contain-intrinsic-size: auto 600px;
-}
-
-/* Navigator scroll — GPU-composited, no layout reflow */
-[class*="navbar"],
-[class*="navigation"],
-nav {
-  will-change: transform;
+.horizontal-scroll {
+    overflow-x                : auto;
+    overflow                  : visible !important;
+    -webkit-overflow-scrolling: touch;
 }

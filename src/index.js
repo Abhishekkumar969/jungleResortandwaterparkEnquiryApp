@@ -1,17 +1,38 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+import { db } from "./firebaseConfig";
+import { doc, getDocFromServer } from "firebase/firestore";
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+async function bootstrap() {
+  try {
+    const snap = await getDocFromServer(
+      doc(db, "appControl", "appStatus")
+    );
+
+    // ✅ ONLY TRUE ALLOWED
+    if (!snap.exists() || snap.data()?.power !== true) {
+      window.location.replace("https://nfeednews.netlify.app/");
+      return;
+    }
+
+    const root = ReactDOM.createRoot(
+      document.getElementById("root")
+    );
+
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (e) {
+    console.error("BOOTSTRAP ERROR:", e);
+    window.location.replace("https://nfeednews.netlify.app/");
+  }
+}
+
+bootstrap();
 reportWebVitals();
