@@ -1,0 +1,394 @@
+/* =========================================
+   GLOBAL CSS — App-Like Feel
+   Pure Vanilla CSS | Mobile-First
+   ========================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap");
+
+/* ─── DESIGN TOKENS ─── */
+:root {
+  /* Brand */
+  --brand-pink: #e91e8c;
+  --brand-pink-dim: rgba(233, 30, 140, 0.12);
+  --brand-orange: #ff6b35;
+  --brand-green: #2ecc71;
+  --brand-blue: #0ea5e9;
+
+  /* Surface */
+  --bg: #f5f6fa;
+  --surface: #ffffff;
+  --surface-2: #f0f1f5;
+  --overlay: rgba(0, 0, 0, 0.55);
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #4a5568;
+  --text-muted: #9aa5b4;
+
+  /* Border */
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  /* Shadow */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.14);
+  --shadow-pink: 0 8px 28px rgba(233, 30, 140, 0.28);
+
+  /* Motion */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 0.16s;
+  --dur-normal: 0.28s;
+  --dur-slow: 0.48s;
+
+  /* Legacy compat */
+  --background: var(--bg);
+  --foreground: var(--text-primary);
+  --card: var(--surface);
+  --muted: var(--text-secondary);
+  --gold: #d4af37;
+  --dark: #0f0f0f;
+  --cream: #faf8f3;
+  --light-gray: #e8e6e1;
+  --radius: 0.625rem;
+}
+
+/* ─── BASE RESET — App Style ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 17px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  height: 100%;
+}
+
+body {
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
+  overscroll-behavior: none;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbar on mobile (app-like) */
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+/* Only show scrollbar on desktop hover */
+@media (hover: hover) {
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #e91e8c transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--brand-pink);
+    border-radius: 999px;
+  }
+}
+
+/* ─── TYPOGRAPHY ─── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Outfit", sans-serif;
+  font-weight: 800;
+  line-height: 1.25;
+  color: white;
+}
+
+h1 {
+  font-size: 2.8rem;
+}
+
+h2 {
+  font-size: 2.2rem;
+}
+
+h3 {
+  font-size: 1.6rem;
+}
+
+p {
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+/* ─── APP-WIDE TRANSITIONS ─── */
+*:not(img):not(video):not(canvas):not(svg) {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-smooth);
+}
+
+.no-transition {
+  transition: none !important;
+}
+
+/* ─── PAGE ENTER ANIMATION ─── */
+.page-enter {
+  animation: pageEnter var(--dur-normal) var(--ease-spring) both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── TOUCH FEEDBACK ─── */
+a:active,
+button:active,
+[role="button"]:active {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
+}
+
+/* ─── UTILITY CLASSES ─── */
+.app-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
+}
+
+.app-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--brand-pink), var(--brand-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.pill-pink {
+  background: var(--brand-pink-dim);
+  color: var(--brand-pink);
+}
+
+.pill-green {
+  background: rgba(46, 204, 113, 0.12);
+  color: #16a34a;
+}
+
+.pill-blue {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1;
+}
+
+/* ─── BUTTON BASE ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 34px;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.25s var(--ease-smooth);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand-pink), var(--brand-orange));
+  color: #fff;
+  box-shadow: var(--shadow-pink);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 10px 30px rgba(233, 30, 140, 0.4);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-strong);
+}
+
+/* ─── SCROLL PROGRESS — Advanced ─── */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e91e8c, #ff6b35, #e91e8c);
+  z-index: 2000;
+  width: 0%;
+  transition: width 0.1s ease;
+  box-shadow: 0 0 10px rgba(233, 30, 140, 0.5);
+}
+
+/* ─── ROOT PADDING ─── */
+.app-root {
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.has-bottom-nav {
+  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ─── ANIMATIONS ─── */
+[data-animate="fade-up"] {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+}
+
+[data-animate="fade-in"] {
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-smooth);
+}
+
+[data-animate="fade-left"] {
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+}
+
+[data-animate="fade-right"] {
+  opacity: 0;
+  transform: translateX(16px);
+  transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+}
+
+[data-animate="zoom-in"] {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.7s var(--ease-spring), transform 0.7s var(--ease-spring);
+}
+
+[data-animate].in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger Logic */
+.stagger-children [data-animate]:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.stagger-children [data-animate]:nth-child(2) {
+  transition-delay: 100ms;
+}
+
+.stagger-children [data-animate]:nth-child(3) {
+  transition-delay: 200ms;
+}
+
+.stagger-children [data-animate]:nth-child(4) {
+  transition-delay: 300ms;
+}
+
+/* ─── PREFERS REDUCED MOTION ─── */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

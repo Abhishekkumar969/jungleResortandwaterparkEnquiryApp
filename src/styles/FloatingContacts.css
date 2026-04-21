@@ -1,0 +1,159 @@
+/* =========================================================
+   SHANGRI-LA PALACE - FLOATING CONTACT BUTTONS (FULLY RESPONSIVE)
+   ========================================================= */
+
+/* Base container */
+#floating-contacts {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  z-index: 1002;
+  pointer-events: none;
+}
+
+/* Hidden by default */
+#floating-contacts .floating-btn {
+  display: none;
+}
+
+/* Visible only when body has class */
+body.show-floating #floating-contacts .floating-btn {
+  display: flex;
+  position: fixed;
+  bottom: 1.5rem;
+  z-index: 10000;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* LEFT: Call */
+body.show-floating #floating-contacts .floating-btn.call {
+  left: 1.5rem;
+  background-color: #16a34a;
+}
+
+/* RIGHT: WhatsApp */
+body.show-floating #floating-contacts .floating-btn.whatsapp {
+  right: 1.5rem;
+  background-color: #22c55e;
+}
+
+/* Hover */
+body.show-floating #floating-contacts .floating-btn:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+}
+
+/* Bounce Animation */
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2.8s infinite ease-in-out;
+}
+
+/* =========================================================
+   RESPONSIVE OPTIMIZATION
+   ========================================================= */
+
+/* TABLETS (max-width: 1024px) */
+@media (max-width: 1024px) {
+  body.show-floating #floating-contacts .floating-btn {
+    width: 3.4rem;
+    height: 3.4rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.call {
+    left: 1.3rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.whatsapp {
+    right: 1.3rem;
+  }
+}
+
+/* LARGE MOBILE & SMALL TABLETS (max-width: 768px) */
+@media (max-width: 768px) {
+  body.show-floating #floating-contacts .floating-btn {
+    width: 3.2rem;
+    height: 3.2rem;
+    bottom: 1.2rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.call {
+    left: 1.2rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.whatsapp {
+    right: 1.2rem;
+  }
+}
+
+/* MOBILE (max-width: 640px) */
+@media (max-width: 640px) {
+  body.show-floating #floating-contacts .floating-btn {
+    width: 3rem;
+    height: 3rem;
+    bottom: 1rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.call {
+    left: 1rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.whatsapp {
+    right: 1rem;
+  }
+}
+
+/* SMALL MOBILE (max-width: 420px) */
+@media (max-width: 420px) {
+  body.show-floating #floating-contacts .floating-btn {
+    width: 2.8rem;
+    height: 2.8rem;
+    bottom: 0.9rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.call {
+    left: 0.9rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.whatsapp {
+    right: 0.9rem;
+  }
+}
+
+/* ULTRA SMALL DEVICES (max-width: 360px) */
+@media (max-width: 360px) {
+  body.show-floating #floating-contacts .floating-btn {
+    width: 2.6rem;
+    height: 2.6rem;
+    bottom: 0.8rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.call {
+    left: 0.8rem;
+  }
+
+  body.show-floating #floating-contacts .floating-btn.whatsapp {
+    right: 0.8rem;
+  }
+}

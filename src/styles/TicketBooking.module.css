@@ -1,0 +1,270 @@
+/* ===============================
+   WATERPARK TICKET BOOKING
+================================ */
+
+.ticketSection {
+    padding   : 90px 20px;
+    background: linear-gradient(180deg, #f9fbff, #f1f6ff);
+}
+
+.ticketContainer {
+    max-width: 900px;
+    margin   : auto;
+}
+
+.small {
+    max-width: 500px;
+}
+
+/* ===============================
+   HEADER
+================================ */
+
+.ticketHeader {
+    text-align   : center;
+    margin-bottom: 45px;
+}
+
+.ticketHeader h2 {
+    font-size    : 38px;
+    font-weight  : 700;
+    margin-bottom: 12px;
+    color        : #111;
+}
+
+.ticketHeader span {
+    color: #00a8ff;
+}
+
+.ticketHeader p {
+    color    : #666;
+    font-size: 16px;
+    max-width: 500px;
+    margin   : auto;
+}
+
+/* ===============================
+   CARD
+================================ */
+
+.ticketCard {
+    background   : white;
+    border-radius: 14px;
+    padding      : 35px;
+    box-shadow   : 0 15px 40px rgba(0, 0, 0, 0.08);
+    border       : 1px solid #eee;
+    transition   : 0.3s;
+}
+
+.ticketCard:hover {
+    transform : translateY(-2px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+}
+
+/* ===============================
+   FORM GRID
+================================ */
+
+.formGrid {
+    display              : grid;
+    grid-template-columns: 1fr 1fr;
+    gap                  : 22px;
+}
+
+/* ===============================
+   FORM GROUP
+================================ */
+
+.formGroup {
+    display       : flex;
+    flex-direction: column;
+    gap           : 6px;
+    margin-bottom : 14px;
+}
+
+.formGroup label {
+    font-weight: 600;
+    font-size  : 14px;
+    color      : #333;
+    display    : flex;
+    align-items: center;
+    gap        : 6px;
+}
+
+/* ===============================
+   INPUT / SELECT
+================================ */
+
+.formGroup input,
+.formGroup select {
+    padding      : 12px 14px;
+    border-radius: 8px;
+    border       : 1px solid #ddd;
+    font-size    : 14px;
+    transition   : 0.25s;
+    background   : #fafafa;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+    outline     : none;
+    border-color: #00a8ff;
+    background  : white;
+    box-shadow  : 0 0 0 3px rgba(0, 168, 255, 0.1);
+}
+
+/* ===============================
+   NOTE BOX
+================================ */
+
+.noteBox {
+    background   : #f7fbff;
+    border       : 1px solid #e3f2ff;
+    padding      : 16px;
+    border-radius: 10px;
+    margin-top   : 16px;
+    font-size    : 13px;
+    color        : #555;
+    line-height  : 1.6;
+}
+
+/* ===============================
+   BUTTON
+================================ */
+
+.ticketBtn {
+    width        : 100%;
+    margin-top   : 24px;
+    padding      : 15px;
+    border       : none;
+    border-radius: 10px;
+    background   : linear-gradient(185deg, #a7e2ff, #0082c3, #a7e2ff);
+    color        : white;
+    font-size    : 18px;
+    font-weight  : 600;
+    cursor       : pointer;
+    transition   : 0.25s;
+}
+
+.ticketBtn:hover {
+    transform : translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 120, 255, 0.35);
+}
+
+.ticketBtn:active {
+    transform: scale(.98);
+}
+
+/* ===============================
+   SUCCESS CARD
+================================ */
+
+.successCard {
+    background   : white;
+    border-radius: 14px;
+    padding      : 50px 30px;
+    text-align   : center;
+    box-shadow   : 0 15px 40px rgba(0, 0, 0, 0.08);
+    border       : 1px solid #eee;
+    animation    : successFade .4s ease;
+}
+
+@keyframes successFade {
+    from {
+        opacity  : 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity  : 1;
+        transform: translateY(0);
+    }
+}
+
+.successIcon {
+    width          : 80px;
+    height         : 80px;
+    background     : #eaf8ff;
+    color          : #00a8ff;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    border-radius  : 50%;
+    margin         : auto;
+    margin-bottom  : 20px;
+    box-shadow     : 0 8px 20px rgba(0, 168, 255, 0.2);
+}
+
+.successCard h3 {
+    font-size    : 26px;
+    margin-bottom: 10px;
+}
+
+.successCard p {
+    color      : #666;
+    max-width  : 380px;
+    margin     : auto;
+    line-height: 1.6;
+}
+
+/* ===============================
+   TABLET
+================================ */
+
+@media (max-width:900px) {
+
+    .ticketHeader h2 {
+        font-size: 32px;
+    }
+
+    .ticketCard {
+        padding: 28px;
+    }
+
+}
+
+/* ===============================
+   MOBILE
+================================ */
+
+@media (max-width:650px) {
+
+    .ticketSection {
+        padding: 70px 15px;
+    }
+
+    .ticketHeader h2 {
+        font-size: 28px;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+        gap                  : 16px;
+    }
+
+    .ticketCard {
+        padding: 24px;
+    }
+
+    .ticketBtn {
+        font-size: 16px;
+        padding  : 14px;
+    }
+
+}
+
+/* ===============================
+   SMALL MOBILE
+================================ */
+
+@media (max-width:400px) {
+
+    .ticketHeader h2 {
+        font-size: 24px;
+    }
+
+    .successCard {
+        padding: 35px 20px;
+    }
+
+}

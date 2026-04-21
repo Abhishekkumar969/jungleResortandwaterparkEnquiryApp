@@ -1,0 +1,137 @@
+.quickBookingSection {
+    padding        : 100px 20px;
+    background     : #ffffff;
+    display        : flex;
+    justify-content: center;
+    align-content  : center;
+
+}
+
+.bookingGrid {
+    max-width: 1200px;
+
+}
+
+.bookingLabel {
+    color         : #38bdf8;
+    font-weight   : 600;
+    text-transform: uppercase;
+    font-size     : 14px;
+}
+
+.bookingTitle {
+    font-size    : 42px;
+    font-weight  : 700;
+    margin-top   : 10px;
+    margin-bottom: 20px;
+}
+
+.bookingTitle span {
+    color: #38bdf8;
+}
+
+.bookingDesc {
+    color        : #666;
+    font-size    : 17px;
+    line-height  : 1.7;
+    margin-bottom: 30px;
+}
+
+.bookingContact {
+    display       : flex;
+    flex-direction: column;
+    gap           : 20px;
+}
+
+.contactCard {
+    display      : flex;
+    align-items  : center;
+    gap          : 15px;
+    border       : 1px solid #e5e7eb;
+    border-radius: 40px;
+    padding      : 18px;
+    background   : #fafafa;
+    transition   : .3s;
+    box-shadow   : 5px 5px 3px rgba(0, 0, 0, 0.345);
+}
+
+.contactCard:hover {
+    transform: translateY(-5px) scale(1.03);
+}
+
+.contactIcon {
+    width          : 48px;
+    height         : 48px;
+    background     : #e0f2fe;
+    border-radius  : 50%;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    color          : #38bdf8;
+    flex-shrink    : 0;
+}
+
+.whatsapp {
+    background: #dcfce7;
+    color     : #22c55e;
+}
+
+.contactCard h4 {
+    margin   : 0;
+    font-size: 16px;
+}
+
+.contactCard a {
+    color          : #38bdf8;
+    font-weight    : 600;
+    text-decoration: none;
+}
+
+.contactCard p {
+    margin   : 0;
+    color    : #666;
+    font-size: 14px;
+}
+
+.bookingFormWrapper {
+    background   : #f8fafc;
+    padding      : 30px;
+    border-radius: 40px;
+    box-shadow   : 15px 15px 3px rgba(0, 0, 0, 0.345);
+}
+
+@media(max-width:900px) {
+
+    .bookingGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .bookingTitle {
+        font-size: 34px;
+    }
+
+}
+
+@media(max-width:700px) {
+
+    .bookingFormWrapper {
+        background   : #f8fafc;
+        padding      : 0px;
+        border-radius: 14px;
+        box-shadow   : 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .quickBookingSection {
+        padding   : 100px 20px;
+        background: #ffffff;
+    }
+
+    .bookingGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .bookingTitle {
+        font-size: 34px;
+    }
+
+}

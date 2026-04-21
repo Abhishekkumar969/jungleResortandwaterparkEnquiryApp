@@ -1,61 +1,51 @@
-// Import Firebase SDK functions 
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
-import { getStorage } from 'firebase/storage';
-import { getAuth } from "firebase/auth";
-import { getMessaging, getToken } from "firebase/messaging";
+// Firebase SDK — all imports at the top (required by ESLint import/first)
+import { initializeApp, getApps } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
-// Firebase config
+// ─── App Config ───────────────────────────────────────────────
 const firebaseConfig = {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_FIREBASE_APP_ID,
-    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-// Init
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-const auth = getAuth(app);
-const messaging = getMessaging(app);
+// Safe against double-init (React StrictMode / HMR)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-// 🔔 REQUEST + SAVE TOKEN
-export const requestNotificationPermission = async () => {
-    try {
-        const permission = await Notification.requestPermission();
+// ─── Synchronous Exports (required by existing components) ────
+export const db            = getFirestore(app);
+export const auth          = getAuth(app);
+export const storage       = getStorage(app);
+export const googleProvider = new GoogleAuthProvider();
+export { app };
 
-        if (permission === "granted") {
-            const token = await getToken(messaging, {
-                vapidKey: process.env.REACT_APP_FIREBASE_VAPID_KEY
-            });
-
-            console.log("🔥 FCM TOKEN:", token);
-
-            if (!token) {
-                console.log("❌ TOKEN NULL");
-                return;
-            }
-
-            await setDoc(doc(db, "fcmTokens", token), {
-                token,
-                createdAt: new Date().toISOString()
-            });
-
-            console.log("✅ TOKEN SAVED");
-
-            return token;
-        } else {
-            console.log("❌ Permission denied");
-        }
-    } catch (error) {
-        console.error("❌ ERROR:", error);
-    }
+// ─── Lazy Service Getters (for future perf refactoring) ───────
+// These dynamic imports keep auth/storage OUT of chunks that don't need them
+export const getAuthInstance = async () => {
+  const { getAuth: _getAuth } = await import("firebase/auth");
+  return _getAuth(app);
 };
 
-export { db, app, storage, analytics, auth, messaging };
+export const getGoogleProviderInstance = async () => {
+  const { GoogleAuthProvider: GAP } = await import("firebase/auth");
+  return new GAP();
+};
+
+export const getStorageInstance = async () => {
+  const { getStorage: _getStorage } = await import("firebase/storage");
+  return _getStorage(app);
+};
+
+// ─── Analytics — production only, fully lazy ──────────────────
+export const getAnalyticsInstance = () => {
+  if (process.env.NODE_ENV === "production") {
+    return import("firebase/analytics").then(({ getAnalytics }) => getAnalytics(app));
+  }
+  return Promise.resolve(null);
+};

@@ -1,0 +1,225 @@
+/* =============================================
+   TESTIMONIALS SECTION — Elegant & Responsive
+   ============================================= */
+
+.testimonialsSection {
+  padding: clamp(48px, 8vw, 100px) 20px;
+  background: #faf8f3;
+}
+
+/* ── Header ── */
+.testimonialsHeader {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto clamp(32px, 5vw, 56px);
+}
+
+.testimonialsLabel {
+  display: inline-block;
+  color: #e72e77;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.testimonialsTitle {
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+
+.testimonialsTitle span {
+  color: #e72e77;
+}
+
+.testimonialsDesc {
+  font-size: 15px;
+  /* #555555 on #faf8f3 = 5.74:1 contrast ratio — passes WCAG AA ✓ */
+  color: #555555;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Card wrapper ── */
+.testimonialWrapper {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.testimonialCard {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.09);
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+
+/* ── Content area ── */
+.testimonialContent {
+  padding: clamp(24px, 4vw, 40px);
+  position: relative;
+}
+
+/* ── Quote icon ── */
+.quoteIcon {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  opacity: 0.08;
+  width: 48px;
+  height: 48px;
+  color: #e72e77;
+}
+
+/* ── Stars ── */
+.testimonialRating {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.starIcon {
+  color: #facc15;
+  fill: #facc15;
+}
+
+/* ── Review text ── */
+.testimonialText {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #333333;
+  margin: 0 0 24px;
+  font-style: italic;
+}
+
+/* ── Author ── */
+.testimonialAuthor {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+  margin-bottom: 20px;
+}
+
+.testimonialAuthor p,
+.testimonialAuthorName {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.testimonialAuthor p:last-child {
+  margin: 0;
+  font-size: 13px;
+  color: #e72e77;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+/* ── Navigation controls ── */
+.testimonialNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.navBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #555555;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.navBtn:hover {
+  background: #e72e77;
+  color: #ffffff;
+  border-color: #e72e77;
+  transform: scale(1.08);
+}
+
+/* ── Dot indicators ── */
+.testimonialDots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.dot {
+  /* min 24×24px for touch target (Lighthouse WCAG requirement) */
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+/* Visual indicator inside the enlarged touch target */
+.dot::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #dddddd;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.dot.active::after {
+  background: #e72e77;
+  transform: scale(1.4);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .testimonialsSection {
+    padding: 40px 16px 48px;
+  }
+
+  .testimonialContent {
+    padding: 24px 18px;
+  }
+
+  .testimonialText {
+    font-size: 15px;
+  }
+
+  .quoteIcon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 400px) {
+  .navBtn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .testimonialText {
+    font-size: 14px;
+  }
+
+  .testimonialAuthor h4 {
+    font-size: 15px;
+  }
+}

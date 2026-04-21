@@ -1,0 +1,120 @@
+.heroSection {
+    position       : relative;
+    height         : 70vh;
+    min-height     : 500px;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    padding-top    : 120px;
+    color          : white;
+    text-align     : center;
+}
+
+.heroBg {
+    position: absolute;
+    inset   : 0;
+    z-index : 0;
+}
+
+.heroBg img {
+    width     : 100%;
+    height    : 100%;
+    object-fit: cover;
+}
+
+.heroOverlay {
+    position: absolute;
+    inset   : 0;
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.6),
+            rgba(0, 0, 0, 0.4),
+            rgba(0, 0, 0, 0.7));
+}
+
+.heroContent {
+    position : relative;
+    z-index  : 2;
+    max-width: 900px;
+    padding  : 20px;
+}
+
+.heroBadge {
+    display        : inline-flex;
+    align-items    : center;
+    gap            : 6px;
+    background     : rgba(255, 255, 255, 0.15);
+    padding        : 6px 14px;
+    border-radius  : 30px;
+    margin-bottom  : 20px;
+    font-size      : 14px;
+    backdrop-filter: blur(5px);
+}
+
+.heroBadge svg {
+    color: #00d2ff;
+}
+
+.heroContent h1 {
+    font-size    : 56px;
+    font-weight  : 700;
+    margin-bottom: 20px;
+}
+
+.heroContent h1 span {
+    color: #00d2ff;
+}
+
+.heroContent p {
+    font-size    : 18px;
+    color        : rgba(255, 255, 255, 0.9);
+    max-width    : 700px;
+    margin       : auto;
+    margin-bottom: 30px;
+}
+
+.heroInfo {
+    display        : flex;
+    flex-wrap      : wrap;
+    justify-content: center;
+    gap            : 10px;
+    margin-bottom  : 30px;
+}
+
+.heroInfo span {
+    background     : rgba(255, 255, 255, 0.15);
+    border         : 1px solid rgba(255, 255, 255, 0.3);
+    padding        : 6px 14px;
+    border-radius  : 30px;
+    font-size      : 13px;
+    backdrop-filter: blur(4px);
+}
+
+.heroBtn {
+    display        : inline-flex;
+    align-items    : center;
+    gap            : 8px;
+    background     : #00d2ff;
+    color          : white;
+    padding        : 14px 26px;
+    border-radius  : 8px;
+    font-size      : 18px;
+    font-weight    : 600;
+    text-decoration: none;
+    transition     : 0.3s;
+}
+
+.heroBtn:hover {
+    background: #00b5e6;
+}
+
+@media(max-width:768px) {
+
+    .heroContent h1 {
+        font-size: 38px;
+    }
+
+    .heroContent p {
+        font-size: 16px;
+    }
+
+}
