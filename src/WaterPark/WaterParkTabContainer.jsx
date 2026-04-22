@@ -568,7 +568,8 @@ const WaterParkTable = () => {
                                 Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
                             </th>
 
-                            <th>Tickets</th>
+                            <th>Water Park</th>
+                            <th>Cottage</th>
                             <th>Total Amt</th>
                             <th>Visit</th>
                             <th>User Id</th>
@@ -726,6 +727,29 @@ const WaterParkTable = () => {
                                                 .map(([key, value]) => `${key}: ${value}`)
                                                 .join(", ")
                                             : enq.tickets || "-"}
+                                    </td>
+
+                                    {/* 🏡 Cottage Column */}
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {enq.cottage ? (
+                                            <div style={{ lineHeight: "1.4", display: "flex" }}>
+                                                {[
+                                                    enq.cottage.id && `Id: ${enq.cottage.id}`,
+                                                    enq.cottage.rooms && `Cottage Rooms: ${enq.cottage.rooms}`,
+                                                    enq.cottage.duration && `Duration: ${enq.cottage.duration}`,
+                                                    enq.cottage.days && `Days: ${enq.cottage.days}`
+                                                ]
+                                                    .filter(Boolean) // ❌ remove empty values
+                                                    .map((item, index, arr) => (
+                                                        <React.Fragment key={index}>
+                                                            <span>{item}</span>
+                                                            {index !== arr.length - 1 && (
+                                                                <span style={{ margin: "0px 6px" }}>||</span>
+                                                            )}
+                                                        </React.Fragment>
+                                                    ))}
+                                            </div>
+                                        ) : ""}
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
