@@ -69,6 +69,51 @@ const EnquiryDetails = () => {
     return new Date(enq.functionDate);
   };
 
+  const getCreatedAtIST = (str) => {
+    if (!str) return null;
+
+    const d = parseCustomDate(str); // already present function
+
+    if (!d) return null;
+
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(d);
+
+    let y, m, day;
+
+    parts.forEach(p => {
+      if (p.type === "year") y = p.value;
+      if (p.type === "month") m = p.value;
+      if (p.type === "day") day = p.value;
+    });
+
+    return `${y}-${m}-${day}`;
+  };
+
+  const parseCustomDate = (str) => {
+    if (!str) return null;
+
+    try {
+      const [datePart, timePart] = str.split(",");
+
+      const [d, m, y] = datePart.trim().split("/").map(Number);
+
+      let [time, modifier] = timePart.trim().split(" ");
+      let [h, min, sec] = time.split(":").map(Number);
+
+      if (modifier.toLowerCase() === "pm" && h !== 12) h += 12;
+      if (modifier.toLowerCase() === "am" && h === 12) h = 0;
+
+      return new Date(y, m - 1, d, h, min, sec);
+    } catch {
+      return null;
+    }
+  };
+
   useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -250,6 +295,9 @@ const EnquiryDetails = () => {
     const hasTodayFollowUp =
       Array.isArray(enq.followUpDetails) &&
       enq.followUpDetails.some(f => f?.date === todayIST);
+
+    if (activeHighlight === "todayEnquiry")
+      return getCreatedAtIST(enq.createdAt) === todayIST;
 
     if (activeHighlight === "today")
       return hasTodayFollowUp;
@@ -875,25 +923,7 @@ const EnquiryDetails = () => {
     activeFunctionType;
 
 
-  const parseCustomDate = (str) => {
-    if (!str) return null;
 
-    try {
-      const [datePart, timePart] = str.split(",");
-
-      const [d, m, y] = datePart.trim().split("/").map(Number);
-
-      let [time, modifier] = timePart.trim().split(" ");
-      let [h, min, sec] = time.split(":").map(Number);
-
-      if (modifier.toLowerCase() === "pm" && h !== 12) h += 12;
-      if (modifier.toLowerCase() === "am" && h === 12) h = 0;
-
-      return new Date(y, m - 1, d, h, min, sec);
-    } catch {
-      return null;
-    }
-  };
 
   const formatCreatedAtSplit = (str) => {
     const dateObj = parseCustomDate(str);
@@ -917,10 +947,17 @@ const EnquiryDetails = () => {
     return { date, time };
   };
 
+
+
+  const todayEnquiryCount = finalEnquiries.filter(enq => {
+    return getCreatedAtIST(enq.createdAt) === todayIST;
+  }).length;
+
   return (
     <div className="leads-table-container" >
 
-      <h2 className="leads-header" style={{ marginTop: '45px' }}>Enquiry</h2>
+      <h2 onClick={() => navigate('/enquiryForm')} className="leads-header"
+        style={{ marginTop: '45px' }}>Create Enquiry</h2>
 
       <input type="text"
         placeholder="Search by name, mobile, function type, date..."
@@ -931,12 +968,50 @@ const EnquiryDetails = () => {
           width: "100%",
           marginBottom: "0px",
           padding: "8px",
-          border: "1px solid #57a2d9",
-          borderRadius: "6px",
+          boxShadow: "2px 2px 2px #9ed6ff",
+          borderRadius: "6px"
         }}
       />
 
-      <div style={{ display: 'flex', margin: "15px 0px", justifyContent: "end" }}>
+      <div style={{ display: 'flex', margin: "15px 0px", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
+
+        <div style={{ display: 'flex', justifyContent: "space-between", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
+          <button
+            onClick={() =>
+              setActiveHighlight(prev => prev === "todayEnquiry" ? null : "todayEnquiry")
+            }
+            style={{
+              padding: "5px 10px",
+              backgroundColor: activeHighlight === "todayEnquiry" ? "#ff5722" : "#4ca5af",
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '15px',
+              fontWeight: "700"
+            }}
+          >
+            Today's Enquiry: {todayEnquiryCount}
+          </button>
+
+          <button
+            onClick={() =>
+              setActiveHighlight(prev => prev === "today" ? null : "today")
+            }
+            style={{
+              padding: "5px 10px",
+              backgroundColor: activeHighlight === "today" ? "#ff9800" : "#4ca5af",
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '15px',
+              fontWeight: "700"
+            }}
+          >
+            Today's FollowUps: {todayFollowUpCount}
+          </button>
+        </div>
 
         {showRefreshBtn && (
           <button
@@ -951,256 +1026,249 @@ const EnquiryDetails = () => {
               cursor: isRefreshing ? "not-allowed" : "pointer",
               fontSize: "15px",
               marginLeft: "10px",
-              opacity: isRefreshing ? 0.7 : 1
+              opacity: isRefreshing ? 0.7 : 1,
+              fontWeight: "700"
             }}
           >
             {isRefreshing ? "Refreshing..." : "Refresh"}
           </button>
         )}
 
-        <button
-          onClick={() => navigate('/enquiryForm')}
-          style={{
-            padding: "5px 10px",
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '15px',
-            whiteSpace: "nowrap",
-          }}
-        >
-          Create Enquiry
-        </button>
 
       </div>
 
-      {/* Function Type Wise Stats */}
-      <div className="win-prob-legend">
-        <strong >🎉 Functions:</strong>
-        <div style={{
-          display: "flex",
-          gap: "5px",
-          flexWrap: "wrap",
-          marginTop: "5px"
-        }}>
-          {Object.entries(functionTypeCounts)
-            .sort((a, b) => b[1] - a[1])
-            .map(([type, count]) => {
+      {/* Filters  */}
+      <div style={{ display: 'flex', margin: "15px 0px", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
 
-              const isActive = activeFunctionType === type;
+        {/* Function Type Wise Stats */}
+        <div className="win-prob-legend">
+          <strong >🎉 Functions:</strong>
+          <div style={{
+            display: "flex",
+            gap: "5px",
+            flexWrap: "wrap",
+            marginTop: "5px"
+          }}>
+            {Object.entries(functionTypeCounts)
+              .sort((a, b) => b[1] - a[1])
+              .map(([type, count]) => {
 
-              return (
-                <div
-                  key={type}
-                  onClick={() =>
-                    setActiveFunctionType(prev => prev === type ? null : type)
-                  }
-                  style={{
-                    ...statBoxStyle("#f1a7fe"),
-                    cursor: "pointer",
-                    transition: "0.2s ease",
-                    transform: isActive ? "scale(1.05)" : "scale(1)",
-                    fontSize: "12px",
-                    padding: "5px",
-                    backgroundColor: isActive ? "#01aacc" : "#00c3ea"
-                  }}
-                >
-                  {type}: <strong>{count}</strong>
-                </div>
-              );
-            })}
+                const isActive = activeFunctionType === type;
+
+                return (
+                  <div
+                    key={type}
+                    onClick={() =>
+                      setActiveFunctionType(prev => prev === type ? null : type)
+                    }
+                    style={{
+                      ...statBoxStyle("#f1a7fe"),
+                      cursor: "pointer",
+                      transition: "0.2s ease",
+                      transform: isActive ? "scale(1.05)" : "scale(1)",
+                      fontSize: "12px",
+                      padding: "5px",
+                      backgroundColor: isActive ? "#01aacc" : "#00c3ea"
+                    }}
+                  >
+                    {type}: <strong>{count}</strong>
+                  </div>
+                );
+              })}
+          </div>
         </div>
-      </div>
 
-      {/* Source Wise Stats */}
-      <div className="win-prob-legend">
-        <strong>📊 Source:</strong>
-        <div style={{
-          display: "flex",
-          gap: "5px",
-          flexWrap: "wrap",
-          marginTop: "5px"
-        }}>
-          {Object.entries(sourceCounts)
-            .sort((a, b) => b[1] - a[1])
-            .map(([source, count]) => {
+        {/* Source Wise Stats */}
+        <div className="win-prob-legend">
+          <strong>📊 Source:</strong>
+          <div style={{
+            display: "flex",
+            gap: "5px",
+            flexWrap: "wrap",
+            marginTop: "5px"
+          }}>
+            {Object.entries(sourceCounts)
+              .sort((a, b) => b[1] - a[1])
+              .map(([source, count]) => {
 
-              const isActive = activeSource === source;
+                const isActive = activeSource === source;
 
-              return (
-                <div
-                  key={source}
-                  onClick={() =>
-                    setActiveSource(prev => prev === source ? null : source)
-                  }
-                  style={{
-                    ...statBoxStyle("#20ac99"),
-                    cursor: "pointer",
-                    transform: isActive ? "scale(1.05)" : "scale(1)",
-                    transition: "0.2s ease",
-                    padding: "5px",
-                    fontSize: "12px",
-                    backgroundColor: isActive ? "#0d8b7d" : "#20ac99"
-                  }}
-                >
-                  {source}: <strong>{count}</strong>
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={source}
+                    onClick={() =>
+                      setActiveSource(prev => prev === source ? null : source)
+                    }
+                    style={{
+                      ...statBoxStyle("#20ac99"),
+                      cursor: "pointer",
+                      transform: isActive ? "scale(1.05)" : "scale(1)",
+                      transition: "0.2s ease",
+                      padding: "5px",
+                      fontSize: "12px",
+                      backgroundColor: isActive ? "#0d8b7d" : "#20ac99"
+                    }}
+                  >
+                    {source}: <strong>{count}</strong>
+                  </div>
+                );
+              })}
+          </div>
         </div>
-      </div>
 
-      {/* FollowUp Stats */}
-      <div className="win-prob-legend">
-        <strong>📅 FollowUp:</strong>
-        <div style={{
-          display: "flex",
-          gap: "5px",
-          flexWrap: "wrap",
-          marginTop: "5px"
-        }}>
-          <div
-            onClick={() => setActiveHighlight(prev => prev === "all" ? null : "all")}
-            style={{
-              ...statBoxStyle("#2196F3"),
-              cursor: "pointer",
-              transform: activeHighlight === "all" ? "scale(1.05)" : "scale(1)",
-              transition: "0.2s ease",
-              padding: "5px",
-              fontSize: "12px",
-            }}
+        {/* FollowUp Stats */}
+        <div className="win-prob-legend">
+          <strong>📅 FollowUp:</strong>
+          <div style={{
+            display: "flex",
+            gap: "5px",
+            flexWrap: "wrap",
+            marginTop: "5px"
+          }}>
+            <div
+              onClick={() => setActiveHighlight(prev => prev === "all" ? null : "all")}
+              style={{
+                ...statBoxStyle("#2196F3"),
+                cursor: "pointer",
+                transform: activeHighlight === "all" ? "scale(1.05)" : "scale(1)",
+                transition: "0.2s ease",
+                padding: "5px",
+                fontSize: "12px",
+              }}
 
-          >
-            Total Enquiry: <strong>{totalEnquiryCount}</strong>
-          </div>
+            >
+              Total Enquiry: <strong>{totalEnquiryCount}</strong>
+            </div>
 
-          <div
-            onClick={() => setActiveHighlight(prev => prev === "nofollowup" ? null : "nofollowup")}
-            style={{
-              ...statBoxStyle("#f44336"),
-              cursor: "pointer",
-              transform: activeHighlight === "nofollowup" ? "scale(1.05)" : "scale(1)",
-              transition: "0.2s ease",
-              padding: "5px",
-              fontSize: "12px",
-            }}
-          >
-            No FollowUp: <strong>{totalPossibleFollowUps - totalCompletedFollowUps} / {totalPossibleFollowUps}</strong>
-          </div>
-
-          <div
-            onClick={() => setActiveHighlight(prev => prev === "today" ? null : "today")}
-            style={{
-              ...statBoxStyle("#ff9800"),
-              cursor: "pointer",
-              transform: activeHighlight === "today" ? "scale(1.05)" : "scale(1)",
-              transition: "0.2s ease",
-              padding: "5px",
-              fontSize: "12px",
-            }}
-          >
-            Today FollowUp: <strong>{todayFollowUpCount}</strong>
-          </div>
-
-          <div
-            onClick={() => setActiveHighlight(prev => prev === "completed" ? null : "completed")}
-            style={{
-              ...statBoxStyle("#4CAF50"),
-              cursor: "pointer",
-              transform: activeHighlight === "completed" ? "scale(1.05)" : "scale(1)",
-              transition: "0.2s ease",
-              padding: "5px",
-              fontSize: "12px",
-            }}
-          >
-            Fully Completed (5/5): <strong>{totalFullyCompletedEnquiries}</strong>
-          </div>
-
-        </div>
-      </div>
-
-      <div className="win-prob-legend">
-        <strong>🎯 Lead Win Probability :</strong>
-        <ul style={{ display: 'flex', justifyContent: 'space-between', whiteSpace: 'nowrap', listStyle: 'none', marginBottom: '0px', padding: '4px 5px', gap: '5px' }}>
-
-          <li
-            style={{ backgroundColor: '#5ca7b8ff', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-            onClick={() => setWinFilter(null)}
-          >
-            All
-          </li>
-
-          <li
-            style={{ backgroundColor: '#5cb85c', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-            onClick={() => handleWinFilter([76, 100])}
-          >
-            100% - 75%
-          </li>
-
-          <li
-            style={{ backgroundColor: '#ffff30', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-            onClick={() => handleWinFilter([51, 75])}
-          >
-            75% - 50%
-          </li>
-
-          <li
-            style={{ backgroundColor: '#f0ad4e', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-            onClick={() => handleWinFilter([26, 50])}
-          >
-            50% - 25%
-          </li>
-
-          <li
-            style={{ backgroundColor: '#d9534f', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-            onClick={() => handleWinFilter([0, 25])}
-          >
-            25% - 0%
-          </li>
-        </ul>
-      </div>
-
-      <div className="filters-container">
-        <div className="date-filters">
-          <div className="filter-item">
-            <label>Date From:</label>
-            <input className="filterInput" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-          </div>
-
-          <div className="filter-item">
-            <label>Date To:</label>
-            <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-          </div>
-
-          <div className="filter-item" style={{ display: "none" }}>
-            <label>Financial Year:</label>
-            <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
-              <option value="">All</option>
-              {availableFY.map(fy => <option key={fy} value={fy}>{fy}</option>)}
-            </select>
-          </div>
-
-          {isAnyFilterActive && (
-            <button
-              className="clear-btnq"
-              onClick={() => {
-                setSearch('');
-                setFromDate('');
-                setToDate('');
-                setFinancialYear('');
-                setActiveHighlight(null);
-                setActiveSource(null);
-                setWinFilter(null);
-                setActiveFunctionType(null);
+            <div
+              onClick={() => setActiveHighlight(prev => prev === "nofollowup" ? null : "nofollowup")}
+              style={{
+                ...statBoxStyle("#f44336"),
+                cursor: "pointer",
+                transform: activeHighlight === "nofollowup" ? "scale(1.05)" : "scale(1)",
+                transition: "0.2s ease",
+                padding: "5px",
+                fontSize: "12px",
               }}
             >
-              Clear Filters
-            </button>
-          )}
+              No FollowUp: <strong>{totalPossibleFollowUps - totalCompletedFollowUps} / {totalPossibleFollowUps}</strong>
+            </div>
 
+            <div
+              onClick={() => setActiveHighlight(prev => prev === "today" ? null : "today")}
+              style={{
+                ...statBoxStyle("#ff9800"),
+                cursor: "pointer",
+                transform: activeHighlight === "today" ? "scale(1.05)" : "scale(1)",
+                transition: "0.2s ease",
+                padding: "5px",
+                fontSize: "12px",
+              }}
+            >
+              Today FollowUp: <strong>{todayFollowUpCount}</strong>
+            </div>
+
+            <div
+              onClick={() => setActiveHighlight(prev => prev === "completed" ? null : "completed")}
+              style={{
+                ...statBoxStyle("#4CAF50"),
+                cursor: "pointer",
+                transform: activeHighlight === "completed" ? "scale(1.05)" : "scale(1)",
+                transition: "0.2s ease",
+                padding: "5px",
+                fontSize: "12px",
+              }}
+            >
+              Fully Completed (5/5): <strong>{totalFullyCompletedEnquiries}</strong>
+            </div>
+
+          </div>
         </div>
+
+        <div className="win-prob-legend">
+          <strong>🎯 Lead Win Probability :</strong>
+          <ul style={{ display: 'flex', flexWrap: "wrap", whiteSpace: 'nowrap', listStyle: 'none', marginBottom: '0px', padding: '4px 5px', gap: '5px' }}>
+
+            <li
+              style={{ backgroundColor: '#5ca7b8ff', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
+              onClick={() => setWinFilter(null)}
+            >
+              All
+            </li>
+
+            <li
+              style={{ backgroundColor: '#5cb85c', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
+              onClick={() => handleWinFilter([76, 100])}
+            >
+              100% - 75%
+            </li>
+
+            <li
+              style={{ backgroundColor: '#ffff30', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
+              onClick={() => handleWinFilter([51, 75])}
+            >
+              75% - 50%
+            </li>
+
+            <li
+              style={{ backgroundColor: '#f0ad4e', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
+              onClick={() => handleWinFilter([26, 50])}
+            >
+              50% - 25%
+            </li>
+
+            <li
+              style={{ backgroundColor: '#d9534f', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
+              onClick={() => handleWinFilter([0, 25])}
+            >
+              25% - 0%
+            </li>
+          </ul>
+        </div>
+
+        <div className="win-prob-legend">
+          <div className="filters-container">
+            <div className="date-filters">
+              <div className="filter-item">
+                <label style={{ fontWeight: "700" }}>Date From:</label>
+                <input className="filterInput" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+              </div>
+
+              <div className="filter-item">
+                <label style={{ fontWeight: "700" }}>Date To:</label>
+                <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+              </div>
+
+              <div className="filter-item" style={{ display: "none" }}>
+                <label>Financial Year:</label>
+                <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
+                  <option value="">All</option>
+                  {availableFY.map(fy => <option key={fy} value={fy}>{fy}</option>)}
+                </select>
+              </div>
+
+              {isAnyFilterActive && (
+                <button
+                  className="clear-btnq"
+                  onClick={() => {
+                    setSearch('');
+                    setFromDate('');
+                    setToDate('');
+                    setFinancialYear('');
+                    setActiveHighlight(null);
+                    setActiveSource(null);
+                    setWinFilter(null);
+                    setActiveFunctionType(null);
+                  }}
+                >
+                  Clear Filters
+                </button>
+              )}
+
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Table */}
@@ -1219,7 +1287,7 @@ const EnquiryDetails = () => {
 
               <th>Name</th>
 
-              <th>What's App No.</th>
+              <th>Mobile</th>
 
               <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
                 Event Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
@@ -1306,7 +1374,7 @@ const EnquiryDetails = () => {
                         return (
                           <div>
                             <div>{date}</div>
-                            <div style={{ fontSize: "11px", color: "black" }}>Time: {time}</div>
+                            <div style={{ fontSize: "13px", color: "#454545" }}>Time: {time}</div>
                           </div>
                         );
                       }

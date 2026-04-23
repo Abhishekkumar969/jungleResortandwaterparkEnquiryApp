@@ -43,7 +43,7 @@ const WaterParkTable = () => {
     const [filteredEnquiries, setFilteredEnquiries] = useState([]);
     const [editing, setEditing] = useState({});
     const [tempFollowUps, setTempFollowUps] = useState({});
-    const [paymentFilter, setPaymentFilter] = useState("payment");
+    const [paymentFilter, setPaymentFilter] = useState("all");
     const [visitStatusFilter, setVisitStatusFilter] = useState("all");
     const [confirmVisit, setConfirmVisit] = useState(null);
 
@@ -400,8 +400,44 @@ const WaterParkTable = () => {
         toDate ||
         financialYear ||
         visitFilter !== "upcoming" ||
-        paymentFilter !== "payment" ||
+        paymentFilter !== "all" ||
         (paymentFilter === "payment" && visitStatusFilter !== "all");
+
+    const formatCreatedAtSplit = (str) => {
+        if (!str) return { date: "-", time: "" };
+
+        try {
+            const [datePart, timePart] = str.split(",");
+
+            const [d, m, y] = datePart.trim().split("/").map(Number);
+
+            let [time, ampm] = timePart.trim().split(" ");
+            let [h, min, sec] = time.split(":").map(Number);
+
+            if (ampm.toLowerCase() === "pm" && h !== 12) h += 12;
+            if (ampm.toLowerCase() === "am" && h === 12) h = 0;
+
+            const dateObj = new Date(y, m - 1, d, h, min, sec);
+
+            const date = new Intl.DateTimeFormat("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            }).format(dateObj);
+
+            const timeStr = new Intl.DateTimeFormat("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                // second: "2-digit",
+                hour12: true,
+            }).format(dateObj);
+
+            return { date, time: timeStr };
+
+        } catch {
+            return { date: str, time: "" };
+        }
+    };
 
     const handleVisitClick = async (enq) => {
         try {
@@ -419,7 +455,7 @@ const WaterParkTable = () => {
     return (
         <div className="leads-table-container" >
 
-            <h2 className="leads-header" style={{ marginTop: '45px' }}>Water Park</h2>
+            {/* <h2 className="leads-header" style={{ marginTop: '45px' }}>Water Park</h2> */}
 
             <input type="text"
                 placeholder="Search by name, mobile, function type, date..."
@@ -430,120 +466,130 @@ const WaterParkTable = () => {
                     width: "100%",
                     marginBottom: "0px",
                     padding: "8px",
-                    border: "1px solid #57a2d9",
+                    boxShadow: "2px 2px 2px #9ed6ff",
                     borderRadius: "6px",
+                    marginTop: '45px'
                 }}
             />
 
-            <div style={{ display: "flex", gap: "0px", flexWrap: "wrap" }}>
-                <div style={{ display: "flex", gap: "10px", margin: "12px 0px", marginRight: "50px" }}>
+            <div style={{ display: 'flex', margin: "15px 0px", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
 
-                    {["upcoming", "past", "all"].map(type => (
-                        <button
-                            key={type}
-                            onClick={() => setVisitFilter(type)}
-                            style={{
-                                padding: "6px 12px",
-                                borderRadius: "6px",
-                                border: "none",
-                                cursor: "pointer",
-                                backgroundColor: visitFilter === type ? "#007bff" : "#e0e0e0",
-                                color: visitFilter === type ? "#fff" : "#000",
-                                fontWeight: "600"
-                            }}
-                        >
-                            {type === "upcoming" ? "UpComing" : type === "past" ? "Past" : "All"}
-                        </button>
-                    ))}
 
+                <div className="win-prob-legend">
+                    <div style={{ display: "flex", gap: "0px", flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: "10px", margin: "12px 0px", marginRight: "50px" }}>
+
+                            {["upcoming", "past", "all"].map(type => (
+                                <button
+                                    key={type}
+                                    onClick={() => setVisitFilter(type)}
+                                    style={{
+                                        padding: "6px 12px",
+                                        borderRadius: "6px",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        backgroundColor: visitFilter === type ? "#007bff" : "#e0e0e0",
+                                        color: visitFilter === type ? "#fff" : "#000",
+                                        fontWeight: "600"
+                                    }}
+                                >
+                                    {type === "upcoming" ? "UpComing" : type === "past" ? "Past" : "All"}
+                                </button>
+                            ))}
+
+                        </div>
+
+                        <div style={{ display: "flex", gap: "10px", margin: "12px 0px", marginRight: "50px" }}>
+                            {["payment", "nonpayment", "all"].map(type => (
+                                <button
+                                    key={type}
+                                    onClick={() => setPaymentFilter(type)}
+                                    style={{
+                                        padding: "6px 12px",
+                                        borderRadius: "6px",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        backgroundColor: paymentFilter === type ? "#28a745" : "#e0e0e0",
+                                        color: paymentFilter === type ? "#fff" : "#000",
+                                        fontWeight: "600"
+                                    }}
+                                >
+                                    {type === "payment" ? "Booked" : type === "nonpayment" ? "Cancelled" : "All"}
+                                </button>
+                            ))}
+                        </div>
+
+                        {paymentFilter === "payment" && (
+                            <div style={{ display: "flex", gap: "10px", margin: "12px 0px" }}>
+                                {["visited", "nonvisited", "all"].map(type => (
+                                    <button
+                                        key={type}
+                                        onClick={() => setVisitStatusFilter(type)}
+                                        style={{
+                                            padding: "6px 12px",
+                                            borderRadius: "6px",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            backgroundColor: visitStatusFilter === type ? "#6f42c1" : "#e0e0e0",
+                                            color: visitStatusFilter === type ? "#fff" : "#000",
+                                            fontWeight: "600"
+                                        }}
+                                    >
+                                        {type === "visited"
+                                            ? "Visited"
+                                            : type === "nonvisited"
+                                                ? "Non-Visited"
+                                                : "All"}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "10px", margin: "12px 0px", marginRight: "50px" }}>
-                    {["payment", "nonpayment", "all"].map(type => (
-                        <button
-                            key={type}
-                            onClick={() => setPaymentFilter(type)}
-                            style={{
-                                padding: "6px 12px",
-                                borderRadius: "6px",
-                                border: "none",
-                                cursor: "pointer",
-                                backgroundColor: paymentFilter === type ? "#28a745" : "#e0e0e0",
-                                color: paymentFilter === type ? "#fff" : "#000",
-                                fontWeight: "600"
-                            }}
-                        >
-                            {type === "payment" ? "Booked" : type === "nonpayment" ? "Cancelled" : "All"}
-                        </button>
-                    ))}
+                <div className="win-prob-legend">
+                    <div className="filters-container">
+                        <div className="date-filters">
+                            <div className="filter-item">
+                                <label style={{ fontWeight: "700" }}>Date From:</label>
+                                <input className="filterInput" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                            </div>
+
+                            <div className="filter-item">
+                                <label style={{ fontWeight: "700" }}>Date To:</label>
+                                <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+                            </div>
+
+                            <div className="filter-item" style={{ display: "none" }}>
+                                <label>Financial Year:</label>
+                                <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
+                                    <option value="">All</option>
+                                    {availableFY.map(fy => <option key={fy} value={fy}>{fy}</option>)}
+                                </select>
+                            </div>
+
+                            {isAnyFilterActive && (
+                                <button
+                                    className="clear-btnq"
+                                    onClick={() => {
+                                        setSearch('');
+                                        setFromDate('');
+                                        setToDate('');
+                                        setFinancialYear('');
+
+                                        // 🔥 reset extra filters also
+                                        setVisitFilter("upcoming");
+                                        setPaymentFilter("all");
+                                        setVisitStatusFilter("all");
+                                    }}
+                                >
+                                    Clear Filters
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
-                {paymentFilter === "payment" && (
-                    <div style={{ display: "flex", gap: "10px", margin: "12px 0px" }}>
-                        {["visited", "nonvisited", "all"].map(type => (
-                            <button
-                                key={type}
-                                onClick={() => setVisitStatusFilter(type)}
-                                style={{
-                                    padding: "6px 12px",
-                                    borderRadius: "6px",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    backgroundColor: visitStatusFilter === type ? "#6f42c1" : "#e0e0e0",
-                                    color: visitStatusFilter === type ? "#fff" : "#000",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                {type === "visited"
-                                    ? "Visited"
-                                    : type === "nonvisited"
-                                        ? "Non-Visited"
-                                        : "All"}
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            <div className="filters-container">
-                <div className="date-filters">
-                    <div className="filter-item">
-                        <label>Date From:</label>
-                        <input className="filterInput" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-                    </div>
-
-                    <div className="filter-item">
-                        <label>Date To:</label>
-                        <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-                    </div>
-
-                    <div className="filter-item" style={{ display: "none" }}>
-                        <label>Financial Year:</label>
-                        <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
-                            <option value="">All</option>
-                            {availableFY.map(fy => <option key={fy} value={fy}>{fy}</option>)}
-                        </select>
-                    </div>
-
-                    {isAnyFilterActive && (
-                        <button
-                            className="clear-btnq"
-                            onClick={() => {
-                                setSearch('');
-                                setFromDate('');
-                                setToDate('');
-                                setFinancialYear('');
-
-                                // 🔥 reset extra filters also
-                                setVisitFilter("upcoming");
-                                setPaymentFilter("payment");
-                                setVisitStatusFilter("all");
-                            }}
-                        >
-                            Clear Filters
-                        </button>
-                    )}
-                </div>
             </div>
 
             {/* Table */}
@@ -611,7 +657,18 @@ const WaterParkTable = () => {
                                         {finalEnquiries.length - index}.
                                     </td>
 
-                                    <td style={{ backgroundColor: rowBg }}>{enq.createdAt}</td>
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {(() => {
+                                            const { date, time } = formatCreatedAtSplit(enq.createdAt);
+
+                                            return (
+                                                <div style={{ lineHeight: "1.2" }}>
+                                                    <div style={{ fontWeight: 500 }}>{date}</div>
+                                                    <div style={{ fontSize: "13px", color: "#454545" }}>Time: {time}</div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </td>
 
                                     <td
                                         style={{

@@ -147,15 +147,15 @@
     .leads-table td:nth-child(2) {
         position : sticky;
         left     : 50px;
-        min-width: 110px;
+        min-width: 125px;
     }
 
     /* 3️⃣ NAME / BANQUET */
     .leads-table th:nth-child(3),
     .leads-table td:nth-child(3) {
         position : sticky;
-        left     : 160px;
-        /* 50 + 110 */
+        /* 50 + 125 */
+        left     : 175px;
         min-width: 245px;
     }
 
@@ -163,8 +163,8 @@
     .leads-table th:nth-child(4),
     .leads-table td:nth-child(4) {
         position : sticky;
-        left     : 405px;
-        /* 160 + 245 */
+        /* 175 + 245 */
+        left     : 420px;
         min-width: 120px;
     }
 
@@ -172,8 +172,8 @@
     .leads-table th:nth-child(5),
     .leads-table td:nth-child(5) {
         position  : sticky;
-        left      : 525px;
-        /* 405 + 120 */
+        /* 420 + 120 */
+        left      : 540px;
         min-width : 100px;
         text-align: left;
 
