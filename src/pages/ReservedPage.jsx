@@ -11,11 +11,9 @@ const formatDate = (date) => { return date.toLocaleDateString("en-CA"); };
 
 export default function ReservedPage() {
     const navigate = useNavigate();
-    const [waterDates, setWaterDates] = useState([]);
-    const [cottageDates, setCottageDates] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [waterMonth, setWaterMonth] = useState(new Date());
-    const [cottageMonth, setCottageMonth] = useState(new Date());
+    const [reservedDates, setReservedDates] = useState([]);
+    const [activeMonth, setActiveMonth] = useState(new Date());
 
     const isFutureOrToday = (dateStr) => {
         const today = new Date();
@@ -34,74 +32,42 @@ export default function ReservedPage() {
 
     // 🔥 Load existing data
     useEffect(() => {
-        const fetchAndClean = async () => {
-            setLoading(true); // 🔥 start
+        const fetchData = async () => {
+            setLoading(true);
 
-            const waterRef = doc(db, "Reserved", "WaterPark");
-            const cottageRef = doc(db, "Reserved", "Cottage");
+            const ref = doc(db, "Reserved", "Dates");
+            const snap = await getDoc(ref);
 
-            const waterSnap = await getDoc(waterRef);
-            const cottageSnap = await getDoc(cottageRef);
-
-            // 🔥 WATERPARK CLEAN
-            if (waterSnap.exists()) {
-                const allDates = waterSnap.data().dates || [];
-
+            if (snap.exists()) {
+                const allDates = snap.data().dates || [];
                 const filtered = allDates.filter(isFutureOrToday);
 
-                setWaterDates(filtered);
+                setReservedDates(filtered);
 
-                // update DB if changed
                 if (filtered.length !== allDates.length) {
-                    await setDoc(waterRef, { dates: filtered });
+                    await setDoc(ref, { dates: filtered });
                 }
             }
 
-            // 🔥 COTTAGE CLEAN
-            if (cottageSnap.exists()) {
-                const allDates = cottageSnap.data().dates || [];
-
-                const filtered = allDates.filter(isFutureOrToday);
-
-                setCottageDates(filtered);
-
-                if (filtered.length !== allDates.length) {
-                    await setDoc(cottageRef, { dates: filtered });
-                }
-            }
-            setLoading(false); // 🔥 end
+            setLoading(false);
         };
 
-        fetchAndClean();
+        fetchData();
     }, []);
 
     // 🔥 Toggle date select
-    const toggleDate = async (date, type) => {
+    const toggleDate = (date) => {
         const formatted = formatDate(date);
 
-        if (type === "water") {
-            setWaterDates(prev => {
-                const updated = prev.includes(formatted)
-                    ? prev.filter(d => d !== formatted)
-                    : [...prev, formatted];
+        setReservedDates(prev => {
+            const updated = prev.includes(formatted)
+                ? prev.filter(d => d !== formatted)
+                : [...prev, formatted];
 
-                // 🔥 DB update
-                setDoc(doc(db, "Reserved", "WaterPark"), { dates: updated });
+            setDoc(doc(db, "Reserved", "Dates"), { dates: updated });
 
-                return updated;
-            });
-
-        } else {
-            setCottageDates(prev => {
-                const updated = prev.includes(formatted)
-                    ? prev.filter(d => d !== formatted)
-                    : [...prev, formatted];
-
-                setDoc(doc(db, "Reserved", "Cottage"), { dates: updated });
-
-                return updated;
-            });
-        }
+            return updated;
+        });
     };
 
     // 🔥 Highlight selected dates
@@ -141,78 +107,39 @@ export default function ReservedPage() {
             <div className="reserved-page">
 
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <h2 className="reserved-title">📅 Reserved Dates</h2>
+                    <h2 className="reserved-title">📅 Reserve Dates</h2>
                 </div>
 
                 <div className="calendar-grid" style={{ display: "flex", flexWrap: "wrap", alignContent: "center" }}>
 
                     {/* WaterPark */}
                     <div className="calendar-card">
-                        <h3>💦 WaterPark</h3>
-
                         <Calendar
-                            key={waterDates.join(",")}
+                            key={reservedDates.join(",")}
                             onClickDay={(date) => {
-                                toggleDate(date, "water");
-                                setWaterMonth(date); // 🔥 stay on same month
+                                toggleDate(date);
+                                setActiveMonth(date);
                             }}
                             onActiveStartDateChange={({ activeStartDate }) =>
-                                setWaterMonth(activeStartDate)
+                                setActiveMonth(activeStartDate)
                             }
-                            activeStartDate={waterMonth}
-                            tileClassName={tileClass(waterDates)}
+                            activeStartDate={activeMonth}
+                            tileClassName={tileClass(reservedDates)}
                             tileDisabled={disablePastDates}
                             prev2Label={null}
                             next2Label={null}
                         />
                     </div>
-
-                    {/* Cottage */}
-                    <div className="calendar-card">
-                        <h3>🏡 Cottage</h3>
-
-                        <Calendar
-                            key={cottageDates.join(",")}
-                            onClickDay={(date) => {
-                                toggleDate(date, "cottage");
-                                setCottageMonth(date);
-                            }}
-                            onActiveStartDateChange={({ activeStartDate }) =>
-                                setCottageMonth(activeStartDate)
-                            }
-                            activeStartDate={cottageMonth}
-                            tileClassName={tileClass(cottageDates)}
-                            tileDisabled={disablePastDates}
-                            prev2Label={null}
-                            next2Label={null}
-                        />
-                    </div>
-
                 </div>
 
                 <div className="tables-wrapper">
-
                     <div className="date-table">
-                        <h4>WaterPark Selected Dates</h4>
+                        <h4>Reserved Dates</h4>
                         <table>
                             <tbody>
-                                {getSortedDates(waterDates).map((d, i) => (
+                                {getSortedDates(reservedDates).map((d, i) => (
                                     <tr key={i}>
-                                        <td>{getSortedDates(waterDates).length - i}.</td>
-                                        <td>{formatToIST(d)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className="date-table">
-                        <h4>Cottage Selected Dates</h4>
-                        <table>
-                            <tbody>
-                                {getSortedDates(cottageDates).map((d, i) => (
-                                    <tr key={i}>
-                                        <td>{getSortedDates(cottageDates).length - i}.</td>
+                                        <td>{getSortedDates(reservedDates).length - i}.</td>
                                         <td>{formatToIST(d)}</td>
                                     </tr>
                                 ))}
