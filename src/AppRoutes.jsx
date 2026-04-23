@@ -10,6 +10,8 @@ import LoginPage from "./auth/LoginPage";
 import LeadsTabContainer from './Lead/AllLeads/LeadsTabContainer';
 import PastLeadsTabContainer from './Lead/AllLeads/PastLeadsTabContainer';
 
+import ReservedPage from './pages/ReservedPage';
+
 import EnquiryForm from "./Enquiry/EnquiryForm";
 import WhatsappMessage from './pages/WhatsappMessage';
 import UserAccessPanel from './pages/UserAccessPanel';
@@ -84,6 +86,7 @@ export default function AppRoutes() {
                 <Route path="/EnquiryForm" element={<PrivateRoute><EnquiryForm /></PrivateRoute>} />
 
                 <Route path="/BlogAdmin" element={<PrivateRoute><BlogAdmin /></PrivateRoute>} />
+                <Route path="/ReservedPage" element={<PrivateRoute><ReservedPage /></PrivateRoute>} />
 
                 <Route path="/scanner" element={<ScannerPage />} />
                 <Route path="/login" element={<LoginPage />} />

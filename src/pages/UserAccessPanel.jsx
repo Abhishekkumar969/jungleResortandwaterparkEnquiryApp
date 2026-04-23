@@ -268,6 +268,7 @@ const UserAccessPanel = () => {
             { label: "🗑️ Past Enquiry", key: "Past Enquiry", color: "#fbc169ff", textColor: getTextColor("#fff9e6") },
         ],
         Utilities: [
+            { label: "Reserved Dates", key: "ReservedPage", color: "#80cfd6", textColor: getTextColor("#0393a7") },
             { label: "Whatsapp Message", key: "WhatsappMessage", color: "#80cfd6", textColor: getTextColor("#0393a7") },
             { label: "Blogs", key: "Blogs", color: "#80cfd6", textColor: getTextColor("#0393a7") }
         ],

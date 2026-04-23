@@ -5,6 +5,7 @@ import { doc, collection, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { FaEnvelopeOpenText, FaFolderOpen, FaPenFancy, FaUserShield, FaWhatsapp, FaQrcode, FaTrashAlt } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
+import { MdEventAvailable } from "react-icons/md";
 import { IoCloudOfflineOutline } from "react-icons/io5";
 import { requestNotificationPermission } from "../firebaseConfig";
 import BackButton from "../components/BackButton";
@@ -343,6 +344,7 @@ const Prebook = () => {
             <div className="service-section">
               <h3 className="service-section-text">Utilities</h3>
               <div className="service-grid">
+                {hasAccess("Utilities", "ReservedPage") && <ServiceBox label="Reserve Dates" onClick={() => navigate('/ReservedPage')} icon={<MdEventAvailable />} />}
                 {hasAccess("Utilities", "WhatsappMessage") && <ServiceBox label="Message" onClick={() => navigate('/WhatsappMessage')} icon={<FaWhatsapp />} />}
                 {hasAccess("Utilities", "Blogs") && <ServiceBox label="Blogs" onClick={() => navigate('/BlogAdmin')} icon={<FaPenFancy />} />}
               </div>
