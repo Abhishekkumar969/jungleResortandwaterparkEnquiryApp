@@ -3,10 +3,14 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import BackButton from "../components/BackButton";
+import BottomNavigationBar from "../components/BottomNavigationBar";
+import { useNavigate } from 'react-router-dom';
 import "../styles/ReservedPage.css";
 const formatDate = (date) => { return date.toLocaleDateString("en-CA"); };
 
 export default function ReservedPage() {
+    const navigate = useNavigate();
     const [waterDates, setWaterDates] = useState([]);
     const [cottageDates, setCottageDates] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -131,88 +135,96 @@ export default function ReservedPage() {
     }
 
     return (
+        <>
+            <BackButton />
 
-        <div className="reserved-page">
+            <div className="reserved-page">
 
-            <h2 className="reserved-title">📅 Reserved Dates</h2>
-
-            <div className="calendar-grid" style={{ display: "flex", flexWrap: "wrap" }}>
-
-                {/* WaterPark */}
-                <div className="calendar-card">
-                    <h3>💦 WaterPark</h3>
-
-                    <Calendar
-                        key={waterDates.join(",")}
-                        onClickDay={(date) => {
-                            toggleDate(date, "water");
-                            setWaterMonth(date); // 🔥 stay on same month
-                        }}
-                        onActiveStartDateChange={({ activeStartDate }) =>
-                            setWaterMonth(activeStartDate)
-                        }
-                        activeStartDate={waterMonth}
-                        tileClassName={tileClass(waterDates)}
-                        tileDisabled={disablePastDates}
-                        prev2Label={null}
-                        next2Label={null}
-                    />
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <h2 className="reserved-title">📅 Reserved Dates</h2>
                 </div>
 
-                {/* Cottage */}
-                <div className="calendar-card">
-                    <h3>🏡 Cottage</h3>
+                <div className="calendar-grid" style={{ display: "flex", flexWrap: "wrap", alignContent: "center" }}>
 
-                    <Calendar
-                        key={cottageDates.join(",")}
-                        onClickDay={(date) => {
-                            toggleDate(date, "cottage");
-                            setCottageMonth(date);
-                        }}
-                        onActiveStartDateChange={({ activeStartDate }) =>
-                            setCottageMonth(activeStartDate)
-                        }
-                        activeStartDate={cottageMonth}
-                        tileClassName={tileClass(cottageDates)}
-                        tileDisabled={disablePastDates}
-                        prev2Label={null}
-                        next2Label={null}
-                    />
+                    {/* WaterPark */}
+                    <div className="calendar-card">
+                        <h3>💦 WaterPark</h3>
+
+                        <Calendar
+                            key={waterDates.join(",")}
+                            onClickDay={(date) => {
+                                toggleDate(date, "water");
+                                setWaterMonth(date); // 🔥 stay on same month
+                            }}
+                            onActiveStartDateChange={({ activeStartDate }) =>
+                                setWaterMonth(activeStartDate)
+                            }
+                            activeStartDate={waterMonth}
+                            tileClassName={tileClass(waterDates)}
+                            tileDisabled={disablePastDates}
+                            prev2Label={null}
+                            next2Label={null}
+                        />
+                    </div>
+
+                    {/* Cottage */}
+                    <div className="calendar-card">
+                        <h3>🏡 Cottage</h3>
+
+                        <Calendar
+                            key={cottageDates.join(",")}
+                            onClickDay={(date) => {
+                                toggleDate(date, "cottage");
+                                setCottageMonth(date);
+                            }}
+                            onActiveStartDateChange={({ activeStartDate }) =>
+                                setCottageMonth(activeStartDate)
+                            }
+                            activeStartDate={cottageMonth}
+                            tileClassName={tileClass(cottageDates)}
+                            tileDisabled={disablePastDates}
+                            prev2Label={null}
+                            next2Label={null}
+                        />
+                    </div>
+
+                </div>
+
+                <div className="tables-wrapper">
+
+                    <div className="date-table">
+                        <h4>WaterPark Selected Dates</h4>
+                        <table>
+                            <tbody>
+                                {getSortedDates(waterDates).map((d, i) => (
+                                    <tr key={i}>
+                                        <td>{getSortedDates(waterDates).length - i}.</td>
+                                        <td>{formatToIST(d)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="date-table">
+                        <h4>Cottage Selected Dates</h4>
+                        <table>
+                            <tbody>
+                                {getSortedDates(cottageDates).map((d, i) => (
+                                    <tr key={i}>
+                                        <td>{getSortedDates(cottageDates).length - i}.</td>
+                                        <td>{formatToIST(d)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
 
-            <div className="tables-wrapper">
+            <BottomNavigationBar navigate={navigate} />
 
-                <div className="date-table">
-                    <h4>WaterPark Selected Dates</h4>
-                    <table>
-                        <tbody>
-                            {getSortedDates(waterDates).map((d, i) => (
-                                <tr key={i}>
-                                    <td>{getSortedDates(waterDates).length - i}.</td>
-                                    <td>{formatToIST(d)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="date-table">
-                    <h4>Cottage Selected Dates</h4>
-                    <table>
-                        <tbody>
-                            {getSortedDates(cottageDates).map((d, i) => (
-                                <tr key={i}>
-                                    <td>{getSortedDates(cottageDates).length - i}.</td>
-                                    <td>{formatToIST(d)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
+        </>
     );
 }

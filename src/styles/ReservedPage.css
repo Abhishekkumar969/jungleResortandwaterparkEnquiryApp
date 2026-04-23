@@ -1,21 +1,24 @@
 /* 🔥 PAGE WRAPPER */
 .reserved-page {
-    padding    : 25px;
-    background : linear-gradient(360deg, #bef2ff, #ffffff);
-    min-height : 100vh;
-    font-family: "Segoe UI", sans-serif;
-    color      : #000000;
+    padding      : 25px;
+    background   : linear-gradient(360deg, #bef2ff, #ffffff);
+    min-height   : 100vh;
+    font-family  : "Segoe UI", sans-serif;
+    color        : #000000;
+    margin       : 40px 0px;
+    margin-bottom: 90px;
 }
 
 /* 🔥 TITLE */
 .reserved-title {
-    font-size    : 26px;
-    font-weight  : 700;
-    margin-bottom: 20px;
-    color        : #502c2c;
-    display      : flex;
-    align-items  : center;
-    gap          : 8px;
+    font-size      : 26px;
+    font-weight    : 700;
+    margin-bottom  : 20px;
+    color          : #502c2c;
+    display        : flex;
+    align-items    : center;
+  
+    gap            : 8px;
 }
 
 /* 🔥 GRID */
@@ -25,6 +28,7 @@
     flex-wrap: wrap;
     color    : #000000;
     flex-wrap: wrap;
+      justify-content: center;
 }
 
 /* 🔥 CARD */
@@ -219,10 +223,11 @@
 
 /* 🔥 TABLE WRAPPER CONTAINER */
 .tables-wrapper {
-    display   : flex;
-    gap       : 20px;
-    flex-wrap : wrap;
-    margin-top: 20px;
+    display        : flex;
+    gap            : 20px;
+    flex-wrap      : wrap;
+    margin-top     : 20px;
+    justify-content: center;
 }
 
 /* 🔥 CARD STYLE TABLE */
@@ -298,8 +303,8 @@
 /* ===================================== */
 @media (max-width: 600px) {
     .tables-wrapper {
-        flex-direction: column;
-        gap           : 15px;
+        justify-content: center;
+        gap            : 15px;
     }
 
     .date-table {
