@@ -108,7 +108,10 @@ const EnquiryDetails = () => {
       if (modifier.toLowerCase() === "pm" && h !== 12) h += 12;
       if (modifier.toLowerCase() === "am" && h === 12) h = 0;
 
-      return new Date(y, m - 1, d, h, min, sec);
+      // 🔥 Convert IST → UTC (IMPORTANT)
+      const utcDate = new Date(Date.UTC(y, m - 1, d, h - 5, min - 30, sec));
+
+      return utcDate;
     } catch {
       return null;
     }
@@ -258,8 +261,18 @@ const EnquiryDetails = () => {
   const sortedEnquiries = [...filteredEnquiries].sort((a, b) => {
     if (!a[sortField]) return 1;
     if (!b[sortField]) return -1;
-    const dateA = new Date(a[sortField]);
-    const dateB = new Date(b[sortField]);
+
+    let dateA, dateB;
+
+    // 🔥 createdAt ke liye custom parser use karo
+    if (sortField === "createdAt") {
+      dateA = parseCustomDate(a.createdAt);
+      dateB = parseCustomDate(b.createdAt);
+    } else {
+      dateA = new Date(a[sortField]);
+      dateB = new Date(b[sortField]);
+    }
+
     return sortAsc ? dateA - dateB : dateB - dateA;
   });
 
@@ -1279,10 +1292,10 @@ const EnquiryDetails = () => {
               <th>Sl</th>
 
               <th
-                onClick={() => handleSort("enquiryDate")}
-                style={{ cursor: "pointer", whiteSpace: "nowrap" }}
+                onClick={() => handleSort("createdAt")}
+                style={{ cursor: "pointer" }}
               >
-                Enquiry Date {sortField === "enquiryDate" ? (sortAsc ? "" : "") : ""}
+                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "↑" : "↓") : ""}
               </th>
 
               <th>Name</th>
