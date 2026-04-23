@@ -17,17 +17,19 @@ messaging.onBackgroundMessage(function (payload) {
     console.log("🔥 BG MESSAGE:", payload);
 
     const data = payload.data || {};
+    const notification = payload.notification || {};
 
-    const title = data.title;
+    const title = data.title || notification.title || "New Notification";
+
     const options = {
-        body: data.body,
+        body: data.body || notification.body || "",
         icon: "/logo192.png",
         badge: "/badge.png",
         requireInteraction: true,
 
         data: {
-            url: data.url,
-            mobile: data.mobile
+            url: data.url || "/",
+            mobile: data.mobile || ""
         },
 
         actions: [
