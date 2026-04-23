@@ -9,7 +9,7 @@ import { getAuth } from "firebase/auth";
 const WaterParkTable = () => {
     const [enquiries, setEnquiries] = useState([]);
     const [search, setSearch] = useState("");
-    const [sortField, setSortField] = useState("visitDate");
+    const [sortField, setSortField] = useState("createdAt");
     const [sortAsc, setSortAsc] = useState(false);
     const navigate = useNavigate();
     const [fromDate, setFromDate] = useState('');
@@ -122,6 +122,27 @@ const WaterParkTable = () => {
         return formats.some(f => f.toLowerCase().includes(s));
     };
 
+    const parseCustomDate = (str) => {
+        if (!str) return null;
+
+        try {
+            const [datePart, timePart] = str.split(",");
+
+            const [d, m, y] = datePart.trim().split("/").map(Number);
+
+            let [time, modifier] = timePart.trim().split(" ");
+            let [h, min, sec] = time.split(":").map(Number);
+
+            if (modifier.toLowerCase() === "pm" && h !== 12) h += 12;
+            if (modifier.toLowerCase() === "am" && h === 12) h = 0;
+
+            // 🔥 IST → UTC convert
+            return new Date(Date.UTC(y, m - 1, d, h - 5, min - 30, sec));
+        } catch {
+            return null;
+        }
+    };
+
     useEffect(() => {
         // Reference to the "enquiry" collection
         const enquiryCollectionRef = collection(db, "WaterPark");
@@ -170,8 +191,17 @@ const WaterParkTable = () => {
     const sortedEnquiries = [...filteredEnquiries].sort((a, b) => {
         if (!a[sortField]) return 1;
         if (!b[sortField]) return -1;
-        const dateA = new Date(a[sortField]);
-        const dateB = new Date(b[sortField]);
+
+        let dateA, dateB;
+
+        if (sortField === "createdAt") {
+            dateA = parseCustomDate(a.createdAt);
+            dateB = parseCustomDate(b.createdAt);
+        } else {
+            dateA = new Date(a[sortField]);
+            dateB = new Date(b[sortField]);
+        }
+
         return sortAsc ? dateA - dateB : dateB - dateA;
     });
 
@@ -326,8 +356,16 @@ const WaterParkTable = () => {
 
         // --- Sorting ---
         data.sort((a, b) => {
-            const A = new Date(a[sortField]);
-            const B = new Date(b[sortField]);
+            let A, B;
+
+            if (sortField === "createdAt") {
+                A = parseCustomDate(a.createdAt);
+                B = parseCustomDate(b.createdAt);
+            } else {
+                A = new Date(a[sortField]);
+                B = new Date(b[sortField]);
+            }
+
             return sortAsc ? A - B : B - A;
         });
 
@@ -417,7 +455,7 @@ const WaterParkTable = () => {
             if (ampm.toLowerCase() === "pm" && h !== 12) h += 12;
             if (ampm.toLowerCase() === "am" && h === 12) h = 0;
 
-            const dateObj = new Date(y, m - 1, d, h, min, sec);
+            const dateObj = new Date(Date.UTC(y, m - 1, d, h - 5, min - 30, sec));
 
             const date = new Intl.DateTimeFormat("en-IN", {
                 day: "2-digit",
@@ -599,11 +637,8 @@ const WaterParkTable = () => {
                         <tr style={{ whiteSpace: "nowrap" }}>
                             <th>Sl</th>
 
-                            <th
-                                onClick={() => handleSort("createdAt")}
-                                style={{ cursor: "pointer", whiteSpace: "nowrap" }}
-                            >
-                                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "" : "") : ""}
+                            <th onClick={() => handleSort("createdAt")} style={{ cursor: "pointer" }}>
+                                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "↑" : "↓") : ""}
                             </th>
 
                             <th>Name</th>
