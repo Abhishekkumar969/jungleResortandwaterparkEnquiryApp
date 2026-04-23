@@ -11,7 +11,7 @@ import { useLocation } from "react-router-dom";
 const EnquiryDetails = () => {
   const [enquiries, setEnquiries] = useState([]);
   const [search, setSearch] = useState("");
-  const [sortField, setSortField] = useState("enquiryDate");
+  const [sortField, setSortField] = useState("createdAt");
   const [sortAsc, setSortAsc] = useState(false);
   const navigate = useNavigate();
   const [fromDate, setFromDate] = useState('');
@@ -705,8 +705,16 @@ const EnquiryDetails = () => {
 
     // --- Sorting ---
     data.sort((a, b) => {
-      const A = getSortDate(a);
-      const B = getSortDate(b);
+      let A, B;
+
+      if (sortField === "createdAt") {
+        A = parseCustomDate(a.createdAt);
+        B = parseCustomDate(b.createdAt);
+      } else {
+        A = getSortDate(a);
+        B = getSortDate(b);
+      }
+
       return sortAsc ? A - B : B - A;
     });
 
