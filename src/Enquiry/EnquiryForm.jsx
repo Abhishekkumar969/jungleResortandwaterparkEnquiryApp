@@ -256,6 +256,30 @@ const EnquiryPage = () => {
         return Object.keys(tempErrors).length === 0;
     };
 
+    const getCreatedAtString = () => {
+        const now = new Date();
+
+        const parts = new Intl.DateTimeFormat("en-IN", {
+            timeZone: "Asia/Kolkata",
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: true,
+        }).formatToParts(now);
+
+        const map = {};
+        parts.forEach(p => {
+            if (p.type !== "literal") map[p.type] = p.value;
+        });
+
+        const pad = (n) => n.toString().padStart(2, "0");
+
+        return `${map.day}/${map.month}/${map.year}, ${pad(map.hour)}:${pad(map.minute)}:${pad(map.second)} ${map.dayPeriod.toLowerCase()}`;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -290,6 +314,10 @@ const EnquiryPage = () => {
             const dataToSave = {
                 ...formData,
                 fieldId: fieldIdToUse,
+
+                createdAt: formData.fieldId
+                    ? (formData.createdAt || getCreatedAtString())
+                    : getCreatedAtString(),
 
                 bookingType,
 
@@ -596,7 +624,7 @@ const EnquiryPage = () => {
                         </div>
 
                         {/* Email */}
-                        <div style={{display:"none"}} className="form-group">
+                        <div style={{ display: "none" }} className="form-group">
                             <label>Email ID:</label>
                             <input type="email" name="email" value={formData.email} onChange={handleChange} />
                         </div>

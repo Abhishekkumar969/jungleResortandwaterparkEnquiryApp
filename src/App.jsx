@@ -42,27 +42,36 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    onMessage(messaging, (payload) => {
+    const unsubscribe = onMessage(messaging, (payload) => {
       console.log("📩 Message received:", payload);
 
-      // 🔊 SOUND PLAY
+      const title =
+        payload?.data?.title ||
+        payload?.notification?.title ||
+        "New Notification";
+
+      const body =
+        payload?.data?.body ||
+        payload?.notification?.body ||
+        "";
+
+      // 🔊 SOUND
       const audio = new Audio("/notification.mp3");
       audio.play().catch(() => { });
 
-      // 📳 VIBRATION (mobile only)
+      // 📳 VIBRATION
       if (navigator.vibrate) {
         navigator.vibrate([200, 100, 200]);
       }
 
-      // 🔔 TOAST
-      toast(
-        `${payload.notification.title} - ${payload.notification.body}`,
-        {
-          icon: "📩",
-          duration: 4000,
-        }
-      );
+      // 🔔 TOAST (SAFE)
+      toast(`${title} - ${body}`, {
+        icon: "📩",
+        duration: 4000,
+      });
     });
+
+    return () => unsubscribe();
   }, []);
 
   if (!authChecked) return <AppLoading />;

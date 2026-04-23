@@ -874,6 +874,49 @@ const EnquiryDetails = () => {
     winFilter ||
     activeFunctionType;
 
+
+  const parseCustomDate = (str) => {
+    if (!str) return null;
+
+    try {
+      const [datePart, timePart] = str.split(",");
+
+      const [d, m, y] = datePart.trim().split("/").map(Number);
+
+      let [time, modifier] = timePart.trim().split(" ");
+      let [h, min, sec] = time.split(":").map(Number);
+
+      if (modifier.toLowerCase() === "pm" && h !== 12) h += 12;
+      if (modifier.toLowerCase() === "am" && h === 12) h = 0;
+
+      return new Date(y, m - 1, d, h, min, sec);
+    } catch {
+      return null;
+    }
+  };
+
+  const formatCreatedAtSplit = (str) => {
+    const dateObj = parseCustomDate(str);
+
+    if (!dateObj) return { date: str, time: "" };
+
+    const date = new Intl.DateTimeFormat("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }).format(dateObj);
+
+    const time = new Intl.DateTimeFormat("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(dateObj);
+
+    return { date, time };
+  };
+
   return (
     <div className="leads-table-container" >
 
@@ -1255,7 +1298,28 @@ const EnquiryDetails = () => {
                     {finalEnquiries.length - index}.
                   </td>
 
-                  <td style={{ backgroundColor: rowBg }}>{formatDate(enq.enquiryDate)}</td>
+                  <td style={{ backgroundColor: rowBg }}>
+                    {(() => {
+                      if (enq.createdAt) {
+                        const { date, time } = formatCreatedAtSplit(enq.createdAt);
+
+                        return (
+                          <div>
+                            <div>{date}</div>
+                            <div style={{ fontSize: "11px", color: "black" }}>Time: {time}</div>
+                          </div>
+                        );
+                      }
+
+                      // fallback
+                      if (enq.enquiryDate) {
+                        const [y, m, d] = enq.enquiryDate.split("-");
+                        return `${d}/${m}/${y}`;
+                      }
+
+                      return "-";
+                    })()}
+                  </td>
 
                   <td
                     style={{
