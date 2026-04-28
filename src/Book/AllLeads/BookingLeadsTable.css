@@ -1149,14 +1149,11 @@
 }
 
 .page-scroller {
-    height    : calc(100vh - 60px);
-    /* bottom nav height minus */
-    overflow-y: auto;
-    overflow-x: hidden;
-
+    height         : calc(100vh - 60px);
+    overflow-y     : auto;
+    overflow-x     : hidden;
     padding        : 10px;
     scrollbar-width: auto;
-    /* Firefox */
     scrollbar-color: #015183 #ffffff;
 }
 
@@ -1172,7 +1169,6 @@
     background-color: #015183;
     border-radius   : 10px;
     border          : 4px solid #ffffff;
-    /* visually thick */
 }
 
 .table-fixed-wrapper {

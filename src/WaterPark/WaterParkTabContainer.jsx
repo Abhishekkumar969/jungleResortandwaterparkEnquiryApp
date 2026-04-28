@@ -18,7 +18,6 @@ const WaterParkTable = () => {
     const [visitFilter, setVisitFilter] = useState("upcoming");
 
     const getCurrentFinancialYear = () => {
-        // Get the current time in Asia/Kolkata timezone accurately
         const now = new Date();
         const istTime = new Intl.DateTimeFormat("en-IN", {
             timeZone: "Asia/Kolkata",
@@ -43,7 +42,7 @@ const WaterParkTable = () => {
     const [filteredEnquiries, setFilteredEnquiries] = useState([]);
     const [editing, setEditing] = useState({});
     const [tempFollowUps, setTempFollowUps] = useState({});
-    const [paymentFilter, setPaymentFilter] = useState("all");
+    const [paymentFilter, setPaymentFilter] = useState("payment");
     const [visitStatusFilter, setVisitStatusFilter] = useState("all");
     const [confirmVisit, setConfirmVisit] = useState(null);
 
@@ -493,8 +492,6 @@ const WaterParkTable = () => {
     return (
         <div className="leads-table-container" >
 
-            {/* <h2 className="leads-header" style={{ marginTop: '45px' }}>Water Park</h2> */}
-
             <input type="text"
                 placeholder="Search by name, mobile, function type, date..."
                 value={search}
@@ -537,7 +534,10 @@ const WaterParkTable = () => {
 
                         </div>
 
-                        <div style={{ display: "flex", gap: "10px", margin: "12px 0px", marginRight: "50px" }}>
+                        <div style={{
+                            // display: "flex", 
+                            gap: "10px", margin: "12px 0px", marginRight: "50px", display: "none"
+                        }}>
                             {["payment", "nonpayment", "all"].map(type => (
                                 <button
                                     key={type}
@@ -1123,8 +1123,6 @@ const WaterParkTable = () => {
 
             <div style={{ marginBottom: '50px' }}></div>
 
-
-
             {confirmVisit && (
                 <div style={{
                     position: "fixed",
@@ -1188,10 +1186,7 @@ const WaterParkTable = () => {
                     </div>
                 </div>
             )}
-
-
         </div>
-
     );
 };
 

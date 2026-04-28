@@ -16,7 +16,6 @@ import EnquiryForm from "./Enquiry/EnquiryForm";
 import WhatsappMessage from './pages/WhatsappMessage';
 import UserAccessPanel from './pages/UserAccessPanel';
 import PaymentBar from "./MonthlyPayment/PaymentBar";
-import ScannerPage from "./WaterPark/ScannerPage";
 
 import BlogAdmin from './pages/BlogAdmin';
 
@@ -87,8 +86,7 @@ export default function AppRoutes() {
 
                 <Route path="/BlogAdmin" element={<PrivateRoute><BlogAdmin /></PrivateRoute>} />
                 <Route path="/ReservedPage" element={<PrivateRoute><ReservedPage /></PrivateRoute>} />
-
-                <Route path="/scanner" element={<ScannerPage />} />
+             
                 <Route path="/login" element={<LoginPage />} />
             </Routes>
 
