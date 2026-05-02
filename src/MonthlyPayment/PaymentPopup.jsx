@@ -21,8 +21,20 @@ export default function PaymentPopup({ data, onClose }) {
             ? data.enabledAt.toDate()
             : new Date(data.enabledAt);
 
-        const payBefore = new Date(enabledDate.getTime() + 48 * 60 * 60 * 1000);
+        const payBefore = new Date(enabledDate.getTime() + 15 * 60 * 60 * 1000);
         return formatIST(payBefore);
+    };
+
+    const isExpired = () => {
+        if (!data.enabledAt) return false;
+
+        const enabledDate = data.enabledAt.toDate
+            ? data.enabledAt.toDate()
+            : new Date(data.enabledAt);
+
+        const payBefore = new Date(enabledDate.getTime() + 15 * 60 * 60 * 1000);
+
+        return new Date() > payBefore;
     };
 
     // 🔐 SAFE PARAMS
@@ -40,7 +52,9 @@ export default function PaymentPopup({ data, onClose }) {
     return (
         <div className="popup-backdrop">
             <div className="popup-card ticket-v2">
-                <button className="close-btn" onClick={onClose}>✕</button>
+                {!isExpired() && (
+                    <button className="close-btn" onClick={onClose}>✕</button>
+                )}
 
                 {/* SCROLLABLE CONTENT */}
                 <div className="popup-content">
