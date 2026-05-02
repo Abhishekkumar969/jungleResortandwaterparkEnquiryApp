@@ -79,14 +79,11 @@ export default function AppRoutes() {
                 <Route path="/" element={<PrivateRoute><Prebook /></PrivateRoute>} />
                 <Route path="/leadstabcontainer" element={<PrivateRoute><LeadsTabContainer /></PrivateRoute>} />
                 <Route path="/PastLeadsTabContainer" element={<PrivateRoute><PastLeadsTabContainer /></PrivateRoute>} />
-
                 <Route path="/WhatsappMessage" element={<PrivateRoute><WhatsappMessage /></PrivateRoute>} />
                 <Route path="/UserAccessPanel" element={<PrivateRoute><UserAccessPanel /></PrivateRoute>} />
                 <Route path="/EnquiryForm" element={<PrivateRoute><EnquiryForm /></PrivateRoute>} />
-
                 <Route path="/BlogAdmin" element={<PrivateRoute><BlogAdmin /></PrivateRoute>} />
                 <Route path="/ReservedPage" element={<PrivateRoute><ReservedPage /></PrivateRoute>} />
-             
                 <Route path="/login" element={<LoginPage />} />
             </Routes>
 
