@@ -125,7 +125,7 @@ const LeadsTabContainer = () => {
                             className={activeTab === "waterpark" ? "active" : ""}
                             onClick={() => handleTabClick("waterpark")}
                         >
-                            Water Park
+                            Water Park / Cottage
                         </button>
                     )}
 
