@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import { doc, collection, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { FaEnvelopeOpenText, FaFolderOpen, FaPenFancy, FaUserShield, FaWhatsapp, FaTrashAlt } from "react-icons/fa";
+import { FaEnvelopeOpenText, FaFolderOpen, FaPenFancy, FaUserShield, FaWhatsapp, FaTrashAlt, FaTicketAlt } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { MdEventAvailable } from "react-icons/md";
 import { IoCloudOfflineOutline } from "react-icons/io5";
@@ -337,6 +337,7 @@ const Prebook = () => {
                 {hasAccess("Utilities", "ReservedPage") && <ServiceBox label="Reserve Dates" onClick={() => navigate('/ReservedPage')} icon={<MdEventAvailable />} />}
                 {hasAccess("Utilities", "WhatsappMessage") && <ServiceBox label="Message" onClick={() => navigate('/WhatsappMessage')} icon={<FaWhatsapp />} />}
                 {hasAccess("Utilities", "Blogs") && <ServiceBox label="Blogs" onClick={() => navigate('/BlogAdmin')} icon={<FaPenFancy />} />}
+                {hasAccess("Utilities", "TicketPricingAdmin") && <ServiceBox label="Ticket Prices" onClick={() => navigate('/TicketPricingAdmin')} icon={<FaTicketAlt />} />}
               </div>
             </div>
           ) : null}

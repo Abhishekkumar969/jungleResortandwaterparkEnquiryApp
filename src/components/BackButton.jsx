@@ -104,7 +104,10 @@ const BackButton = ({ setActiveTab }) => {
     Utilities: {
       label: "Utilities",
       routes: {
+        ReservedPage: { label: "Reserve Dates", path: "/ReservedPage" },
         WhatsappMessage: { label: "WhatsApp Message", path: "/WhatsappMessage" },
+        Blogs: { label: "Blogs", path: "/BlogAdmin" },
+        TicketPricingAdmin: { label: "Ticket Prices", path: "/TicketPricingAdmin" },
       },
     },
 

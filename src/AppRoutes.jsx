@@ -18,6 +18,7 @@ import UserAccessPanel from './pages/UserAccessPanel';
 import PaymentBar from "./MonthlyPayment/PaymentBar";
 
 import BlogAdmin from './pages/BlogAdmin';
+import TicketPricingAdmin from './pages/TicketPricingAdmin';
 
 export default function AppRoutes() {
     const navigate = useNavigate();
@@ -83,6 +84,7 @@ export default function AppRoutes() {
                 <Route path="/UserAccessPanel" element={<PrivateRoute><UserAccessPanel /></PrivateRoute>} />
                 <Route path="/EnquiryForm" element={<PrivateRoute><EnquiryForm /></PrivateRoute>} />
                 <Route path="/BlogAdmin" element={<PrivateRoute><BlogAdmin /></PrivateRoute>} />
+                <Route path="/TicketPricingAdmin" element={<PrivateRoute><TicketPricingAdmin /></PrivateRoute>} />
                 <Route path="/ReservedPage" element={<PrivateRoute><ReservedPage /></PrivateRoute>} />
                 <Route path="/login" element={<LoginPage />} />
             </Routes>
