@@ -1,0 +1,381 @@
+/* TicketPricingAdmin.css */
+.ticket-admin-container {
+    max-width: 1200px;
+    margin: 80px auto 100px auto;
+    padding: 20px;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+/* Header */
+.ticket-admin-header {
+    text-align: center;
+    margin-bottom: 35px;
+    background: linear-gradient(135deg, #f0fdf4, #f0f9ff);
+    padding: 30px 20px;
+    border-radius: 16px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.ticket-admin-header h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0c4a6e;
+    margin: 0 0 10px 0;
+}
+
+.ticket-admin-header p {
+    color: #475569;
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+/* Actions and Buttons */
+.ticket-admin-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 15px;
+}
+
+.btn-secondary {
+    background: #ffffff;
+    color: #ef4444;
+    border: 1.5px solid #fecaca;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+}
+
+.btn-primary, .btn-success, .btn-edit, .btn-danger, .btn-add {
+    border: none;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 1rem;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35);
+}
+
+.btn-edit {
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-edit:hover {
+    background: #e0e7ff;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: #ecfdf5;
+    color: #059669;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-success:hover {
+    background: #d1fae5;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-danger:hover {
+    background: #fee2e2;
+    transform: translateY(-1px);
+}
+
+/* Tabs */
+.tabs-container {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 30px;
+    gap: 15px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border: none;
+    background: none;
+    color: #64748b;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+    font-family: inherit;
+}
+
+.tab-btn.active {
+    color: #0284c7;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #0284c7;
+    border-radius: 3px;
+}
+
+/* Grid layout for Cards */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+/* Card Styling */
+.ticket-admin-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+    box-sizing: border-box;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.ticket-admin-card.editing {
+    border: 1.5px solid #3b82f6;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.08);
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 12px;
+    gap: 10px;
+}
+
+.card-title-id {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 700;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.card-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* Forms */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
+}
+
+/* Two column layout inside cards */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+/* View Mode styling */
+.view-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.view-price-box {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    background: #f0fdf4;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #bbf7d0;
+}
+
+.view-price-box.addon {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.view-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #166534;
+}
+
+.view-old-price {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+/* View Mode Features list (Cleaned standard bullets) */
+.view-features-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.view-features-list li {
+    font-size: 0.95rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge-popular {
+    background: #fef3c7;
+    color: #d97706;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    margin-top: 5px;
+}
+
+.checkbox-row input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.checkbox-row span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+/* Toast alert notification */
+.toast-message {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    background: #0f172a;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+    z-index: 10000;
+    font-weight: 600;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media(max-width: 768px) {
+    .ticket-admin-container {
+        padding: 12px;
+        margin-top: 70px;
+    }
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .ticket-admin-header h2 {
+        font-size: 1.8rem;
+    }
+}
