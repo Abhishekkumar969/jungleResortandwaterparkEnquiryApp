@@ -12,8 +12,6 @@ const BackButton = ({ setActiveTab }) => {
   const location = useLocation();
 
   const [userAppType, setUserAppType] = useState(null);
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const [panelAccess, setPanelAccess] = useState({});
 
   const containerStyle = { position: "fixed", top: 0, left: 0, width: "100vw", backgroundColor: "#d1f3fe", zIndex: 9999, padding: "3px 10px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", boxShadow: "inset -2px -2px 5px #7abfd6" };
@@ -21,22 +19,16 @@ const BackButton = ({ setActiveTab }) => {
   const scrollGroupStyle = { display: "flex", alignItems: "center", gap: "10px", overflowX: "auto", padding: "4px 0", whiteSpace: "nowrap", flex: 1 };
   const iconButtonStyle = { background: "#fff", borderRadius: "12px", color: "#000", cursor: "pointer", padding: "6px 10px", display: "inline-flex", alignItems: "center", justifyContent: "center", flex: "0 0 auto", fontWeight: 700, boxShadow: "inset -0 -4px 2.2px #035571", transition: "all 0.15s ease-in-out", fontSize: "0.85rem", position: "relative" };
   const activeButtonStyle = { ...iconButtonStyle, background: "linear-gradient(270deg, #4dbce1, #048bb8)", color: "#fff" };
-  const dropdownItemStyle = { padding: "8px 14px", cursor: "pointer", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap" };
 
-  const isSectionActive = (sectionKey) => {
-    const meta = PANEL_META[sectionKey];
-    if (!meta) return false;
-
-    return Object.values(meta.routes).some(r =>
-      location.pathname.startsWith(r.path.split("?")[0])
-    );
-  };
-
-  const handleToggleDropdown = (menu, e) => {
-    if (openDropdown === menu) return setOpenDropdown(null);
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDropdownPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
-    setOpenDropdown(menu);
+  const isRouteActive = (routePath) => {
+    const [path, search] = routePath.split("?");
+    if (location.pathname.startsWith(path)) {
+      if (search) {
+        return location.search.includes(search);
+      }
+      return true;
+    }
+    return false;
   };
 
   const activateOrNavigate = (tabKey, path) => { if (setActiveTab) setActiveTab(tabKey); navigate(path); };
@@ -65,19 +57,7 @@ const BackButton = ({ setActiveTab }) => {
     fetchUserAndAccess();
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = e => { if (!e.target.closest(".dropdown-container")) setOpenDropdown(null); };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   useEffect(() => { if (location.pathname === "/leadstabcontainer" && setActiveTab) setActiveTab("EnquiryDetails"); }, [location.pathname, setActiveTab]);
-
-  const renderDropdown = (menuKey, items) => openDropdown === menuKey && (
-    <div style={{ position: "fixed", top: "45px", left: dropdownPos.left, background: "#fff", border: "1px solid #ccc", borderRadius: "10px", padding: "6px 0", boxShadow: "0 2px 8px rgba(0,0,0,0.25)", minWidth: "180px", zIndex: 999999 }}>
-      {items.map(({ label, path }) => <div key={label} style={dropdownItemStyle} onClick={() => navigate(path)}>{label}</div>)}
-    </div>
-  );
 
   const PANEL_META = {
     /* ================= BOOKINGS ================= */
@@ -86,7 +66,7 @@ const BackButton = ({ setActiveTab }) => {
       routes: {
         Enquiry: { label: "Enquiry Form", path: "/EnquiryForm" },
 
-        "Enquiry Record": { label: "Enquiry Record", path: "/leadstabcontainer?tab=enquiry" },
+        "Enquiry Record": { label: "Enquiry", path: "/leadstabcontainer?tab=enquiry" },
       },
     },
 
@@ -96,7 +76,15 @@ const BackButton = ({ setActiveTab }) => {
       routes: {
         // WaterPark: { label: "Enquiry Form", path: "/EnquiryForm" },
 
-        "WaterPark Record": { label: "WaterPark Record", path: "/leadstabcontainer?tab=waterpark" },
+        "WaterPark Record": { label: "WaterPark", path: "/leadstabcontainer?tab=waterpark" },
+      },
+    },
+
+    /* ================= COTTAGE ================= */
+    Cottage: {
+      label: "Cottage",
+      routes: {
+        "Cottage Record": { label: "Cottage", path: "/leadstabcontainer?tab=cottage" },
       },
     },
 
@@ -120,42 +108,37 @@ const BackButton = ({ setActiveTab }) => {
     },
   };
 
-  const buildDropdownsFromDB = () => {
+  const buildButtonsFromDB = () => {
     if (!userAppType) return [];
+
+    let flatItems = [];
 
     // Admin → all
     if (userAppType === "A") {
-      return Object.entries(PANEL_META).map(([key, cfg]) => ({
-        key,
-        label: cfg.label,
-        items: Object.values(cfg.routes),
-      }));
+      Object.entries(PANEL_META).forEach(([key, cfg]) => {
+        Object.values(cfg.routes).forEach(route => {
+          flatItems.push(route);
+        });
+      });
+      return flatItems;
     }
-
-    const result = [];
 
     Object.entries(panelAccess || {}).forEach(([section, items]) => {
       const meta = PANEL_META[section];
       if (!meta || !items) return;
 
-      const allowedItems = Object.entries(items)
+      Object.entries(items)
         .filter(([itemKey, roles]) =>
           Array.isArray(roles) &&
           roles.includes(userAppType) &&
           meta.routes[itemKey]
         )
-        .map(([itemKey]) => meta.routes[itemKey]);
-
-      if (allowedItems.length > 0) {
-        result.push({
-          key: section,
-          label: meta.label,
-          items: allowedItems,
+        .forEach(([itemKey]) => {
+          flatItems.push(meta.routes[itemKey]);
         });
-      }
     });
 
-    return result;
+    return flatItems;
   };
 
   return (
@@ -183,21 +166,14 @@ const BackButton = ({ setActiveTab }) => {
           </button>
         )}
 
-        {buildDropdownsFromDB().map(({ key, label, items }) => (
-          <div
-            key={key}
-            className="dropdown-container"
-            style={{ position: "relative" }}
-            onClick={e => handleToggleDropdown(key, e)}
+        {buildButtonsFromDB().map(({ label, path }) => (
+          <button
+            key={label}
+            style={isRouteActive(path) ? activeButtonStyle : iconButtonStyle}
+            onClick={() => navigate(path)}
           >
-            <button
-              style={isSectionActive(key) ? activeButtonStyle : iconButtonStyle}
-            >
-              {label}
-            </button>
-
-            {renderDropdown(key, items)}
-          </div>
+            {label}
+          </button>
         ))}
 
         <div style={{ marginRight: "80px" }}></div>

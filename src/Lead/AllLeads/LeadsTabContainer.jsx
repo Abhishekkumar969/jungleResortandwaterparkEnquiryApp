@@ -73,6 +73,7 @@ const LeadsTabContainer = () => {
         const accessibleTabs = [];
         if (hasAccess("Enquiry Record")) accessibleTabs.push("enquiry");
         if (hasAccess("Water Park")) accessibleTabs.push("waterpark");
+        if (hasAccess("Water Park")) accessibleTabs.push("cottage");
 
         let defaultTab = null;
 
@@ -96,7 +97,10 @@ const LeadsTabContainer = () => {
                 return <EnquiryDetails />;
 
             case "waterpark": // ✅ FIX
-                return <WaterParkDetails />;
+                return <WaterParkDetails type="waterpark" />;
+
+            case "cottage": 
+                return <WaterParkDetails type="cottage" />;
 
             default:
                 return <p style={{ textAlign: "center" }}>No access</p>;
@@ -125,7 +129,16 @@ const LeadsTabContainer = () => {
                             className={activeTab === "waterpark" ? "active" : ""}
                             onClick={() => handleTabClick("waterpark")}
                         >
-                            Water Park / Cottage
+                            Water Park
+                        </button>
+                    )}
+
+                    {hasAccess("Water Park") && (
+                        <button
+                            className={activeTab === "cottage" ? "active" : ""}
+                            onClick={() => handleTabClick("cottage")}
+                        >
+                            Cottage
                         </button>
                     )}
 

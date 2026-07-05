@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../firebaseConfig";
 import BackButton from "../components/BackButton";
@@ -12,7 +12,7 @@ export default function TicketPricingAdmin() {
     const [loading, setLoading] = useState(true);
     const [hasAccess, setHasAccess] = useState(false);
     const [activeTab, setActiveTab] = useState("waterpark");
-    
+
     const [tickets, setTickets] = useState([]);
     const [cottagePkgs, setCottagePkgs] = useState([]);
     const [toastMessage, setToastMessage] = useState("");
@@ -22,12 +22,13 @@ export default function TicketPricingAdmin() {
 
     // Check Access & Load from Firestore
     useEffect(() => {
+        let unsubscribe = null;
         const checkAccessAndLoad = async () => {
             setLoading(true);
             try {
                 const auth = getAuth();
                 const user = auth.currentUser;
-                
+
                 if (!user) {
                     setHasAccess(false);
                     setLoading(false);
@@ -37,7 +38,7 @@ export default function TicketPricingAdmin() {
                 // 1. Fetch user's role
                 const userAccessRef = doc(db, "usersAccess", user.email);
                 const userAccessSnap = await getDoc(userAccessRef);
-                
+
                 if (!userAccessSnap.exists()) {
                     setHasAccess(false);
                     setLoading(false);
@@ -50,7 +51,7 @@ export default function TicketPricingAdmin() {
                 // 2. Fetch panel access list
                 const panelAccessRef = doc(db, "pannelAccess", "Utilities");
                 const panelAccessSnap = await getDoc(panelAccessRef);
-                
+
                 let isAllowed = false;
                 if (role === "A") {
                     isAllowed = true;
@@ -62,15 +63,17 @@ export default function TicketPricingAdmin() {
                 setHasAccess(isAllowed);
 
                 if (isAllowed) {
-                    // 3. Load actual pricing data
+                    // 3. Load actual pricing data in real-time
                     const docRef = doc(db, "ticketPrices", "active");
-                    const docSnap = await getDoc(docRef);
-                    
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        setTickets(data.waterparkTickets || []);
-                        setCottagePkgs(data.cottagePackages || []);
-                    }
+                    unsubscribe = onSnapshot(docRef, (docSnap) => {
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            setTickets(data.waterparkTickets || []);
+                            setCottagePkgs(data.cottagePackages || []);
+                        }
+                    }, (err) => {
+                        console.error("Error in onSnapshot listener:", err);
+                    });
                 }
             } catch (err) {
                 console.error("Error verifying access or loading data:", err);
@@ -80,6 +83,10 @@ export default function TicketPricingAdmin() {
             }
         };
         checkAccessAndLoad();
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, []);
 
     const showToast = (msg) => {
@@ -251,13 +258,13 @@ export default function TicketPricingAdmin() {
                 </div>
 
                 <div className="tabs-container">
-                    <button 
+                    <button
                         className={`tab-btn ${activeTab === "waterpark" ? "active" : ""}`}
                         onClick={() => setActiveTab("waterpark")}
                     >
                         🌊 Waterpark Tickets
                     </button>
-                    <button 
+                    <button
                         className={`tab-btn ${activeTab === "cottage" ? "active" : ""}`}
                         onClick={() => setActiveTab("cottage")}
                     >
@@ -299,8 +306,8 @@ export default function TicketPricingAdmin() {
                                                 <>
                                                     <div className="form-group">
                                                         <label>Ticket Name</label>
-                                                        <input 
-                                                            type="text" 
+                                                        <input
+                                                            type="text"
                                                             value={ticket.name}
                                                             onChange={(e) => updateTicketValue(ticket.id, "name", e.target.value)}
                                                         />
@@ -309,16 +316,16 @@ export default function TicketPricingAdmin() {
                                                     <div className="form-grid-2">
                                                         <div className="form-group">
                                                             <label>Price (₹)</label>
-                                                            <input 
-                                                                type="number" 
+                                                            <input
+                                                                type="number"
                                                                 value={ticket.price}
                                                                 onChange={(e) => updateTicketValue(ticket.id, "price", Number(e.target.value))}
                                                             />
                                                         </div>
                                                         <div className="form-group">
                                                             <label>Original Price (₹)</label>
-                                                            <input 
-                                                                type="number" 
+                                                            <input
+                                                                type="number"
                                                                 value={ticket.originalPrice}
                                                                 onChange={(e) => updateTicketValue(ticket.id, "originalPrice", Number(e.target.value))}
                                                             />
@@ -328,8 +335,8 @@ export default function TicketPricingAdmin() {
                                                     <div className="form-group">
                                                         <label style={{ marginBottom: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                                             <span>Features</span>
-                                                            <button 
-                                                                type="button" 
+                                                            <button
+                                                                type="button"
                                                                 onClick={() => addFeatureToTicket(ticket.id)}
                                                                 style={{ fontSize: "0.8rem", padding: "2px 8px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}
                                                             >
@@ -339,15 +346,15 @@ export default function TicketPricingAdmin() {
                                                         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                                                             {ticket.features.map((feature, idx) => (
                                                                 <div key={idx} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                                                                    <input 
-                                                                        type="text" 
+                                                                    <input
+                                                                        type="text"
                                                                         value={feature}
                                                                         onChange={(e) => updateFeatureInTicket(ticket.id, idx, e.target.value)}
                                                                         placeholder={`Feature #${idx + 1}`}
                                                                         style={{ flex: 1, padding: "8px" }}
                                                                     />
-                                                                    <button 
-                                                                        type="button" 
+                                                                    <button
+                                                                        type="button"
                                                                         onClick={() => deleteFeatureFromTicket(ticket.id, idx)}
                                                                         style={{ background: "#ef4444", color: "#fff", border: "none", padding: "8px 12px", borderRadius: "6px", cursor: "pointer", fontSize: "0.9rem" }}
                                                                     >
@@ -359,10 +366,10 @@ export default function TicketPricingAdmin() {
                                                     </div>
 
                                                     <div className="checkbox-row" onClick={() => updateTicketValue(ticket.id, "popular", !ticket.popular)}>
-                                                        <input 
-                                                            type="checkbox" 
+                                                        <input
+                                                            type="checkbox"
                                                             checked={!!ticket.popular}
-                                                            onChange={() => {}} 
+                                                            onChange={() => { }}
                                                         />
                                                         <span>Mark as Popular / Trending</span>
                                                     </div>
@@ -430,8 +437,8 @@ export default function TicketPricingAdmin() {
                                                 <>
                                                     <div className="form-group">
                                                         <label>Duration / Stay</label>
-                                                        <input 
-                                                            type="text" 
+                                                        <input
+                                                            type="text"
                                                             value={pkg.duration}
                                                             onChange={(e) => updateCottagePkgValue(pkg.id, "duration", e.target.value)}
                                                         />
@@ -439,8 +446,8 @@ export default function TicketPricingAdmin() {
 
                                                     <div className="form-group">
                                                         <label>Base Price (₹)</label>
-                                                        <input 
-                                                            type="number" 
+                                                        <input
+                                                            type="number"
                                                             value={pkg.price}
                                                             onChange={(e) => updateCottagePkgValue(pkg.id, "price", Number(e.target.value))}
                                                         />
@@ -449,8 +456,8 @@ export default function TicketPricingAdmin() {
                                                     <div className="form-group">
                                                         <label style={{ marginBottom: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                                             <span>Highlights</span>
-                                                            <button 
-                                                                type="button" 
+                                                            <button
+                                                                type="button"
                                                                 onClick={() => addHighlightToCottage(pkg.id)}
                                                                 style={{ fontSize: "0.8rem", padding: "2px 8px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}
                                                             >
@@ -460,15 +467,15 @@ export default function TicketPricingAdmin() {
                                                         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                                                             {pkg.highlights.map((highlight, idx) => (
                                                                 <div key={idx} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                                                                    <input 
-                                                                        type="text" 
+                                                                    <input
+                                                                        type="text"
                                                                         value={highlight}
                                                                         onChange={(e) => updateHighlightInCottage(pkg.id, idx, e.target.value)}
                                                                         placeholder={`Highlight #${idx + 1}`}
                                                                         style={{ flex: 1, padding: "8px" }}
                                                                     />
-                                                                    <button 
-                                                                        type="button" 
+                                                                    <button
+                                                                        type="button"
                                                                         onClick={() => deleteHighlightFromCottage(pkg.id, idx)}
                                                                         style={{ background: "#ef4444", color: "#fff", border: "none", padding: "8px 12px", borderRadius: "6px", cursor: "pointer", fontSize: "0.9rem" }}
                                                                     >
@@ -480,19 +487,19 @@ export default function TicketPricingAdmin() {
                                                     </div>
 
                                                     <div className="checkbox-row" onClick={() => updateCottagePkgValue(pkg.id, "waterIncluded", !pkg.waterIncluded)}>
-                                                        <input 
-                                                            type="checkbox" 
+                                                        <input
+                                                            type="checkbox"
                                                             checked={!!pkg.waterIncluded}
-                                                            onChange={() => { }} 
+                                                            onChange={() => { }}
                                                         />
                                                         <span>🌊 Water Park Access Included</span>
                                                     </div>
 
                                                     <div className="checkbox-row" onClick={() => updateCottagePkgValue(pkg.id, "popular", !pkg.popular)}>
-                                                        <input 
-                                                            type="checkbox" 
+                                                        <input
+                                                            type="checkbox"
                                                             checked={!!pkg.popular}
-                                                            onChange={() => { }} 
+                                                            onChange={() => { }}
                                                         />
                                                         <span>⭐ Popular Package</span>
                                                     </div>

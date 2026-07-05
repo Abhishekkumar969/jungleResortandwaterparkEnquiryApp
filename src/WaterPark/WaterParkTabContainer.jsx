@@ -5,8 +5,9 @@ import "../Book/AllLeads/BookingLeadsTable.css";
 import { useNavigate } from "react-router-dom";
 import "../styles/FixedTable.css"
 import { getAuth } from "firebase/auth";
+import Pagination from "../components/Pagination";
 
-const WaterParkTable = () => {
+const WaterParkTable = ({ type }) => {
     const [enquiries, setEnquiries] = useState([]);
     const [search, setSearch] = useState("");
     const [sortField, setSortField] = useState("createdAt");
@@ -15,7 +16,12 @@ const WaterParkTable = () => {
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [availableFY, setAvailableFY] = useState([]);
-    const [visitFilter, setVisitFilter] = useState("upcoming");
+    const [visitFilter, setVisitFilter] = useState("all");
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [showFilters, setShowFilters] = useState(false);
+    const itemsPerPage = 25;
+
 
     const getCurrentFinancialYear = () => {
         const now = new Date();
@@ -45,6 +51,10 @@ const WaterParkTable = () => {
     const [paymentFilter, setPaymentFilter] = useState("payment");
     const [visitStatusFilter, setVisitStatusFilter] = useState("all");
     const [confirmVisit, setConfirmVisit] = useState(null);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, fromDate, toDate, visitStatusFilter, financialYear, sortField, sortAsc, paymentFilter, visitFilter, type]);
 
     useEffect(() => {
         const auth = getAuth();
@@ -408,9 +418,25 @@ const WaterParkTable = () => {
 
         // "all" → no filter
 
+        // Separate Water Park and Cottage
+        if (type === "waterpark") {
+            data = data.filter(enq => {
+                if (!enq.tickets) return false;
+                if (typeof enq.tickets === 'object') return Object.keys(enq.tickets).length > 0;
+                return enq.tickets.toString().trim() !== "";
+            });
+        } else if (type === "cottage") {
+            data = data.filter(enq => enq.cottage && Object.keys(enq.cottage).length > 0);
+        }
+
         setFilteredEnquiries(data);
 
-    }, [search, fromDate, toDate, visitStatusFilter, financialYear, sortField, sortAsc, paymentFilter, enquiries, visitFilter]);
+    }, [search, fromDate, toDate, visitStatusFilter, financialYear, sortField, sortAsc, paymentFilter, enquiries, visitFilter, type]);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentEnquiries = finalEnquiries.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(finalEnquiries.length / itemsPerPage);
 
     const handleCancelEdit = (enquiryId, index) => {
         setEditing(prev => ({
@@ -492,22 +518,45 @@ const WaterParkTable = () => {
     return (
         <div className="leads-table-container" >
 
-            <input type="text"
-                placeholder="Search by name, mobile, function type, date..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="booking-input"
-                style={{
-                    width: "100%",
-                    marginBottom: "0px",
-                    padding: "8px",
-                    boxShadow: "2px 2px 2px #9ed6ff",
-                    borderRadius: "6px",
-                    marginTop: '45px'
-                }}
-            />
+            <div style={{ display: 'flex', gap: '10px', marginTop: '45px', alignItems: 'center', width: '100%' }}>
+                <input type="text"
+                    placeholder="Search by name, mobile, function type, date..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="booking-input"
+                    style={{
+                        flex: 1,
+                        marginBottom: "0px",
+                        padding: "8px",
+                        boxShadow: "2px 2px 2px #9ed6ff",
+                        borderRadius: "6px"
+                    }}
+                />
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    title={showFilters ? "Hide Filters" : "Show Filters"}
+                    style={{
+                        padding: "8px 12px",
+                        backgroundColor: "#0067b8",
+                        color: "#ffffff",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                        transition: "0.2s ease"
+                    }}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                </button>
+            </div>
 
-            <div style={{ display: 'flex', margin: "15px 0px", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
+            {showFilters && (
+                <div style={{ display: 'flex', margin: "15px 0px", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
 
 
                 <div className="win-prob-legend">
@@ -519,13 +568,9 @@ const WaterParkTable = () => {
                                     key={type}
                                     onClick={() => setVisitFilter(type)}
                                     style={{
-                                        padding: "6px 12px",
-                                        borderRadius: "6px",
-                                        border: "none",
+                                        ...statBoxStyle(visitFilter === type),
                                         cursor: "pointer",
-                                        backgroundColor: visitFilter === type ? "#007bff" : "#e0e0e0",
-                                        color: visitFilter === type ? "#fff" : "#000",
-                                        fontWeight: "600"
+                                        transition: "all 0.2s ease"
                                     }}
                                 >
                                     {type === "upcoming" ? "UpComing" : type === "past" ? "Past" : "All"}
@@ -543,13 +588,9 @@ const WaterParkTable = () => {
                                     key={type}
                                     onClick={() => setPaymentFilter(type)}
                                     style={{
-                                        padding: "6px 12px",
-                                        borderRadius: "6px",
-                                        border: "none",
+                                        ...statBoxStyle(paymentFilter === type),
                                         cursor: "pointer",
-                                        backgroundColor: paymentFilter === type ? "#28a745" : "#e0e0e0",
-                                        color: paymentFilter === type ? "#fff" : "#000",
-                                        fontWeight: "600"
+                                        transition: "all 0.2s ease"
                                     }}
                                 >
                                     {type === "payment" ? "Booked" : type === "nonpayment" ? "Cancelled" : "All"}
@@ -564,13 +605,9 @@ const WaterParkTable = () => {
                                         key={type}
                                         onClick={() => setVisitStatusFilter(type)}
                                         style={{
-                                            padding: "6px 12px",
-                                            borderRadius: "6px",
-                                            border: "none",
+                                            ...statBoxStyle(visitStatusFilter === type),
                                             cursor: "pointer",
-                                            backgroundColor: visitStatusFilter === type ? "#6f42c1" : "#e0e0e0",
-                                            color: visitStatusFilter === type ? "#fff" : "#000",
-                                            fontWeight: "600"
+                                            transition: "all 0.2s ease"
                                         }}
                                     >
                                         {type === "visited"
@@ -627,11 +664,10 @@ const WaterParkTable = () => {
                         </div>
                     </div>
                 </div>
-
             </div>
-
+            )}
             {/* Table */}
-            <div className="table-fixed-wrapper" ref={rightRef}>
+            <div className="table-fixed-wrapper" ref={rightRef} style={{ marginTop: '15px' }}>
                 <table className="leads-table">
                     <thead>
                         <tr style={{ whiteSpace: "nowrap" }}>
@@ -649,8 +685,14 @@ const WaterParkTable = () => {
                                 Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
                             </th>
 
-                            <th>Water Park</th>
-                            <th>Cottage</th>
+                            {(!type || type === "waterpark") && <th>Water Park</th>}
+                            {(!type || type === "cottage") && (
+                                <>
+                                    <th>Cottage Rooms</th>
+                                    <th>Duration</th>
+                                    <th>Days</th>
+                                </>
+                            )}
                             <th>Total Amt</th>
                             <th>Visit</th>
                             <th>User Id</th>
@@ -671,25 +713,26 @@ const WaterParkTable = () => {
                     </thead>
 
                     <tbody>
-                        {finalEnquiries.map((enq, index) => {
+                        {currentEnquiries.map((enq, index) => {
 
                             const isCancelled = !enq.paymentId;
 
                             const rowBg =
                                 isCancelled
                                     ? "#ffbec0"
-                                    : "#5ffe64";
+                                    : (index % 2 === 0 ? "#ffffff" : "#eaf4ff");
 
                             return (
                                 <tr
                                     key={enq.id}
                                     style={{
                                         backgroundColor: rowBg,
-                                        transition: "0.3s ease"
+                                        transition: "0.3s ease",
+                                        whiteSpace: "nowrap"
                                     }}
                                 >
                                     <td style={{ backgroundColor: rowBg }}>
-                                        {finalEnquiries.length - index}.
+                                        {finalEnquiries.length - indexOfFirstItem - index}.
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
@@ -813,36 +856,24 @@ const WaterParkTable = () => {
                                         </div>
                                     </td>
 
-                                    <td style={{ backgroundColor: rowBg }}>
-                                        {enq.tickets && typeof enq.tickets === "object"
-                                            ? Object.entries(enq.tickets)
-                                                .map(([key, value]) => `${key}: ${value}`)
-                                                .join(", ")
-                                            : enq.tickets || "-"}
-                                    </td>
+                                    {(!type || type === "waterpark") && (
+                                        <td style={{ backgroundColor: rowBg }}>
+                                            {enq.tickets && typeof enq.tickets === "object"
+                                                ? Object.entries(enq.tickets)
+                                                    .map(([key, value]) => `${key}: ${value}`)
+                                                    .join(", ")
+                                                : enq.tickets || "-"}
+                                        </td>
+                                    )}
 
-                                    {/* 🏡 Cottage Column */}
-                                    <td style={{ backgroundColor: rowBg }}>
-                                        {enq.cottage ? (
-                                            <div style={{ lineHeight: "1.4", display: "flex" }}>
-                                                {[
-                                                    enq.cottage.id && `Id: ${enq.cottage.id}`,
-                                                    enq.cottage.rooms && `Cottage Rooms: ${enq.cottage.rooms}`,
-                                                    enq.cottage.duration && `Duration: ${enq.cottage.duration}`,
-                                                    enq.cottage.days && `Days: ${enq.cottage.days}`
-                                                ]
-                                                    .filter(Boolean) // ❌ remove empty values
-                                                    .map((item, index, arr) => (
-                                                        <React.Fragment key={index}>
-                                                            <span>{item}</span>
-                                                            {index !== arr.length - 1 && (
-                                                                <span style={{ margin: "0px 6px" }}>||</span>
-                                                            )}
-                                                        </React.Fragment>
-                                                    ))}
-                                            </div>
-                                        ) : ""}
-                                    </td>
+                                    {/* 🏡 Cottage Columns */}
+                                    {(!type || type === "cottage") && (
+                                        <>
+                                            <td style={{ backgroundColor: rowBg }}>{enq.cottage?.rooms || "-"}</td>
+                                            <td style={{ backgroundColor: rowBg }}>{enq.cottage?.duration || "-"}</td>
+                                            <td style={{ backgroundColor: rowBg }}>{enq.cottage?.days || "-"}</td>
+                                        </>
+                                    )}
 
                                     <td style={{ backgroundColor: rowBg }}>
                                         ₹{enq.total?.toLocaleString("en-IN")}
@@ -1121,6 +1152,12 @@ const WaterParkTable = () => {
 
             </div>
 
+            <Pagination 
+                currentPage={currentPage} 
+                totalPages={totalPages} 
+                onPageChange={setCurrentPage} 
+            />
+
             <div style={{ marginBottom: '50px' }}></div>
 
             {confirmVisit && (
@@ -1191,3 +1228,14 @@ const WaterParkTable = () => {
 };
 
 export default WaterParkTable;
+
+const statBoxStyle = (isActive) => ({
+    backgroundColor: isActive ? "#0067b8" : "#ffffff",
+    color: isActive ? "#ffffff" : "#424242",
+    padding: "4px 10px",
+    borderRadius: "16px",
+    fontSize: "12px",
+    fontWeight: "600",
+    border: isActive ? "1px solid #0067b8" : "1px solid #d2d2d2",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+});

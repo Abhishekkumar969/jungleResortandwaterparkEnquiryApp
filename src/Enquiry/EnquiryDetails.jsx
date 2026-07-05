@@ -7,6 +7,7 @@ import "../styles/FixedTable.css"
 import "./EnquiryStats"
 import { getAuth } from "firebase/auth";
 import { useLocation } from "react-router-dom";
+import Pagination from "../components/Pagination";
 
 const EnquiryDetails = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -19,6 +20,9 @@ const EnquiryDetails = () => {
   const [availableFY, setAvailableFY] = useState([]);
   const location = useLocation();
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const itemsPerPage = 25;
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -746,6 +750,7 @@ const EnquiryDetails = () => {
     }
 
     setFilteredEnquiries(data);
+    setCurrentPage(1);
   }, [search, fromDate, activeFunctionType, toDate, financialYear, winFilter, sortField, sortAsc, enquiries, activeSource]);
 
   const handleRefreshPastEnquiry = useCallback(async () => {
@@ -880,16 +885,6 @@ const EnquiryDetails = () => {
     return acc;
   }, {});
 
-  const getWinProbabilityColor = (prob) => {
-    const p = Number(prob || 0);
-
-    if (p >= 76) return "#76fe76";   // Green
-    if (p >= 51) return "#fdf279";   // Yellow
-    if (p >= 26) return "#fdc279";   // Orange
-    if (p > 0) return "#fd7575";     // Red
-
-    return null;
-  };
 
   const getDisplayEventDate = (enq) => {
     if (enq.bookingType === "multi") {
@@ -974,25 +969,50 @@ const EnquiryDetails = () => {
     return getCreatedAtIST(enq.createdAt) === todayIST;
   }).length;
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentEnquiries = finalEnquiries.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(finalEnquiries.length / itemsPerPage);
+
   return (
     <div className="leads-table-container" >
 
-      <h2 onClick={() => navigate('/enquiryForm')} className="leads-header"
-        style={{ marginTop: '45px' }}>Create Enquiry</h2>
-
-      <input type="text"
-        placeholder="Search by name, mobile, function type, date..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="booking-input"
-        style={{
-          width: "100%",
-          marginBottom: "0px",
-          padding: "8px",
-          boxShadow: "2px 2px 2px #9ed6ff",
-          borderRadius: "6px"
-        }}
-      />
+      <div style={{ display: 'flex', gap: '10px', marginTop: '45px', alignItems: 'center', width: '100%' }}>
+        <input type="text"
+          placeholder="Search by name, mobile, function type, date..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="booking-input"
+          style={{
+            flex: 1,
+            marginBottom: "0px",
+            padding: "8px",
+            boxShadow: "2px 2px 2px #9ed6ff",
+            borderRadius: "6px"
+          }}
+        />
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          title={showFilters ? "Hide Filters" : "Show Filters"}
+          style={{
+            padding: "8px 12px",
+            backgroundColor: "#0067b8",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+            transition: "0.2s ease"
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+        </button>
+      </div>
 
       <div style={{ display: 'flex', margin: "15px 0px", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
 
@@ -1059,240 +1079,227 @@ const EnquiryDetails = () => {
       </div>
 
       {/* Filters  */}
-      <div style={{ display: 'flex', margin: "15px 0px", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
+      {showFilters && (
+        <div style={{ display: 'flex', margin: "15px 0px", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
 
-        {/* Function Type Wise Stats */}
-        <div className="win-prob-legend">
-          <strong >🎉 Functions:</strong>
-          <div style={{
-            display: "flex",
-            gap: "5px",
-            flexWrap: "wrap",
-            marginTop: "5px"
-          }}>
-            {Object.entries(functionTypeCounts)
-              .sort((a, b) => b[1] - a[1])
-              .map(([type, count]) => {
+          {/* Function Type Wise Stats */}
+          <div className="win-prob-legend">
+            <strong >🎉 Functions:</strong>
+            <div style={{
+              display: "flex",
+              gap: "5px",
+              flexWrap: "wrap",
+              marginTop: "5px"
+            }}>
+              {Object.entries(functionTypeCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, count]) => {
 
-                const isActive = activeFunctionType === type;
+                  const isActive = activeFunctionType === type;
 
-                return (
-                  <div
-                    key={type}
-                    onClick={() =>
-                      setActiveFunctionType(prev => prev === type ? null : type)
-                    }
-                    style={{
-                      ...statBoxStyle("#f1a7fe"),
-                      cursor: "pointer",
-                      transition: "0.2s ease",
-                      transform: isActive ? "scale(1.05)" : "scale(1)",
-                      fontSize: "12px",
-                      padding: "5px",
-                      backgroundColor: isActive ? "#01aacc" : "#00c3ea"
+                  return (
+                    <div
+                      key={type}
+                      onClick={() =>
+                        setActiveFunctionType(prev => prev === type ? null : type)
+                      }
+                      style={{
+                        ...statBoxStyle(isActive),
+                        cursor: "pointer",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      {type}: <strong>{count}</strong>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* Source Wise Stats */}
+          <div className="win-prob-legend">
+            <strong>📊 Source:</strong>
+            <div style={{
+              display: "flex",
+              gap: "5px",
+              flexWrap: "wrap",
+              marginTop: "5px"
+            }}>
+              {Object.entries(sourceCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([source, count]) => {
+
+                  const isActive = activeSource === source;
+
+                  return (
+                    <div
+                      key={source}
+                      onClick={() =>
+                        setActiveSource(prev => prev === source ? null : source)
+                      }
+                      style={{
+                        ...statBoxStyle(isActive),
+                        cursor: "pointer",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      {source}: <strong>{count}</strong>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* FollowUp Stats */}
+          <div className="win-prob-legend">
+            <strong>📅 FollowUp:</strong>
+            <div style={{
+              display: "flex",
+              gap: "5px",
+              flexWrap: "wrap",
+              marginTop: "5px"
+            }}>
+              <div
+                onClick={() => setActiveHighlight(prev => prev === "all" ? null : "all")}
+                style={{
+                  ...statBoxStyle(activeHighlight === "all"),
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  padding: "5px",
+                  fontSize: "12px",
+                }}
+
+              >
+                Total Enquiry: <strong>{totalEnquiryCount}</strong>
+              </div>
+
+              <div
+                onClick={() => setActiveHighlight(prev => prev === "nofollowup" ? null : "nofollowup")}
+                style={{
+                  ...statBoxStyle(activeHighlight === "nofollowup"),
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  padding: "5px",
+                  fontSize: "12px",
+                }}
+              >
+                No FollowUp: <strong>{totalPossibleFollowUps - totalCompletedFollowUps} / {totalPossibleFollowUps}</strong>
+              </div>
+
+              <div
+                onClick={() => setActiveHighlight(prev => prev === "today" ? null : "today")}
+                style={{
+                  ...statBoxStyle(activeHighlight === "today"),
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  padding: "5px",
+                  fontSize: "12px",
+                }}
+              >
+                Today FollowUp: <strong>{todayFollowUpCount}</strong>
+              </div>
+
+              <div
+                onClick={() => setActiveHighlight(prev => prev === "completed" ? null : "completed")}
+                style={{
+                  ...statBoxStyle(activeHighlight === "completed"),
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  padding: "5px",
+                  fontSize: "12px",
+                }}
+              >
+                Fully Completed (5/5): <strong>{totalFullyCompletedEnquiries}</strong>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="win-prob-legend">
+            <strong>🎯 Lead Win Probability :</strong>
+            <ul style={{ display: 'flex', flexWrap: "wrap", whiteSpace: 'nowrap', listStyle: 'none', marginBottom: '0px', padding: '4px 5px', gap: '5px' }}>
+
+              <li
+                style={{ ...statBoxStyle(winFilter === null), cursor: 'pointer' }}
+                onClick={() => setWinFilter(null)}
+              >
+                All
+              </li>
+
+              <li
+                style={{ ...statBoxStyle(winFilter?.toString() === [76, 100].toString()), cursor: 'pointer' }}
+                onClick={() => handleWinFilter([76, 100])}
+              >
+                100% - 75%
+              </li>
+
+              <li
+                style={{ ...statBoxStyle(winFilter?.toString() === [51, 75].toString()), cursor: 'pointer' }}
+                onClick={() => handleWinFilter([51, 75])}
+              >
+                75% - 50%
+              </li>
+
+              <li
+                style={{ ...statBoxStyle(winFilter?.toString() === [26, 50].toString()), cursor: 'pointer' }}
+                onClick={() => handleWinFilter([26, 50])}
+              >
+                50% - 25%
+              </li>
+
+              <li
+                style={{ ...statBoxStyle(winFilter?.toString() === [0, 25].toString()), cursor: 'pointer' }}
+                onClick={() => handleWinFilter([0, 25])}
+              >
+                25% - 0%
+              </li>
+            </ul>
+          </div>
+
+          <div className="win-prob-legend">
+            <div className="filters-container">
+              <div className="date-filters">
+                <div className="filter-item">
+                  <label style={{ fontWeight: "700" }}>Date From:</label>
+                  <input className="filterInput" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                </div>
+
+                <div className="filter-item">
+                  <label style={{ fontWeight: "700" }}>Date To:</label>
+                  <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+                </div>
+
+                <div className="filter-item" style={{ display: "none" }}>
+                  <label>Financial Year:</label>
+                  <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
+                    <option value="">All</option>
+                    {availableFY.map(fy => <option key={fy} value={fy}>{fy}</option>)}
+                  </select>
+                </div>
+
+                {isAnyFilterActive && (
+                  <button
+                    className="clear-btnq"
+                    onClick={() => {
+                      setSearch('');
+                      setFromDate('');
+                      setToDate('');
+                      setFinancialYear('');
+                      setActiveHighlight(null);
+                      setActiveSource(null);
+                      setWinFilter(null);
+                      setActiveFunctionType(null);
                     }}
                   >
-                    {type}: <strong>{count}</strong>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
+                    Clear Filters
+                  </button>
+                )}
 
-        {/* Source Wise Stats */}
-        <div className="win-prob-legend">
-          <strong>📊 Source:</strong>
-          <div style={{
-            display: "flex",
-            gap: "5px",
-            flexWrap: "wrap",
-            marginTop: "5px"
-          }}>
-            {Object.entries(sourceCounts)
-              .sort((a, b) => b[1] - a[1])
-              .map(([source, count]) => {
-
-                const isActive = activeSource === source;
-
-                return (
-                  <div
-                    key={source}
-                    onClick={() =>
-                      setActiveSource(prev => prev === source ? null : source)
-                    }
-                    style={{
-                      ...statBoxStyle("#20ac99"),
-                      cursor: "pointer",
-                      transform: isActive ? "scale(1.05)" : "scale(1)",
-                      transition: "0.2s ease",
-                      padding: "5px",
-                      fontSize: "12px",
-                      backgroundColor: isActive ? "#0d8b7d" : "#20ac99"
-                    }}
-                  >
-                    {source}: <strong>{count}</strong>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-
-        {/* FollowUp Stats */}
-        <div className="win-prob-legend">
-          <strong>📅 FollowUp:</strong>
-          <div style={{
-            display: "flex",
-            gap: "5px",
-            flexWrap: "wrap",
-            marginTop: "5px"
-          }}>
-            <div
-              onClick={() => setActiveHighlight(prev => prev === "all" ? null : "all")}
-              style={{
-                ...statBoxStyle("#2196F3"),
-                cursor: "pointer",
-                transform: activeHighlight === "all" ? "scale(1.05)" : "scale(1)",
-                transition: "0.2s ease",
-                padding: "5px",
-                fontSize: "12px",
-              }}
-
-            >
-              Total Enquiry: <strong>{totalEnquiryCount}</strong>
-            </div>
-
-            <div
-              onClick={() => setActiveHighlight(prev => prev === "nofollowup" ? null : "nofollowup")}
-              style={{
-                ...statBoxStyle("#f44336"),
-                cursor: "pointer",
-                transform: activeHighlight === "nofollowup" ? "scale(1.05)" : "scale(1)",
-                transition: "0.2s ease",
-                padding: "5px",
-                fontSize: "12px",
-              }}
-            >
-              No FollowUp: <strong>{totalPossibleFollowUps - totalCompletedFollowUps} / {totalPossibleFollowUps}</strong>
-            </div>
-
-            <div
-              onClick={() => setActiveHighlight(prev => prev === "today" ? null : "today")}
-              style={{
-                ...statBoxStyle("#ff9800"),
-                cursor: "pointer",
-                transform: activeHighlight === "today" ? "scale(1.05)" : "scale(1)",
-                transition: "0.2s ease",
-                padding: "5px",
-                fontSize: "12px",
-              }}
-            >
-              Today FollowUp: <strong>{todayFollowUpCount}</strong>
-            </div>
-
-            <div
-              onClick={() => setActiveHighlight(prev => prev === "completed" ? null : "completed")}
-              style={{
-                ...statBoxStyle("#4CAF50"),
-                cursor: "pointer",
-                transform: activeHighlight === "completed" ? "scale(1.05)" : "scale(1)",
-                transition: "0.2s ease",
-                padding: "5px",
-                fontSize: "12px",
-              }}
-            >
-              Fully Completed (5/5): <strong>{totalFullyCompletedEnquiries}</strong>
-            </div>
-
-          </div>
-        </div>
-
-        <div className="win-prob-legend">
-          <strong>🎯 Lead Win Probability :</strong>
-          <ul style={{ display: 'flex', flexWrap: "wrap", whiteSpace: 'nowrap', listStyle: 'none', marginBottom: '0px', padding: '4px 5px', gap: '5px' }}>
-
-            <li
-              style={{ backgroundColor: '#5ca7b8ff', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-              onClick={() => setWinFilter(null)}
-            >
-              All
-            </li>
-
-            <li
-              style={{ backgroundColor: '#5cb85c', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-              onClick={() => handleWinFilter([76, 100])}
-            >
-              100% - 75%
-            </li>
-
-            <li
-              style={{ backgroundColor: '#ffff30', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-              onClick={() => handleWinFilter([51, 75])}
-            >
-              75% - 50%
-            </li>
-
-            <li
-              style={{ backgroundColor: '#f0ad4e', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-              onClick={() => handleWinFilter([26, 50])}
-            >
-              50% - 25%
-            </li>
-
-            <li
-              style={{ backgroundColor: '#d9534f', borderRadius: '6px', padding: '4px 6px', cursor: 'pointer' }}
-              onClick={() => handleWinFilter([0, 25])}
-            >
-              25% - 0%
-            </li>
-          </ul>
-        </div>
-
-        <div className="win-prob-legend">
-          <div className="filters-container">
-            <div className="date-filters">
-              <div className="filter-item">
-                <label style={{ fontWeight: "700" }}>Date From:</label>
-                <input className="filterInput" type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
               </div>
-
-              <div className="filter-item">
-                <label style={{ fontWeight: "700" }}>Date To:</label>
-                <input className="filterInput" type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-              </div>
-
-              <div className="filter-item" style={{ display: "none" }}>
-                <label>Financial Year:</label>
-                <select className="filterInput" value={financialYear} onChange={(e) => setFinancialYear(e.target.value)}>
-                  <option value="">All</option>
-                  {availableFY.map(fy => <option key={fy} value={fy}>{fy}</option>)}
-                </select>
-              </div>
-
-              {isAnyFilterActive && (
-                <button
-                  className="clear-btnq"
-                  onClick={() => {
-                    setSearch('');
-                    setFromDate('');
-                    setToDate('');
-                    setFinancialYear('');
-                    setActiveHighlight(null);
-                    setActiveSource(null);
-                    setWinFilter(null);
-                    setActiveFunctionType(null);
-                  }}
-                >
-                  Clear Filters
-                </button>
-              )}
-
             </div>
           </div>
         </div>
-
-      </div>
-
-      {/* Table */}
+      )}
       <div className="table-fixed-wrapper" ref={rightRef}>
         <table className="leads-table">
           <thead>
@@ -1337,7 +1344,7 @@ const EnquiryDetails = () => {
           </thead>
 
           <tbody>
-            {finalEnquiries.map((enq, index) => {
+            {currentEnquiries.map((enq, index) => {
 
               const hasTodayFollowUp =
                 Array.isArray(enq.followUpDetails) &&
@@ -1350,8 +1357,6 @@ const EnquiryDetails = () => {
 
               const isFullyCompleted = completedCount >= 5;
 
-              const winBg = getWinProbabilityColor(enq.winProbability);
-
               const rowBg =
                 activeHighlight === "today" && hasTodayFollowUp
                   ? "#ffdaa4"
@@ -1361,7 +1366,7 @@ const EnquiryDetails = () => {
                       ? "#ffc8c8"
                       : activeHighlight === "all"
                         ? "#d1eaff"
-                        : winBg || (index % 2 === 0 ? "#ffffff" : "#eaf4ff");
+                        : (index % 2 === 0 ? "#ffffff" : "#eaf4ff");
 
               return (
                 <tr
@@ -1384,7 +1389,7 @@ const EnquiryDetails = () => {
                   }}
                 >
                   <td style={{ backgroundColor: rowBg }}>
-                    {finalEnquiries.length - index}.
+                    {finalEnquiries.length - indexOfFirstItem - index}.
                   </td>
 
                   <td style={{ backgroundColor: rowBg }}>
@@ -1826,6 +1831,12 @@ const EnquiryDetails = () => {
 
       </div>
 
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+
       <div style={{ marginBottom: '50px' }}></div>
     </div>
   );
@@ -1834,12 +1845,13 @@ const EnquiryDetails = () => {
 
 export default EnquiryDetails;
 
-const statBoxStyle = (color) => ({
-  backgroundColor: color,
-  color: "white",
-  padding: "6px 12px",
-  borderRadius: "6px",
-  fontSize: "14px",
-  fontWeight: "500",
-  boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+const statBoxStyle = (isActive) => ({
+  backgroundColor: isActive ? "#0067b8" : "#ffffff",
+  color: isActive ? "#ffffff" : "#424242",
+  padding: "4px 10px",
+  borderRadius: "16px",
+  fontSize: "12px",
+  fontWeight: "600",
+  border: isActive ? "1px solid #0067b8" : "1px solid #d2d2d2",
+  boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
 });
