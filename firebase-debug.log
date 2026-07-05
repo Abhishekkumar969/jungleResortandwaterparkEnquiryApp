@@ -1,0 +1,127 @@
+[debug] [2026-07-05T07:12:37.075Z] ----------------------------------------------------------------------
+[debug] [2026-07-05T07:12:37.079Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2026-07-05T07:12:37.080Z] CLI Version:   15.19.0
+[debug] [2026-07-05T07:12:37.080Z] Platform:      win32
+[debug] [2026-07-05T07:12:37.080Z] Node Version:  v22.18.0
+[debug] [2026-07-05T07:12:37.081Z] Time:          Sun Jul 05 2026 12:42:37 GMT+0530 (India Standard Time)
+[debug] [2026-07-05T07:12:37.081Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-05T07:12:42.116Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-05T07:12:42.117Z] > authorizing via signed-in user (abhishekbhardwaj9631@gmail.com)
+[debug] [2026-07-05T07:12:42.117Z] [iam] checking project jungleresortwaterparkenquiry for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-07-05T07:12:42.118Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:42.118Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:42.119Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions [none]
+[debug] [2026-07-05T07:12:42.119Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions  x-goog-user-project=jungleresortwaterparkenquiry
+[debug] [2026-07-05T07:12:42.120Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-07-05T07:12:43.561Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions 200
+[debug] [2026-07-05T07:12:43.562Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-07-05T07:12:43.563Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:43.563Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:43.563Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-07-05T07:12:43.563Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-07-05T07:12:45.317Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-07-05T07:12:45.317Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/jungleresortwaterparkenquiry/serviceAccounts/jungleresortwaterparkenquiry@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-07-05T07:12:45.319Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:45.320Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:45.321Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry [none]
+[debug] [2026-07-05T07:12:45.835Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry 200
+[debug] [2026-07-05T07:12:45.835Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry {"projectId":"jungleresortwaterparkenquiry","projectNumber":"462669648395","displayName":"jungleresortwaterparkEnquiry","name":"projects/jungleresortwaterparkenquiry","resources":{"hostingSite":"jungleresortwaterparkenquiry"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_e9aeaab0-4410-4679-b66f-179a7f0c1504"}
+[debug] [2026-07-05T07:12:45.842Z] Specified "public" directory "build" does not exist; Deploy to Hosting site "jungleresortwaterparkenquiry" may fail or be empty.
+[info] 
+[info] === Deploying to 'jungleresortwaterparkenquiry'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] +  functions: Finished running predeploy script. 
+[debug] [2026-07-05T07:12:46.730Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:46.730Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:46.730Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry [none]
+[debug] [2026-07-05T07:12:47.050Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry 200
+[debug] [2026-07-05T07:12:47.050Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/jungleresortwaterparkenquiry {"projectNumber":"462669648395","projectId":"jungleresortwaterparkenquiry","lifecycleState":"ACTIVE","name":"jungleresortwaterparkEnquiry","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-03-14T17:15:50.029211Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-07-05T07:12:47.068Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:47.068Z] Checked if tokens are valid: true, expires at: 1783239063104
+[debug] [2026-07-05T07:12:47.069Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry/adminSdkConfig [none]
+[debug] [2026-07-05T07:12:47.457Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry/adminSdkConfig 200
+[debug] [2026-07-05T07:12:47.457Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/jungleresortwaterparkenquiry/adminSdkConfig {"projectId":"jungleresortwaterparkenquiry","storageBucket":"jungleresortwaterparkenquiry.firebasestorage.app"}
+[debug] [2026-07-05T07:12:47.464Z] Validating nodejs source
+[warn] !  functions: Couldn't find firebase-functions package in your source code. Have you run 'npm install'? 
+[debug] [2026-07-05T07:12:47.469Z] getFunctionsSDKVersion encountered error: Cannot find module 'firebase-functions'
+Require stack:
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\versioning.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\emulator\functionsEmulatorShared.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\prepare.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\deploy.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js {"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\versioning.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\node\\index.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\runtimes\\index.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\functions\\prepare.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorShared.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\frameworks\\index.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\hosting\\prepare.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\hosting\\index.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\deploy\\index.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\deploy.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\commands\\index.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\index.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\cli.js","C:\\Users\\ABHISHEK\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\bin\\firebase.js"]}
+[debug] [2026-07-05T07:12:47.473Z] checkFunctionsSDKVersion encountered error: Invalid Version:  {}
+[debug] [2026-07-05T07:12:47.476Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "echo 'skip lint'",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "24"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0",
+    "razorpay": "^2.9.6"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.4.1"
+  },
+  "private": true
+}
+[debug] [2026-07-05T07:12:47.477Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-07-05T07:12:47.481Z] Could not parse firebase-functions version '' into semver.
+[debug] [2026-07-05T07:12:47.483Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-07-05T07:12:47.513Z] Error: Cannot find module 'firebase-functions'
+Require stack:
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\emulator\functionsEmulatorShared.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\prepare.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\hosting\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\deploy.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js
+- C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at Function.resolve (node:internal/modules/helpers:145:19)
+    at Delegate.findFunctionsBinary (C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:101:33)
+    at Delegate.spawnFunctionsProcess (C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:131:30)
+    at Delegate.serveAdmin (C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:152:35)
+    at Delegate.discoverBuild (C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\runtimes\node\index.js:192:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async loadCodebases (C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js:489:33)
+    at async prepare (C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\prepare.js:80:24)
+    at async chain (C:\Users\ABHISHEK\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js:45:9)
+[error] 
+[error] Error: An unexpected error has occurred.
