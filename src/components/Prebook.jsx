@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 import { doc, collection, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { FaEnvelopeOpenText, FaFolderOpen, FaPenFancy, FaUserShield, FaWhatsapp, FaTrashAlt, FaTicketAlt } from "react-icons/fa";
+import { FaEnvelopeOpenText, FaFolderOpen, FaPenFancy, FaUserShield, FaWhatsapp, FaTrashAlt, FaTicketAlt, FaQrcode } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { MdEventAvailable } from "react-icons/md";
 import { IoCloudOfflineOutline } from "react-icons/io5";
 import { requestNotificationPermission } from "../firebaseConfig";
 import BackButton from "../components/BackButton";
 import BottomNavigationBar from './BottomNavigationBar';
+import { Html5QrcodeScanner } from "html5-qrcode";
+import toast from "react-hot-toast";
 import './Prebook.css';
 
 const Prebook = () => {
@@ -23,6 +25,15 @@ const Prebook = () => {
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [visitedCount, setVisitedCount] = useState(0);
   const [nonVisitedCount, setNonVisitedCount] = useState(0);
+  
+  const [allWaterparkBookings, setAllWaterparkBookings] = useState([]);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
+  const bookingsRef = useRef([]);
+
+  useEffect(() => {
+    bookingsRef.current = allWaterparkBookings;
+  }, [allWaterparkBookings]);
 
   useEffect(() => {
     const unsubscribes = [];
@@ -39,19 +50,19 @@ const Prebook = () => {
       })
     );
 
-    // 🔹 WaterPark
     const bookingWaterparkRef = collection(db, "WaterPark");
 
     unsubscribes.push(
       onSnapshot(bookingWaterparkRef, (snapshot) => {
         let visited = 0;
         let nonVisited = 0;
+        let flatBookings = [];
 
         snapshot.forEach((docSnap) => {
           const allBookings = docSnap.data();
 
           Object.values(allBookings).forEach((data) => {
-
+            flatBookings.push(data);
             const hasPayment = !!data.paymentId;
             const isVisited = data.visited === true;
 
@@ -66,6 +77,7 @@ const Prebook = () => {
 
         setVisitedCount(visited);
         setNonVisitedCount(nonVisited);
+        setAllWaterparkBookings(flatBookings);
       })
     );
 
@@ -262,6 +274,56 @@ const Prebook = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    let scanner = null;
+    if (scannerOpen) {
+      scanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        false
+      );
+
+      scanner.render(
+        (decodedText) => {
+          if (scanner) {
+            scanner.clear().catch((e) => console.error(e));
+          }
+          setScannerOpen(false);
+          if (!decodedText) return;
+
+          const booking = bookingsRef.current.find((e) => e.id === decodedText);
+          if (booking) {
+            setScanResult(booking);
+          } else {
+            toast.error("Booking not found in current records.", { icon: "❌" });
+          }
+        },
+        (error) => {}
+      );
+    }
+
+    return () => {
+      if (scanner) {
+        scanner.clear().catch((e) => console.error("Failed to clear scanner", e));
+      }
+    };
+  }, [scannerOpen]);
+
+  const handleMarkScannedVisit = async () => {
+    if (!scanResult) return;
+    try {
+      await updateDoc(doc(db, "WaterPark", scanResult.monthYear), {
+        [`${scanResult.id}.visited`]: true,
+        [`${scanResult.id}.visitedAt`]: new Date().toISOString(),
+      });
+      toast.success(`Successfully marked as visited!`);
+      setScanResult(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update visit status.");
+    }
+  };
+
   return (
     <>
       <div style={{ marginBottom: '40px' }}> <BackButton />  </div>
@@ -325,6 +387,7 @@ const Prebook = () => {
                 {hasAccess("Bookings", "Enquiry") && <ServiceBox label="Enquiry Form" onClick={() => navigate('/EnquiryForm')} icon={<FaEnvelopeOpenText />} />}
                 {(hasAccess("Bookings", "Lead Record") || hasAccess("Bookings", "Enquiry Record") || hasAccess("Bookings", "Book Record")) && (<ServiceBox label="Reports" onClick={() => navigate('/leadstabcontainer')} icon={<FaFolderOpen />} />)}
                 {(hasAccess("Bookings", "Past Enquiry") || hasAccess("Bookings", "Dropped Leads") || hasAccess("Bookings", "Cancelled Bookings")) && (<ServiceBox label="Dropped" onClick={() => navigate('/PastLeadsTabContainer')} icon={<FaTrashAlt />} />)}
+                {hasAccess("Bookings", "Water Park") && (<ServiceBox label="Scan QR" onClick={() => setScannerOpen(true)} icon={<FaQrcode />} />)}
               </div>
             </div>
           ) : null}
@@ -428,6 +491,43 @@ const Prebook = () => {
               </button>
 
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* SCANNER MODAL */}
+      {scannerOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ background: "#fff", padding: "20px", borderRadius: "10px", maxWidth: "400px", width: "90%" }}>
+            <h3 style={{ marginTop: 0 }}>Scan Ticket QR</h3>
+            <div id="reader" style={{ width: "100%" }}></div>
+            <button onClick={() => setScannerOpen(false)} style={{ marginTop: "15px", width: "100%", padding: "10px", background: "#f44336", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer" }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {scanResult && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ background: "#fff", padding: "20px", borderRadius: "10px", maxWidth: "400px", width: "90%", color: "#000" }}>
+            <h3 style={{ marginTop: 0 }}>Ticket Details</h3>
+            <p><strong>Name:</strong> {scanResult.name}</p>
+            <p><strong>Mobile:</strong> {scanResult.phone}</p>
+            <p><strong>Visit Date:</strong> {scanResult.visitDate}</p>
+            <p><strong>Amount:</strong> ₹{scanResult.totalAmount || scanResult.amount || "N/A"}</p>
+
+            {scanResult.visited ? (
+              <div style={{ padding: "10px", background: "#ffebee", color: "#d32f2f", borderRadius: "5px", textAlign: "center", marginTop: "10px", fontWeight: "bold" }}>
+                ⚠️ ALREADY VISITED
+                <div style={{ fontSize: "12px", marginTop: "5px", fontWeight: "normal" }}>
+                  on {new Date(scanResult.visitedAt).toLocaleString()}
+                </div>
+              </div>
+            ) : (
+              <button onClick={handleMarkScannedVisit} style={{ marginTop: "15px", width: "100%", padding: "10px", background: "#4caf50", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold", fontSize: "16px" }}>
+                ✅ Mark as Visited
+              </button>
+            )}
+            <button onClick={() => setScanResult(null)} style={{ marginTop: "10px", width: "100%", padding: "10px", background: "#9e9e9e", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer" }}>Close</button>
           </div>
         </div>
       )}

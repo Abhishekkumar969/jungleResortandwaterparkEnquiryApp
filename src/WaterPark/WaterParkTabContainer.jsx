@@ -6,8 +6,10 @@ import { useNavigate } from "react-router-dom";
 import "../styles/FixedTable.css"
 import { getAuth } from "firebase/auth";
 import Pagination from "../components/Pagination";
+import { Html5QrcodeScanner } from "html5-qrcode";
+import toast from "react-hot-toast";
 
-const WaterParkTable = ({ type }) => {
+const WaterParkTable = ({ type, openScannerInitial }) => {
     const [enquiries, setEnquiries] = useState([]);
     const [search, setSearch] = useState("");
     const [sortField, setSortField] = useState("createdAt");
@@ -22,6 +24,13 @@ const WaterParkTable = ({ type }) => {
     const [showFilters, setShowFilters] = useState(false);
     const itemsPerPage = 25;
 
+    const [scannerOpen, setScannerOpen] = useState(openScannerInitial || false);
+    const [scanResult, setScanResult] = useState(null);
+    const enquiriesRef = useRef(enquiries);
+
+    useEffect(() => {
+        enquiriesRef.current = enquiries;
+    }, [enquiries]);
 
     const getCurrentFinancialYear = () => {
         const now = new Date();
@@ -418,11 +427,22 @@ const WaterParkTable = ({ type }) => {
 
         // "all" → no filter
 
-        // Separate Water Park and Cottage
-        if (type === "waterpark") {
+        // Separate Water Park, Pool Party, and Cottage
+        if (type === "poolparty") {
             data = data.filter(enq => {
                 if (!enq.tickets) return false;
-                if (typeof enq.tickets === 'object') return Object.keys(enq.tickets).length > 0;
+                if (typeof enq.tickets === 'object') {
+                    return Object.keys(enq.tickets).some(k => k.startsWith("pp_"));
+                }
+                return String(enq.tickets).includes("pp_");
+            });
+        } else if (type === "waterpark") {
+            data = data.filter(enq => {
+                if (!enq.tickets) return false;
+                if (typeof enq.tickets === 'object') {
+                    const keys = Object.keys(enq.tickets).filter(k => k !== 'total' && k !== 'userId' && k !== 'verification');
+                    return keys.some(k => !k.startsWith("pp_"));
+                }
                 return enq.tickets.toString().trim() !== "";
             });
         } else if (type === "cottage") {
@@ -515,6 +535,56 @@ const WaterParkTable = ({ type }) => {
         }
     };
 
+    const handleMarkScannedVisit = async () => {
+        if (!scanResult) return;
+        try {
+            await updateDoc(doc(db, "WaterPark", scanResult.monthYear), {
+                [`${scanResult.id}.visited`]: true,
+                [`${scanResult.id}.visitedAt`]: new Date().toISOString()
+            });
+            toast.success(`Successfully marked as visited!`);
+            setScanResult(null);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to update visit status.");
+        }
+    };
+
+    useEffect(() => {
+        let scanner = null;
+        if (scannerOpen) {
+            scanner = new Html5QrcodeScanner(
+                "reader",
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                false
+            );
+            
+            scanner.render(
+                (decodedText) => {
+                    if (scanner) {
+                        scanner.clear().catch(e => console.error(e));
+                    }
+                    setScannerOpen(false);
+                    if (!decodedText) return;
+                    
+                    const booking = enquiriesRef.current.find(e => e.id === decodedText);
+                    if (booking) {
+                        setScanResult(booking);
+                    } else {
+                        toast.error("Booking not found in current records.", { icon: "❌" });
+                    }
+                },
+                (error) => {}
+            );
+        }
+
+        return () => {
+            if (scanner) {
+                scanner.clear().catch(e => console.error("Failed to clear scanner", e));
+            }
+        };
+    }, [scannerOpen]);
+
     return (
         <div className="leads-table-container" >
 
@@ -553,7 +623,64 @@ const WaterParkTable = ({ type }) => {
                         <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                     </svg>
                 </button>
+                <button
+                    onClick={() => setScannerOpen(true)}
+                    title="Scan QR Ticket"
+                    style={{
+                        padding: "8px 12px",
+                        backgroundColor: "#e91e8c",
+                        color: "#ffffff",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                        transition: "0.2s ease",
+                        fontWeight: "bold",
+                        whiteSpace: "nowrap"
+                    }}
+                >
+                    📸 Scan QR
+                </button>
             </div>
+
+            {scannerOpen && (
+                <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <div style={{ background: "#fff", padding: "20px", borderRadius: "10px", maxWidth: "400px", width: "90%" }}>
+                        <h3 style={{ marginTop: 0 }}>Scan Ticket QR</h3>
+                        <div id="reader" style={{ width: "100%" }}></div>
+                        <button onClick={() => setScannerOpen(false)} style={{ marginTop: "15px", width: "100%", padding: "10px", background: "#f44336", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer" }}>Cancel</button>
+                    </div>
+                </div>
+            )}
+            
+            {scanResult && (
+                <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <div style={{ background: "#fff", padding: "20px", borderRadius: "10px", maxWidth: "400px", width: "90%", color: "#000" }}>
+                        <h3 style={{ marginTop: 0 }}>Ticket Details</h3>
+                        <p><strong>Name:</strong> {scanResult.name}</p>
+                        <p><strong>Mobile:</strong> {scanResult.phone}</p>
+                        <p><strong>Visit Date:</strong> {scanResult.visitDate}</p>
+                        <p><strong>Amount:</strong> ₹{scanResult.totalAmount || scanResult.amount || "N/A"}</p>
+                        
+                        {scanResult.visited ? (
+                            <div style={{ padding: "10px", background: "#ffebee", color: "#d32f2f", borderRadius: "5px", textAlign: "center", marginTop: "10px", fontWeight: "bold" }}>
+                                ⚠️ ALREADY VISITED
+                                <div style={{ fontSize: "12px", marginTop: "5px", fontWeight: "normal" }}>
+                                    on {new Date(scanResult.visitedAt).toLocaleString()}
+                                </div>
+                            </div>
+                        ) : (
+                            <button onClick={handleMarkScannedVisit} style={{ marginTop: "15px", width: "100%", padding: "10px", background: "#4caf50", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold", fontSize: "16px" }}>
+                                ✅ Mark as Visited
+                            </button>
+                        )}
+                        <button onClick={() => setScanResult(null)} style={{ marginTop: "10px", width: "100%", padding: "10px", background: "#9e9e9e", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer" }}>Close</button>
+                    </div>
+                </div>
+            )}
 
             {showFilters && (
                 <div style={{ display: 'flex', margin: "15px 0px", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>

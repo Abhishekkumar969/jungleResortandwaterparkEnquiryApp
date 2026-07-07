@@ -12,6 +12,7 @@ const LeadsTabContainer = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tabFromURL = queryParams.get("tab");
+    const openScanner = location.state?.openScanner || false;
     const [activeTab, setActiveTab] = useState(null);
     const [panelAccess, setPanelAccess] = useState({});
     const [userAppType, setUserAppType] = useState(null);
@@ -74,6 +75,7 @@ const LeadsTabContainer = () => {
         if (hasAccess("Enquiry Record")) accessibleTabs.push("enquiry");
         if (hasAccess("Water Park")) accessibleTabs.push("waterpark");
         if (hasAccess("Water Park")) accessibleTabs.push("cottage");
+        if (hasAccess("Water Park")) accessibleTabs.push("poolparty");
 
         let defaultTab = null;
 
@@ -97,10 +99,13 @@ const LeadsTabContainer = () => {
                 return <EnquiryDetails />;
 
             case "waterpark": // ✅ FIX
-                return <WaterParkDetails type="waterpark" />;
+                return <WaterParkDetails type="waterpark" openScannerInitial={openScanner} />;
 
             case "cottage": 
                 return <WaterParkDetails type="cottage" />;
+
+            case "poolparty": 
+                return <WaterParkDetails type="poolparty" />;
 
             default:
                 return <p style={{ textAlign: "center" }}>No access</p>;
@@ -139,6 +144,15 @@ const LeadsTabContainer = () => {
                             onClick={() => handleTabClick("cottage")}
                         >
                             Cottage
+                        </button>
+                    )}
+
+                    {hasAccess("Water Park") && (
+                        <button
+                            className={activeTab === "poolparty" ? "active" : ""}
+                            onClick={() => handleTabClick("poolparty")}
+                        >
+                            Pool Party
                         </button>
                     )}
 

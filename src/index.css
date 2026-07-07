@@ -72,3 +72,46 @@ body {
     overflow                  : visible !important;
     -webkit-overflow-scrolling: touch;
 }
+
+/* ===== QR SCANNER OVERRIDES ===== */
+#reader {
+    border: none !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+#reader video {
+    border-radius: 8px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+#reader button {
+    background-color: #0067b8 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 16px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    margin: 5px !important;
+    transition: background 0.2s !important;
+}
+
+#reader button:hover {
+    background-color: #005599 !important;
+}
+
+#reader select {
+    padding: 8px !important;
+    border-radius: 6px !important;
+    border: 1px solid #ccc !important;
+    margin: 5px !important;
+    max-width: 100% !important;
+}
+
+#reader__dashboard_section_swaplink {
+    text-decoration: none !important;
+    color: #e91e8c !important;
+    font-weight: bold !important;
+}
