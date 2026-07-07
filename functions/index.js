@@ -13,6 +13,7 @@ admin.initializeApp();
 const razorpayKey = defineSecret("RAZORPAY_KEY");
 const razorpaySecret = defineSecret("RAZORPAY_SECRET");
 
+// Force redeployment to pick up latest secrets
 exports.createRazorpayOrder = onRequest(
   {
     secrets: ["RAZORPAY_KEY", "RAZORPAY_SECRET"],
@@ -50,8 +51,8 @@ exports.createRazorpayOrder = onRequest(
       }
 
       const razorpay = new Razorpay({
-        key_id: razorpayKey.value(),
-        key_secret: razorpaySecret.value(),
+        key_id: razorpayKey.value().trim(),
+        key_secret: razorpaySecret.value().trim(),
       });
 
       const order = await razorpay.orders.create({
