@@ -1306,19 +1306,19 @@ const EnquiryDetails = () => {
             <tr style={{ whiteSpace: "nowrap" }}>
               <th>Sl</th>
 
-              <th
-                onClick={() => handleSort("createdAt")}
-                style={{ cursor: "pointer" }}
-              >
-                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "↑" : "↓") : ""}
+              <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
+                Event Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
               </th>
 
               <th>Name</th>
 
               <th>Mobile</th>
 
-              <th onClick={() => handleSort("functionDate")} style={{ cursor: "pointer", padding: '4px' }}>
-                Event Date {sortField === "functionDate" ? (sortAsc ? "" : "") : ""}
+              <th
+                onClick={() => handleSort("createdAt")}
+                style={{ cursor: "pointer" }}
+              >
+                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "↑" : "↓") : ""}
               </th>
               {/* <th>Email</th> */}
               <th>Pax</th>
@@ -1392,53 +1392,6 @@ const EnquiryDetails = () => {
                     {finalEnquiries.length - indexOfFirstItem - index}.
                   </td>
 
-                  <td style={{ backgroundColor: rowBg }}>
-                    {(() => {
-                      if (enq.createdAt) {
-                        const { date, time } = formatCreatedAtSplit(enq.createdAt);
-
-                        return (
-                          <div>
-                            <div>{date}</div>
-                            <div style={{ fontSize: "13px", color: "#454545" }}>Time: {time}</div>
-                          </div>
-                        );
-                      }
-
-                      // fallback
-                      if (enq.enquiryDate) {
-                        const [y, m, d] = enq.enquiryDate.split("-");
-                        return `${d}/${m}/${y}`;
-                      }
-
-                      return "-";
-                    })()}
-                  </td>
-
-                  <td
-                    style={{
-                      backgroundColor: rowBg
-                    }}
-                  >
-                    {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
-                  </td>
-
-                  {/* What's App No. */}
-                  <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
-                    {enq.mobile1 ? (
-                      <a href={`tel:${enq.mobile1}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                        {enq.mobile1}
-                      </a>
-                    ) : " "}
-                    <div style={{ marginTop: '5px' }}>
-                      {enq.mobile2 ? (
-                        <a href={`tel:${enq.mobile2}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                          {enq.mobile2}
-                        </a>
-                      ) : " "}
-                    </div>
-                  </td>
-
                   <td style={{ backgroundColor: rowBg }} >
                     <div style={{ display: "flex", flexDirection: "column" }}>
 
@@ -1492,6 +1445,53 @@ const EnquiryDetails = () => {
                       })()}
 
                     </div>
+                  </td>
+
+                  <td
+                    style={{
+                      backgroundColor: rowBg
+                    }}
+                  >
+                    {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
+                  </td>
+
+                  {/* What's App No. */}
+                  <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
+                    {enq.mobile1 ? (
+                      <a href={`tel:${enq.mobile1}`} style={{ color: '#000000', textDecoration: 'none' }}>
+                        {enq.mobile1}
+                      </a>
+                    ) : " "}
+                    <div style={{ marginTop: '5px' }}>
+                      {enq.mobile2 ? (
+                        <a href={`tel:${enq.mobile2}`} style={{ color: '#000000', textDecoration: 'none' }}>
+                          {enq.mobile2}
+                        </a>
+                      ) : " "}
+                    </div>
+                  </td>
+
+                  <td style={{ backgroundColor: rowBg }}>
+                    {(() => {
+                      if (enq.createdAt) {
+                        const { date, time } = formatCreatedAtSplit(enq.createdAt);
+
+                        return (
+                          <div>
+                            <div>{date}</div>
+                            <div style={{ fontSize: "13px", color: "#454545" }}>Time: {time}</div>
+                          </div>
+                        );
+                      }
+
+                      // fallback
+                      if (enq.enquiryDate) {
+                        const [y, m, d] = enq.enquiryDate.split("-");
+                        return `${d}/${m}/${y}`;
+                      }
+
+                      return "-";
+                    })()}
                   </td>
 
                   <td style={{ backgroundColor: rowBg, display: "none" }}>{enq.email}</td>

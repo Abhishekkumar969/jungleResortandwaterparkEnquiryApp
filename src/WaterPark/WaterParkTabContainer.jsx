@@ -623,27 +623,6 @@ const WaterParkTable = ({ type, openScannerInitial }) => {
                         <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                     </svg>
                 </button>
-                <button
-                    onClick={() => setScannerOpen(true)}
-                    title="Scan QR Ticket"
-                    style={{
-                        padding: "8px 12px",
-                        backgroundColor: "#e91e8c",
-                        color: "#ffffff",
-                        border: "none",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                        transition: "0.2s ease",
-                        fontWeight: "bold",
-                        whiteSpace: "nowrap"
-                    }}
-                >
-                    📸 Scan QR
-                </button>
             </div>
 
             {scannerOpen && (
@@ -793,6 +772,7 @@ const WaterParkTable = ({ type, openScannerInitial }) => {
                 </div>
             </div>
             )}
+
             {/* Table */}
             <div className="table-fixed-wrapper" ref={rightRef} style={{ marginTop: '15px' }}>
                 <table className="leads-table">
@@ -800,19 +780,25 @@ const WaterParkTable = ({ type, openScannerInitial }) => {
                         <tr style={{ whiteSpace: "nowrap" }}>
                             <th>Sl</th>
 
-                            <th onClick={() => handleSort("createdAt")} style={{ cursor: "pointer" }}>
-                                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "↑" : "↓") : ""}
+                            <th onClick={() => handleSort("visitDate")} style={{ cursor: "pointer", padding: '4px' }}>
+                                Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
                             </th>
 
                             <th>Name</th>
 
                             <th>Mobile</th>
 
-                            <th onClick={() => handleSort("visitDate")} style={{ cursor: "pointer", padding: '4px' }}>
-                                Visit Date {sortField === "visitDate" ? (sortAsc ? "" : "") : ""}
+                            <th onClick={() => handleSort("createdAt")} style={{ cursor: "pointer" }}>
+                                Enquiry Date {sortField === "createdAt" ? (sortAsc ? "↑" : "↓") : ""}
                             </th>
 
                             {(!type || type === "waterpark") && <th>Water Park</th>}
+                            {(!type || type === "poolparty") && (
+                                <>
+                                    <th>Name</th>
+                                    <th>Qty</th>
+                                </>
+                            )}
                             {(!type || type === "cottage") && (
                                 <>
                                     <th>Cottage Rooms</th>
@@ -820,7 +806,13 @@ const WaterParkTable = ({ type, openScannerInitial }) => {
                                     <th>Days</th>
                                 </>
                             )}
-                            <th>Total Amt</th>
+                            <th>
+                                Total Amt
+                                <br />
+                                <span style={{ fontSize: '13px', color: '#084298', backgroundColor: '#eaf4ff', padding: '2px 4px', borderRadius: '4px', fontWeight: 'bold' }}>
+                                    ₹ {finalEnquiries.reduce((sum, enq) => sum + (Number(enq.total) || 0), 0).toLocaleString("en-IN")}
+                                </span>
+                            </th>
                             <th>Visit</th>
                             <th>User Id</th>
                             <th>Payment Id</th>
@@ -860,35 +852,6 @@ const WaterParkTable = ({ type, openScannerInitial }) => {
                                 >
                                     <td style={{ backgroundColor: rowBg }}>
                                         {finalEnquiries.length - indexOfFirstItem - index}.
-                                    </td>
-
-                                    <td style={{ backgroundColor: rowBg }}>
-                                        {(() => {
-                                            const { date, time } = formatCreatedAtSplit(enq.createdAt);
-
-                                            return (
-                                                <div style={{ lineHeight: "1.2" }}>
-                                                    <div style={{ fontWeight: 500 }}>{date}</div>
-                                                    <div style={{ fontSize: "13px", color: "#454545" }}>Time: {time}</div>
-                                                </div>
-                                            );
-                                        })()}
-                                    </td>
-
-                                    <td
-                                        style={{
-                                            backgroundColor: rowBg
-                                        }}
-                                    >
-                                        {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
-                                    </td>
-
-                                    <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
-
-                                        <a href={`tel:${enq.phone}`} style={{ color: '#000000', textDecoration: 'none' }}>
-                                            {enq.phone}
-                                        </a>
-
                                     </td>
 
                                     <td style={{ backgroundColor: rowBg }} >
@@ -983,14 +946,65 @@ const WaterParkTable = ({ type, openScannerInitial }) => {
                                         </div>
                                     </td>
 
+                                    <td
+                                        style={{
+                                            backgroundColor: rowBg
+                                        }}
+                                    >
+                                        {`${enq.prefix || ''} ${enq.name || '-'}`.trim()}
+                                    </td>
+
+                                    <td style={{ fontWeight: '700', backgroundColor: rowBg }}>
+
+                                        <a href={`tel:${enq.phone}`} style={{ color: '#000000', textDecoration: 'none' }}>
+                                            {enq.phone}
+                                        </a>
+
+                                    </td>
+
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {(() => {
+                                            const { date, time } = formatCreatedAtSplit(enq.createdAt);
+
+                                            return (
+                                                <div style={{ lineHeight: "1.2" }}>
+                                                    <div style={{ fontWeight: 500 }}>{date}</div>
+                                                    <div style={{ fontSize: "13px", color: "#454545" }}>Time: {time}</div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </td>
+
                                     {(!type || type === "waterpark") && (
                                         <td style={{ backgroundColor: rowBg }}>
                                             {enq.tickets && typeof enq.tickets === "object"
                                                 ? Object.entries(enq.tickets)
+                                                    .filter(([key]) => key !== 'total' && key !== 'userId' && key !== 'verification' && !key.startsWith("pp_"))
                                                     .map(([key, value]) => `${key}: ${value}`)
                                                     .join(", ")
                                                 : enq.tickets || "-"}
                                         </td>
+                                    )}
+
+                                    {(!type || type === "poolparty") && (
+                                        <>
+                                            <td style={{ backgroundColor: rowBg }}>
+                                                {enq.tickets && typeof enq.tickets === "object"
+                                                    ? Object.entries(enq.tickets)
+                                                        .filter(([key]) => key.startsWith("pp_"))
+                                                        .map(([key]) => key.replace("pp_", ""))
+                                                        .join(", ")
+                                                    : "-"}
+                                            </td>
+                                            <td style={{ backgroundColor: rowBg }}>
+                                                {enq.tickets && typeof enq.tickets === "object"
+                                                    ? Object.entries(enq.tickets)
+                                                        .filter(([key]) => key.startsWith("pp_"))
+                                                        .map(([, value]) => value)
+                                                        .join(", ")
+                                                    : "-"}
+                                            </td>
+                                        </>
                                     )}
 
                                     {/* 🏡 Cottage Columns */}
