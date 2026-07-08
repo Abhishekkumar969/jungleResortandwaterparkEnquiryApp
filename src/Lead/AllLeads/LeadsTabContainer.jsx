@@ -12,7 +12,6 @@ const LeadsTabContainer = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tabFromURL = queryParams.get("tab");
-    const openScanner = location.state?.openScanner || false;
     const [activeTab, setActiveTab] = useState(null);
     const [panelAccess, setPanelAccess] = useState({});
     const [userAppType, setUserAppType] = useState(null);
@@ -99,7 +98,7 @@ const LeadsTabContainer = () => {
                 return <EnquiryDetails />;
 
             case "waterpark": // ✅ FIX
-                return <WaterParkDetails type="waterpark" openScannerInitial={openScanner} />;
+                return <WaterParkDetails type="waterpark" />;
 
             case "cottage": 
                 return <WaterParkDetails type="cottage" />;

@@ -19,6 +19,7 @@ import PaymentBar from "./MonthlyPayment/PaymentBar";
 
 import BlogAdmin from './pages/BlogAdmin';
 import TicketPricingAdmin from './pages/TicketPricingAdmin';
+import InfluencersTab from './pages/InfluencersTab';
 
 export default function AppRoutes() {
     const navigate = useNavigate();
@@ -86,6 +87,7 @@ export default function AppRoutes() {
                 <Route path="/BlogAdmin" element={<PrivateRoute><BlogAdmin /></PrivateRoute>} />
                 <Route path="/TicketPricingAdmin" element={<PrivateRoute><TicketPricingAdmin /></PrivateRoute>} />
                 <Route path="/ReservedPage" element={<PrivateRoute><ReservedPage /></PrivateRoute>} />
+                <Route path="/influencers" element={<PrivateRoute><InfluencersTab /></PrivateRoute>} />
                 <Route path="/login" element={<LoginPage />} />
             </Routes>
 
