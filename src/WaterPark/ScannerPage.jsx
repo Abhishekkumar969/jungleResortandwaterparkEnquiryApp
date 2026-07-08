@@ -54,8 +54,20 @@ const ScannerPage = () => {
                         try {
                             await scanner.stop();
 
-                            const data = JSON.parse(decodedText);
-                            const ticketId = data.ticketId;
+                            let ticketId;
+                            try {
+                                const data = JSON.parse(decodedText);
+                                ticketId = data.ticketId || decodedText;
+                            } catch (e) {
+                                // Fallback to raw string if not JSON (old tickets)
+                                ticketId = decodedText;
+                            }
+
+                            if (!ticketId) {
+                                alert("❌ Invalid QR format");
+                                restartScanner();
+                                return;
+                            }
 
                             setScannedData(ticketId);
                             setLoading(true);
