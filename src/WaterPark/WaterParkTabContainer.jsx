@@ -718,6 +718,7 @@ const WaterParkTable = ({ type }) => {
                                     <th>Days</th>
                                 </>
                             )}
+                            <th>Addons</th>
                             <th>
                                 Total Amt
                                 <br />
@@ -927,6 +928,44 @@ const WaterParkTable = ({ type }) => {
                                             <td style={{ backgroundColor: rowBg }}>{enq.cottage?.days || "-"}</td>
                                         </>
                                     )}
+
+                                    <td style={{ backgroundColor: rowBg }}>
+                                        {(() => {
+                                            let addonsList = [];
+                                            const hasWaterpark = enq.tickets && typeof enq.tickets === "object" && Object.keys(enq.tickets).some(k => k !== 'total' && k !== 'userId' && k !== 'verification' && !k.startsWith("pp_"));
+                                            const hasPoolParty = enq.tickets && typeof enq.tickets === "object" && Object.keys(enq.tickets).some(k => k.startsWith("pp_"));
+                                            const hasCottage = enq.cottage && Object.keys(enq.cottage).length > 0;
+
+                                            if (type === "waterpark") {
+                                                if (hasPoolParty) {
+                                                    addonsList.push("Pool Party: " + Object.entries(enq.tickets).filter(([k]) => k.startsWith("pp_")).map(([k, v]) => `${k.replace("pp_", "")} (${v})`).join(", "));
+                                                }
+                                                if (hasCottage) {
+                                                    addonsList.push(`Cottage: ${enq.cottage.rooms || 0} rooms`);
+                                                }
+                                            } else if (type === "poolparty") {
+                                                if (hasWaterpark) {
+                                                    addonsList.push("Water Park: " + Object.entries(enq.tickets).filter(([k]) => k !== 'total' && k !== 'userId' && k !== 'verification' && !k.startsWith("pp_")).map(([k, v]) => `${k} (${v})`).join(", "));
+                                                }
+                                                if (hasCottage) {
+                                                    addonsList.push(`Cottage: ${enq.cottage.rooms || 0} rooms`);
+                                                }
+                                            } else if (type === "cottage") {
+                                                if (hasWaterpark) {
+                                                    addonsList.push("Water Park: " + Object.entries(enq.tickets).filter(([k]) => k !== 'total' && k !== 'userId' && k !== 'verification' && !k.startsWith("pp_")).map(([k, v]) => `${k} (${v})`).join(", "));
+                                                }
+                                                if (hasPoolParty) {
+                                                    addonsList.push("Pool Party: " + Object.entries(enq.tickets).filter(([k]) => k.startsWith("pp_")).map(([k, v]) => `${k.replace("pp_", "")} (${v})`).join(", "));
+                                                }
+                                            }
+
+                                            if (enq.addons && Array.isArray(enq.addons) && enq.addons.length > 0) {
+                                                addonsList.push(...enq.addons);
+                                            }
+
+                                            return addonsList.length > 0 ? addonsList.join(" | ") : "-";
+                                        })()}
+                                    </td>
 
                                     <td style={{ backgroundColor: rowBg }}>
                                         ₹{enq.total?.toLocaleString("en-IN")}
