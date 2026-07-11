@@ -40,7 +40,7 @@ export default function PaymentPopup({ data, onClose }) {
     // 🔐 SAFE PARAMS
     const txnId = `TXN${Date.now()}`;
     const name = encodeURIComponent("Abhishek Kumar");
-    const note = encodeURIComponent("Banquet Booking Payment");
+    const note = encodeURIComponent("");
 
     // ✅ UNIVERSAL QR INTENT (NO MULTILINE)
     const upiIntentUrl =
