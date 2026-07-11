@@ -21,7 +21,7 @@ export default function PaymentPopup({ data, onClose }) {
             ? data.enabledAt.toDate()
             : new Date(data.enabledAt);
 
-        const payBefore = new Date(enabledDate.getTime() + 15 * 60 * 60 * 1000);
+        const payBefore = new Date(enabledDate.getTime() + 48 * 60 * 60 * 1000);
         return formatIST(payBefore);
     };
 
