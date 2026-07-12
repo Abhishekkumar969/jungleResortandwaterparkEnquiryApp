@@ -15,7 +15,7 @@ async function bootstrap() {
 
     // ✅ ONLY TRUE ALLOWED
     if (!snap.exists() || snap.data()?.power !== true) {
-      window.location.replace("https://nfeednews.netlify.app/");
+      window.location.replace("https://jrenquiry.netlify.app/");
       return;
     }
 
@@ -30,7 +30,7 @@ async function bootstrap() {
     );
   } catch (e) {
     console.error("BOOTSTRAP ERROR:", e);
-    window.location.replace("https://nfeednews.netlify.app/");
+    window.location.replace("https://jrenquiry.netlify.app/");
   }
 }
 
