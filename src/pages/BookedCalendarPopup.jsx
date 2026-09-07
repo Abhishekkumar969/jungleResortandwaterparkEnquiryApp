@@ -1,8 +1,15 @@
+
+
+
 import React, { useEffect, useState } from "react";
-import { getDocs, collection } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "../styles/LiveAvailability.css";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+
+
 
 const AllBookingDatesPopup = ({ isOpen, onClose }) => {
     const [calendarData, setCalendarData] = useState({});

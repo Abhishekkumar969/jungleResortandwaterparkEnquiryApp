@@ -1,7 +1,14 @@
+
+
+
 import React, { useEffect, useState, useMemo } from "react";
+
+
+import "../styles/EnquiryStats.css";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import "../styles/EnquiryStats.css";
+
+
 
 const EnquiryStats = () => {
     const [enquiries, setEnquiries] = useState([]);

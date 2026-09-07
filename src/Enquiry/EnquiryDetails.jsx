@@ -1,13 +1,20 @@
+
+
+
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { deleteField, updateDoc, doc, setDoc, collection, onSnapshot, serverTimestamp, getDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+
+
 import "../Book/AllLeads/BookingLeadsTable.css";
 import { useNavigate } from "react-router-dom";
 import "../styles/FixedTable.css"
 import "./EnquiryStats"
-import { getAuth } from "firebase/auth";
+
 import { useLocation } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import { collection, doc, setDoc, getDoc, updateDoc, deleteField, onSnapshot, serverTimestamp } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 const EnquiryDetails = () => {
   const [enquiries, setEnquiries] = useState([]);

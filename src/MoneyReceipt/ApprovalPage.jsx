@@ -1,10 +1,17 @@
+
+
+
 import React, { useState, useEffect, useRef } from "react";
-import { db } from "../firebaseConfig";
-import { collection, updateDoc, doc, onSnapshot, getDocs, getDoc } from "firebase/firestore";
+
+
 import BackButton from "../components/BackButton";
-import { getAuth } from "firebase/auth";
+
 import { useNavigate } from 'react-router-dom';
 import BottomNavigationBar from "../components/BottomNavigationBar";
+import { collection, doc, getDoc, getDocs, updateDoc, onSnapshot } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 export default function ApprovalPage() {
     const navigate = useNavigate();

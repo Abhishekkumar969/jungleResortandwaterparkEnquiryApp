@@ -1,16 +1,23 @@
+
+
+
 import React, { useEffect, useState, useRef } from 'react';
-import { collection, onSnapshot, doc, updateDoc, setDoc, getDoc, getDocs, deleteField } from "firebase/firestore";
-import { db } from '../firebaseConfig';
+
+
 import '../styles/MoneyReceipts.css';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { getAuth } from "firebase/auth";
+
 import BackButton from "../components/BackButton";
 import BottomNavigationBar from "../components/BottomNavigationBar";
 import LogPopupCell from '../Book/AllLeads/LogPopupCell';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteField, onSnapshot } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 const MoneyReceipts = () => {
   const navigate = useNavigate();

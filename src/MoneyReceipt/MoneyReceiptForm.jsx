@@ -1,11 +1,18 @@
+
+
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { db } from '../firebaseConfig';
-import { runTransaction, collection, getDocs, doc, updateDoc, getDoc, setDoc, arrayUnion, onSnapshot } from 'firebase/firestore';
+
+
 import '../styles/MoneyReceipt.css';
 import { useNavigate } from 'react-router-dom';
 import BackButton from "../components/BackButton";
-import { getAuth } from "firebase/auth";
+
 import BottomNavigationBar from "../components/BottomNavigationBar";
+import { collection, doc, setDoc, getDoc, getDocs, updateDoc, onSnapshot } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 const MoneyReceipt = () => {
     const [search, setSearch] = useState('');

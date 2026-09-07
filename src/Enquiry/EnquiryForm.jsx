@@ -1,13 +1,20 @@
+
+
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../styles/Booking.css";
-import { db } from "../firebaseConfig";
-import { doc, setDoc, collection, deleteField, getDoc, getDocs } from "firebase/firestore";
+
+
 import FunctionTypeSelector from "./FunctionTypeSelector";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
-import { getAuth } from "firebase/auth";
+
 import BackButton from "../components/BackButton";
 import BottomNavigationBar from "../components/BottomNavigationBar";
+import { collection, doc, setDoc, getDoc, getDocs, deleteField } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 const EnquiryPage = () => {
     const navigate = useNavigate();

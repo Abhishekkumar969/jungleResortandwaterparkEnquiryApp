@@ -1,10 +1,17 @@
+
+
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { db } from '../firebaseConfig';
-import { runTransaction, doc, setDoc, getDoc, onSnapshot, collection, getDocs } from 'firebase/firestore';
+
+
 import BackButton from '../components/BackButton';
 import { useNavigate } from 'react-router-dom';
-import { getAuth } from 'firebase/auth';
+
 import BottomNavigationBar from "../components/BottomNavigationBar";
+import { collection, doc, setDoc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 const Receipts = () => {
   const [type, setType] = useState('Debit');

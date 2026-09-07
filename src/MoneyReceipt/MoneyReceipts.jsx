@@ -1,12 +1,19 @@
+
+
+
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
-import { db } from '../firebaseConfig';
+
+
 import '../styles/MoneyReceipts.css';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { getAuth } from "firebase/auth";
+
 import BackButton from "../components/BackButton";
 import BottomNavigationBar from "../components/BottomNavigationBar";
+import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 const MoneyReceipts = () => {
   const navigate = useNavigate();

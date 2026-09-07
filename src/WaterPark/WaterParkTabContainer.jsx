@@ -1,11 +1,18 @@
+
+
+
 import React, { useEffect, useState, useRef } from "react";
-import { updateDoc, doc, collection, onSnapshot } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+
+
 import "../Book/AllLeads/BookingLeadsTable.css";
 import { useNavigate } from "react-router-dom";
 import "../styles/FixedTable.css"
-import { getAuth } from "firebase/auth";
+
 import Pagination from "../components/Pagination";
+import { collection, doc, updateDoc, onSnapshot } from "firebase/firestore";
+import { db, getAuth } from "../firebaseConfig";
+
+
 
 const WaterParkTable = ({ type }) => {
     const [enquiries, setEnquiries] = useState([]);

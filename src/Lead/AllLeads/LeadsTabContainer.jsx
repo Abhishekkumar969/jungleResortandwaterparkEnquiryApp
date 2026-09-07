@@ -1,12 +1,19 @@
+
+
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import { getAuth } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
+
+
 import EnquiryDetails from "../../Enquiry/EnquiryDetails";
 import WaterParkDetails from "../../WaterPark/WaterParkTabContainer";
 import "../../styles/LeadsTabContainer.css";
 import BackButton from "../../components/BackButton";
-import { db } from "../../firebaseConfig";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db, getAuth } from "../../firebaseConfig";
+
+
+
 
 const LeadsTabContainer = () => {
     const location = useLocation();
