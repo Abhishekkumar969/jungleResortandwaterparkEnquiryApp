@@ -16,7 +16,7 @@ import BottomNavigationBar from './BottomNavigationBar';
 import './Prebook.css';
 import { collection, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { db, getAuth } from "../firebaseConfig";
+import { db, getAuth, requestNotificationPermission } from "../firebaseConfig";
 
 
 
