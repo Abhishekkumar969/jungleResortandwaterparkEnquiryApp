@@ -52,7 +52,9 @@ export default function PaymentPopup({ data, onClose }) {
     return (
         <div className="popup-backdrop">
             <div className="popup-card ticket-v2">
-                <button className="close-btn" onClick={onClose}>✕</button>
+                {!isExpired() && (
+                    <button className="close-btn" onClick={onClose}>✕</button>
+                )}
 
                 {/* SCROLLABLE CONTENT */}
                 <div className="popup-content">
