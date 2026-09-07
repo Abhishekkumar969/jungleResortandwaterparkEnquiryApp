@@ -1,14 +1,7 @@
-
-
-
 import React, { useState, useEffect } from "react";
-
-
-import "../styles/BookingAmenities.css";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-
-
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import "../styles/BookingAmenities.css";
 
 const FunctionTypeSelector = ({ selectedType = [], onSelect = () => { } }) => {
   const [types, setTypes] = useState([]);

@@ -1,20 +1,13 @@
-
-
-
 import React, { useRef, useEffect, useState } from "react";
-
-
+import { collection, doc, setDoc, deleteDoc, onSnapshot, serverTimestamp, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 import styles from "../styles//WhatsappMessage.module.css";
 import BackButton from '../components/BackButton';
 import BottomNavigationBar from "../components/BottomNavigationBar";
 
-
+import { getAuth } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
-import { collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
-import { db, getAuth } from "../firebaseConfig";
-
-
 
 const MESSAGE_TYPES = [
     "Enquiry"

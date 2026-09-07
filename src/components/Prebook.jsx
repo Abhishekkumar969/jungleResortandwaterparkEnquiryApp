@@ -1,24 +1,16 @@
-
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-
-
+import { getAuth, signOut } from 'firebase/auth';
+import { doc, collection, onSnapshot, updateDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import { FaEnvelopeOpenText, FaFolderOpen, FaPenFancy, FaUserShield, FaWhatsapp, FaTrashAlt, FaTicketAlt, FaStar } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { MdEventAvailable } from "react-icons/md";
 import { IoCloudOfflineOutline } from "react-icons/io5";
-
+import { requestNotificationPermission } from "../firebaseConfig";
 import BackButton from "../components/BackButton";
 import BottomNavigationBar from './BottomNavigationBar';
 import './Prebook.css';
-import { collection, doc, updateDoc, onSnapshot } from "firebase/firestore";
-import { signOut } from "firebase/auth";
-import { db, getAuth, requestNotificationPermission } from "../firebaseConfig";
-
-
 
 const Prebook = () => {
   const navigate = useNavigate();
@@ -356,7 +348,6 @@ const Prebook = () => {
                 {hasAccess("Utilities", "WhatsappMessage") && <ServiceBox label="Message" onClick={() => navigate('/WhatsappMessage')} icon={<FaWhatsapp />} />}
                 {hasAccess("Utilities", "Blogs") && <ServiceBox label="Blogs" onClick={() => navigate('/BlogAdmin')} icon={<FaPenFancy />} />}
                 {hasAccess("Utilities", "TicketPricingAdmin") && <ServiceBox label="Ticket Prices" onClick={() => navigate('/TicketPricingAdmin')} icon={<FaTicketAlt />} />}
-                <ServiceBox label="Host Event" onClick={() => navigate('/host-my-event')} icon={<FaStar />} />
               </div>
             </div>
           ) : null}

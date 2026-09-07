@@ -1,19 +1,12 @@
-
-
-
 import React, { useEffect, useState } from 'react';
-
-
+import { collection, deleteDoc, doc, updateDoc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 import '../styles/UserAccessTable.css';
 import BackButton from "../components/BackButton";
 import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
-
+import { getAuth } from "firebase/auth";
 import BottomNavigationBar from "../components/BottomNavigationBar";
-import { collection, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore";
-import { db, getAuth } from "../firebaseConfig";
-
-
 
 Modal.setAppElement('#root');
 

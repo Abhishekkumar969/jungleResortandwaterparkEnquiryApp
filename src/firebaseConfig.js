@@ -1,10 +1,12 @@
+// Import Firebase SDK functions 
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getAuth as firebaseGetAuth, onAuthStateChanged as firebaseOnAuthStateChanged } from "firebase/auth";
-import { getMessaging, getToken, onMessage as firebaseOnMessage } from "firebase/messaging";
+import { getAnalytics } from "firebase/analytics";
+import { getStorage } from 'firebase/storage';
+import { getAuth } from "firebase/auth";
+import { getMessaging, getToken } from "firebase/messaging";
 
+// Firebase config
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
     authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -15,34 +17,38 @@ const firebaseConfig = {
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
+// Init
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const auth = firebaseGetAuth(app);
+const auth = getAuth(app);
 const messaging = getMessaging(app);
 
-const getAuth = firebaseGetAuth;
-const onAuthStateChanged = firebaseOnAuthStateChanged;
-const onMessage = firebaseOnMessage;
-
+// 🔔 REQUEST + SAVE TOKEN
 export const requestNotificationPermission = async () => {
     try {
         const permission = await Notification.requestPermission();
+
         if (permission === "granted") {
             const token = await getToken(messaging, {
                 vapidKey: process.env.REACT_APP_FIREBASE_VAPID_KEY
             });
+
             console.log("🔥 FCM TOKEN:", token);
+
             if (!token) {
                 console.log("❌ TOKEN NULL");
                 return;
             }
+
             await setDoc(doc(db, "fcmTokens", token), {
                 token,
                 createdAt: new Date().toISOString()
             });
+
             console.log("✅ TOKEN SAVED");
+
             return token;
         } else {
             console.log("❌ Permission denied");
@@ -52,4 +58,4 @@ export const requestNotificationPermission = async () => {
     }
 };
 
-export { db, app, storage, analytics, auth, messaging, getAuth, onAuthStateChanged, onMessage };
+export { db, app, storage, analytics, auth, messaging };

@@ -1,16 +1,9 @@
-
-
-
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/Calendar.css';
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebaseConfig";
-
-
-
-
+import { db } from '../firebaseConfig';
+import { collection, getDocs } from 'firebase/firestore';
 
 const toISTDate = (dateInput) => {
     if (!dateInput) return new Date();

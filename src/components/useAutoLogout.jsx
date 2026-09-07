@@ -1,13 +1,6 @@
-
-
-
 import { useEffect, useState, useRef } from "react";
-
+import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { getAuth } from "../firebaseConfig";
-
-
 
 const useAutoLogout = (idleTime = 10 * 60 * 1000, warningTime = 10) => {
     const navigate = useNavigate();

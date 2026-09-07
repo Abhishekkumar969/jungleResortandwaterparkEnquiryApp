@@ -1,18 +1,11 @@
-
-
-
 import React, { useState, useEffect } from "react";
-
-
-
+import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { db } from "../firebaseConfig";
 import BackButton from "../components/BackButton";
 import BottomNavigationBar from "../components/BottomNavigationBar";
 import { useNavigate } from 'react-router-dom';
 import "../styles/TicketPricingAdmin.css";
-import { doc, setDoc, getDoc, onSnapshot } from "firebase/firestore";
-import { db, getAuth } from "../firebaseConfig";
-
-
 
 export default function TicketPricingAdmin() {
     const navigate = useNavigate();

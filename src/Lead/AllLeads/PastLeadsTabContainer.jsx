@@ -1,16 +1,9 @@
-
-
-
 import React, { useState, useEffect } from "react";
-
-
-
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { getAuth } from "firebase/auth";
 import BackButton from "../../components/BackButton";
 import PastEnquiry from "../../Enquiry/pastEnquiry/pastEnquiry";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db, getAuth } from "../../firebaseConfig";
-
-
 
 const PastLeadsTabContainer = () => {
   const [hasPermission, setHasPermission] = useState(false);

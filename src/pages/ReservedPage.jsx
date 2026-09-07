@@ -1,19 +1,12 @@
-
-
-
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-
-
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import BackButton from "../components/BackButton";
 import BottomNavigationBar from "../components/BottomNavigationBar";
 import { useNavigate } from 'react-router-dom';
 import "../styles/ReservedPage.css";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
-
-
 const formatDate = (date) => { return date.toLocaleDateString("en-CA"); };
 
 export default function ReservedPage() {

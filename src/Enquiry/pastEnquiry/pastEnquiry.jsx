@@ -1,16 +1,9 @@
-
-
-
 import React, { useEffect, useState, useRef } from "react";
-
+import { updateDoc, deleteField, doc, setDoc, collection, onSnapshot } from "firebase/firestore";
 import "../../Book/AllLeads/BookingLeadsTable.css";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/BackButton";
-import { collection, doc, setDoc, updateDoc, deleteField, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-
-
-
 
 const PastEnquiry = () => {
   const [enquiries, setEnquiries] = useState([]);
