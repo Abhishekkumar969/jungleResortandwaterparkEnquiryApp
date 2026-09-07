@@ -1,8 +1,11 @@
+
+
+
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "./firebaseConfig";
+
+
+
 
 import Prebook from "./components/Prebook";
 import PrivateRoute from "./auth/PrivateRoute";
@@ -20,6 +23,15 @@ import PaymentBar from "./MonthlyPayment/PaymentBar";
 import BlogAdmin from './pages/BlogAdmin';
 import TicketPricingAdmin from './pages/TicketPricingAdmin';
 import InfluencersTab from './pages/InfluencersTab';
+
+import HostEventStart from "./HostEvent/HostEventStart";
+import PageBuilder from "./HostEvent/PageBuilder";
+import DynamicEventPage from "./HostEvent/DynamicEventPage";
+import { doc, onSnapshot } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { db, getAuth, onAuthStateChanged } from "./firebaseConfig";
+
+
 
 export default function AppRoutes() {
     const navigate = useNavigate();
@@ -89,6 +101,9 @@ export default function AppRoutes() {
                 <Route path="/ReservedPage" element={<PrivateRoute><ReservedPage /></PrivateRoute>} />
                 <Route path="/influencers" element={<PrivateRoute><InfluencersTab /></PrivateRoute>} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/host-my-event" element={<PrivateRoute><HostEventStart /></PrivateRoute>} />
+                <Route path="/builder/:slug" element={<PrivateRoute><PageBuilder /></PrivateRoute>} />
+                <Route path="/event/:slug" element={<DynamicEventPage />} />
             </Routes>
 
             {!hidePaymentBar && <PaymentBar appCost={appCost} />}

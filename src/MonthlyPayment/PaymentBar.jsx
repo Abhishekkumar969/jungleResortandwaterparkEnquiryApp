@@ -5,8 +5,23 @@ import "./PaymentBar.css";
 export default function PaymentBar({ appCost }) {
     const [open, setOpen] = useState(false);
 
+    const isExpired = () => {
+        if (!appCost?.enabledAt) return false;
+        const enabledDate = appCost.enabledAt.toDate
+            ? appCost.enabledAt.toDate()
+            : new Date(appCost.enabledAt);
+        const payBefore = new Date(enabledDate.getTime() + 15 * 60 * 60 * 1000);
+        return new Date() > payBefore;
+    };
+
     useEffect(() => {
         if (!appCost?.isActive || !appCost?.amount) return;
+
+        // If expired, always force open — no localStorage check
+        if (isExpired()) {
+            setOpen(true);
+            return;
+        }
 
         const checkPopup = () => {
             const lastShown = localStorage.getItem("paymentPopupLastShown");

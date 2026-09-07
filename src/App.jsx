@@ -1,8 +1,6 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { requestNotificationPermission, messaging } from "./firebaseConfig";
-import { onMessage } from "firebase/messaging"; // 👈 ADD
+import { requestNotificationPermission, messaging, getAuth, onAuthStateChanged, onMessage } from "./firebaseConfig";
 import AppRoutes from "./AppRoutes";
 import LoginPage from "./auth/LoginPage";
 import AppLoading from "./AppLoading/AppLoading";
